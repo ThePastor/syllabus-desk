@@ -1,0 +1,1086 @@
+<!doctype html>
+<!--
+  Syllabus Desk  v1.0  (9 September 2026)
+  Copyright (c) 2026 JohnsonXCorp. All rights reserved.
+
+  This page is proprietary software. It is published so it can be served and so you can verify what
+  it does with your files. It is NOT open source and NOT free to reuse: you may use it and read it,
+  and everything it makes from your own course material is yours, but you may not republish, rehost,
+  redistribute, sell, or build another product from it, in whole or in part.
+
+  Licence:  https://github.com/ThePastor/syllabus-desk/blob/main/LICENSE
+  Contact:  johnsonandy242@gmail.com
+
+  This file also bundles PDF.js (Apache-2.0, (c) Mozilla Foundation) and JSZip (MIT, (c) Stuart
+  Knightley), each under its own licence. Those notices must travel with any copy.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Paste or upload your course outlines and get one calendar for the whole term - exams, quizzes, deadlines and study blocks, exportable to Google or Apple Calendar.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F2F8F9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0C0C0D" media="(prefers-color-scheme: dark)">
+<meta name="author" content="JohnsonXCorp">
+<meta name="copyright" content="Copyright (c) 2026 JohnsonXCorp. All rights reserved.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E7C86'/%3E%3Crect x='6' y='9' width='20' height='2.4' fill='%23fff'/%3E%3Crect x='6' y='15' width='20' height='2.4' fill='%23D9F56B'/%3E%3Crect x='6' y='21' width='12' height='2.4' fill='%23fff'/%3E%3C/svg%3E">
+<style>html{background:#F2F8F9}@media(prefers-color-scheme:dark){html{background:#0C0C0D}}
+img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Syllabus Desk — turn your course outlines into one calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{
+  --bg:#F2F8F9; --surface:#FFFFFF; --surface-2:#E6F1F4; --surface-3:#D6E7EC;
+  --ink:#0E2A3A; --ink-2:#3F5B69; --ink-3:#55707D;
+  --line:#16405A; --line-soft:#C9DCE3;
+  --accent:#0E7C86; --accent-deep:#0A5A62; --accent-soft:#D2EEF0; --accent-ink:#FFFFFF;
+  --mint:#D9F56B; --mint-deep:#0E7C86; --mint-ink:#0E2A3A;
+  --coral:#FF7A59; --coral-soft:#FFE0D6;
+  --ok:#17835B; --ok-soft:#D3F3E3; --bad:#C0341A; --bad-soft:#FFE0D6;
+  --warn:#8C6100; --warn-soft:#FFF0B8;
+  --sky:#CFEAF3; --dot:#16405A; --shape:#C3DAE3;
+  --tint-1:#DDF0F6; --tint-2:#ECFAB9; --tint-3:#D3F3E3; --tint-4:#FFE1D6;
+  --inverse:#0E2A3A; --inverse-ink:#FFFFFF; --inverse-ink-2:#9DB6C2;
+  --jxc-gold:#EBB64E;
+  --shadow:0 24px 60px -30px rgba(14,42,58,.4);
+  --gut:32px; --gut-in:16px; --band:22px; --band-lg:40px; --pad-in:14px; --accent-bar:3px;
+  --font-display:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-body:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C0C0D; --surface:#0C0C0D; --surface-2:#161618; --surface-3:#202024;
+    --ink:#F4F4F2; --ink-2:#B5B5BB; --ink-3:#8B8B94; --line:#F4F4F2; --line-soft:#2C2C31;
+    --accent:#5FD3DC; --accent-deep:#7FE2EA; --accent-soft:#10343A; --accent-ink:#0C0C0D;
+    --mint:#A6F0C5; --mint-deep:#6FE0A4; --mint-ink:#0C0C0D;
+    --coral:#FF8A6E; --coral-soft:#3A2119;
+    --ok:#6FE0A4; --ok-soft:#123324; --bad:#FF8A78; --bad-soft:#3A1D18;
+    --warn:#F2C94C; --warn-soft:#3A2F0E;
+    --sky:#14303A; --dot:#F4F4F2; --shape:#2A2A2E;
+    --tint-1:#101C22; --tint-2:#171E10; --tint-3:#0F1F17; --tint-4:#201512;
+    --inverse:#F4F4F2; --inverse-ink:#0C0C0D; --inverse-ink-2:#4B4B51; --jxc-gold:#B8800E;
+    --shadow:0 24px 60px -30px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C0C0D; --surface:#0C0C0D; --surface-2:#161618; --surface-3:#202024;
+  --ink:#F4F4F2; --ink-2:#B5B5BB; --ink-3:#8B8B94; --line:#F4F4F2; --line-soft:#2C2C31;
+  --accent:#5FD3DC; --accent-deep:#7FE2EA; --accent-soft:#10343A; --accent-ink:#0C0C0D;
+  --mint:#A6F0C5; --mint-deep:#6FE0A4; --mint-ink:#0C0C0D;
+  --coral:#FF8A6E; --coral-soft:#3A2119;
+  --ok:#6FE0A4; --ok-soft:#123324; --bad:#FF8A78; --bad-soft:#3A1D18;
+  --warn:#F2C94C; --warn-soft:#3A2F0E;
+  --sky:#14303A; --dot:#F4F4F2; --shape:#2A2A2E;
+  --tint-1:#101C22; --tint-2:#171E10; --tint-3:#0F1F17; --tint-4:#201512;
+  --inverse:#F4F4F2; --inverse-ink:#0C0C0D; --inverse-ink-2:#4B4B51; --jxc-gold:#B8800E;
+  --shadow:0 24px 60px -30px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-family:var(--font-display);font-weight:600;text-wrap:balance}
+a{color:var(--accent-deep)}
+.wrap{max-width:1220px;margin:0 auto;padding:0 var(--gut)}
+@media(max-width:700px){:root{--gut:18px}}
+.mono{font-family:var(--font-mono)}
+.lab{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ---- topbar ---- */
+.topbar{border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:30}
+.topbar-in{display:flex;align-items:stretch;min-height:56px;gap:0}
+.brand{display:flex;align-items:center;gap:10px;padding-right:var(--gut-in);border-right:1px solid var(--line-soft);margin-right:var(--gut-in)}
+.brand .wm{font-family:var(--font-display);font-size:1.05rem;font-weight:700;letter-spacing:-.035em;white-space:nowrap}
+.brand .wm b{color:var(--accent-deep);font-weight:700}
+.tabs{display:flex;align-items:stretch;overflow-x:auto;flex:1;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;border-bottom:var(--accent-bar) solid transparent;background:transparent;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding:0 15px;cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--ink);background:var(--surface-2)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.topacts{display:flex;align-items:center;gap:8px;padding-left:var(--gut-in);border-left:1px solid var(--line-soft);margin-left:var(--gut-in)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---- buttons ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:11px 17px;border:1px solid var(--line);border-radius:2px;background:var(--surface);color:var(--ink);cursor:pointer;text-decoration:none;font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;line-height:1.2;transition:background .12s,color .12s,border-color .12s}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{background:var(--accent-deep);border-color:var(--accent-deep)}
+.btn.ghost{border-color:var(--line-soft);color:var(--ink-3)}
+.btn.ghost:hover{color:var(--ink)}
+.btn.danger{color:var(--bad);border-color:var(--line-soft)}
+.btn.sm{padding:7px 12px;font-size:.63rem}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.btn .arw{font-family:var(--font-mono)}
+
+main{padding:var(--band-lg) 0 90px}
+.panel{display:none}
+.panel.on{display:block}
+section{margin-bottom:var(--band-lg)}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.sec-head h2{font-size:1.5rem;letter-spacing:-.03em}
+.sec-head .note{margin-left:auto;font-family:var(--font-mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ---- hero ---- */
+.hero{border:1px solid var(--line);background:var(--surface);position:relative;overflow:hidden}
+.hero-in{padding:var(--band-lg) var(--gut)}
+.hero h1{font-size:clamp(2rem,5.2vw,3.6rem);letter-spacing:-.045em;line-height:1.02;margin:10px 0 14px;max-width:17ch}
+.hero h1 em{font-style:normal;color:var(--accent-deep)}
+.hero p.lede{color:var(--ink-2);max-width:60ch;margin:0 0 22px;font-size:1.02rem}
+.dots{position:absolute;inset:0 0 auto auto;width:210px;height:210px;opacity:.5;pointer-events:none;
+  background-image:radial-gradient(var(--dot) 1px, transparent 1px);background-size:11px 11px;
+  -webkit-mask-image:linear-gradient(215deg,#000,transparent 72%);mask-image:linear-gradient(215deg,#000,transparent 72%)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));border-top:1px solid var(--line)}
+.step{padding:var(--band) var(--gut) var(--band) 0;border-right:1px solid var(--line-soft)}
+.step:last-child{border-right:0}
+.step h4{font-size:1rem;margin:8px 0 5px;letter-spacing:-.02em}
+.step p{font-size:.84rem;color:var(--ink-3);margin:0}
+.hero .steps{padding:0 var(--gut)}
+.hero .steps .step:first-child{padding-left:0}
+
+/* ---- weeks ---- */
+.weeks{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line)}
+.weeks>div+div{border-left:1px solid var(--line-soft)}
+@media(max-width:880px){.weeks{grid-template-columns:1fr}.weeks>div+div{border-left:0;border-top:1px solid var(--line)}}
+.wcol{background:var(--surface)}
+.wcol-head{padding:13px var(--gut-in);border-bottom:1px solid var(--line-soft);display:flex;align-items:baseline;gap:10px}
+.wcol-head h3{font-size:.95rem;letter-spacing:-.02em}
+.wcol-head .rng{margin-left:auto;font-family:var(--font-mono);font-size:.66rem;color:var(--ink-3)}
+.wcol.now .wcol-head{background:var(--accent-soft)}
+.day{border-bottom:1px solid var(--line-soft);padding:11px var(--gut-in);display:grid;grid-template-columns:52px 1fr;gap:12px}
+.day:last-child{border-bottom:0}
+.day.today{background:var(--tint-1)}
+.day.empty .items{color:var(--ink-3);font-size:.8rem;opacity:.7;padding-top:3px}
+.dstamp{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.1em;color:var(--ink-3);line-height:1.4;padding-top:2px}
+.dstamp b{display:block;font-size:1.15rem;color:var(--ink);font-weight:500;letter-spacing:-.02em}
+.day.today .dstamp b{color:var(--accent-deep)}
+.items{display:flex;flex-direction:column;gap:7px;min-width:0}
+.it{display:flex;gap:9px;align-items:flex-start;font-size:.86rem;line-height:1.4}
+.it .tick{margin-top:2px;flex:0 0 auto}
+.it .body{min-width:0}
+.it .when{font-family:var(--font-mono);font-size:.62rem;color:var(--ink-3);letter-spacing:.04em}
+.it.done .name{text-decoration:line-through;color:var(--ink-3)}
+.rail{flex:0 0 var(--accent-bar);align-self:stretch}
+.name{font-weight:500}
+.ck{font-family:var(--font-mono);font-size:.62rem;font-weight:600;letter-spacing:.06em}
+.badge{display:inline-block;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;vertical-align:1.5px;margin-left:6px;font-weight:500;border-radius:2px}
+.b-exam{background:var(--bad);color:#fff}
+.b-due{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.b-quiz{background:var(--tint-2);color:var(--mint-ink);border:1px solid var(--mint-deep)}
+.b-study{background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line-soft)}
+.b-off{background:transparent;color:var(--ink-3);border:1px dashed var(--line-soft)}
+input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
+.horizon{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:0;border:1px solid var(--line);border-right:0;border-bottom:0}
+.hcard{border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);padding:15px 17px;background:var(--surface);position:relative}
+.hcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--accent-bar);background:var(--hc,var(--accent))}
+.hcard .d{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase}
+.hcard .t{font-family:var(--font-display);font-weight:600;font-size:1rem;margin:6px 0 4px;line-height:1.2;letter-spacing:-.02em}
+.hcard .m{font-size:.78rem;color:var(--ink-3)}
+.hcard .cd{font-family:var(--font-mono);font-size:.66rem;margin-top:9px;font-weight:500;letter-spacing:.05em}
+.hcard.unset{background:repeating-linear-gradient(45deg,transparent,transparent 6px,var(--surface-2) 6px,var(--surface-2) 12px)}
+
+/* ---- calendar ---- */
+.filters{display:flex;flex-wrap:wrap;gap:0;margin-bottom:20px;border:1px solid var(--line-soft)}
+.chip{font-family:var(--font-mono);font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;padding:8px 13px;border:0;border-right:1px solid var(--line-soft);background:var(--surface);color:var(--ink-3);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.chip .dot{width:7px;height:7px;background:currentColor}
+.chip[aria-pressed="true"]{background:var(--surface-2);color:var(--ink)}
+.months{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:0;border:1px solid var(--line);border-right:0;border-bottom:0}
+.month{border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);background:var(--surface)}
+.mhead{padding:12px 14px;border-bottom:1px solid var(--line-soft);display:flex;align-items:baseline;gap:8px}
+.mhead h3{font-size:1.05rem;letter-spacing:-.03em}
+.mhead .cnt{margin-left:auto;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.dow{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--line-soft)}
+.dow span{text-align:center;font-family:var(--font-mono);font-size:.55rem;letter-spacing:.1em;color:var(--ink-3);padding:6px 0}
+.grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.cell{aspect-ratio:1/.9;border:0;border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);padding:4px;display:flex;flex-direction:column;gap:2px;background:transparent;text-align:left;cursor:pointer;min-width:0;font:inherit}
+.cell:nth-child(7n){border-right:0}
+.cell.pad{cursor:default;background:var(--surface-2);opacity:.4}
+.cell:hover:not(.pad){background:var(--tint-1)}
+.cell .n{font-family:var(--font-mono);font-size:.62rem;color:var(--ink-3);line-height:1}
+.cell.today .n{background:var(--accent);color:var(--accent-ink);width:16px;height:16px;display:grid;place-items:center;font-weight:600}
+.cell.off .n{opacity:.5;text-decoration:line-through}
+.dots-row{display:flex;flex-wrap:wrap;gap:2px;margin-top:auto}
+.dot-e{width:5px;height:5px}
+.dot-e.big{width:100%;height:3px}
+.cell .mk{font-family:var(--font-mono);font-size:.53rem;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;letter-spacing:.02em}
+.daypanel{margin-top:0;border:1px solid var(--line);border-top:0;background:var(--surface);padding:16px 18px;min-height:76px}
+.daypanel h4{font-size:1.05rem;letter-spacing:-.02em;margin-bottom:10px}
+.daypanel .empty{color:var(--ink-3);font-size:.85rem}
+
+/* ---- courses ---- */
+.course{border:1px solid var(--line);margin-bottom:22px;background:var(--surface)}
+.chead{padding:17px var(--gut-in);border-bottom:1px solid var(--line-soft);border-top:var(--accent-bar) solid var(--ck)}
+.ctop{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px}
+.ccode{font-family:var(--font-mono);font-size:.72rem;font-weight:600;letter-spacing:.09em;color:var(--ck)}
+.ctitle{font-family:var(--font-display);font-size:1.4rem;font-weight:600;letter-spacing:-.03em}
+.cacts{margin-left:auto;display:flex;gap:7px}
+.cmeta{display:flex;flex-wrap:wrap;gap:5px 26px;margin-top:12px;font-size:.8rem;color:var(--ink-3)}
+.cmeta b{color:var(--ink-2);font-weight:500}
+.cbody{padding:18px var(--gut-in) 20px;display:grid;grid-template-columns:1.35fr 1fr;gap:28px}
+@media(max-width:860px){.cbody{grid-template-columns:1fr}}
+.blk h4{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;font-weight:500}
+.blk+.blk{margin-top:24px}
+table.assess{width:100%;border-collapse:collapse;font-size:.86rem}
+table.assess th{text-align:left;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:0 8px 7px 0;border-bottom:1px solid var(--line-soft)}
+table.assess td{padding:9px 8px 9px 0;border-bottom:1px solid var(--line-soft);vertical-align:top}
+table.assess tr:last-child td{border-bottom:0}
+table.assess td.wt{font-family:var(--font-mono);font-size:.76rem;text-align:right;white-space:nowrap;padding-right:0;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+table.assess td.dt{font-family:var(--font-mono);font-size:.72rem;white-space:nowrap;color:var(--ink-2)}
+.sub{font-size:.76rem;color:var(--ink-3);margin-top:2px}
+.tbd{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;background:var(--warn-soft);border:1px solid var(--warn);border-radius:2px;padding:3px 8px;color:var(--warn);cursor:pointer}
+.wbar{display:flex;height:10px;overflow:hidden;border:1px solid var(--line-soft);margin-bottom:10px}
+.wkey{display:flex;flex-wrap:wrap;gap:4px 15px;font-size:.68rem;color:var(--ink-3);font-family:var(--font-mono)}
+.wkey i{width:8px;height:8px;display:inline-block;margin-right:6px}
+details.sched{border:1px solid var(--line-soft);background:var(--surface-2)}
+details.sched summary{padding:10px 13px;cursor:pointer;font-family:var(--font-mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);list-style:none;display:flex;align-items:center;gap:9px}
+details.sched summary::-webkit-details-marker{display:none}
+details.sched summary::before{content:"+";color:var(--accent-deep);font-weight:600}
+details.sched[open] summary::before{content:"–"}
+.schedlist{background:var(--surface);border-top:1px solid var(--line-soft);max-height:320px;overflow-y:auto}
+.srow{display:grid;grid-template-columns:84px 1fr;gap:10px;padding:7px 13px;font-size:.8rem;border-bottom:1px solid var(--line-soft)}
+.srow:last-child{border-bottom:0}
+.srow .sd{font-family:var(--font-mono);font-size:.66rem;color:var(--ink-3);white-space:nowrap}
+.srow.past{opacity:.4}
+.srow.mark .st{font-weight:600}
+.srow.off .st{color:var(--ink-3);font-style:italic}
+.studyrow{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:.8rem}
+.studyrow select,.studyrow input,label.f input,label.f select,table.rev input,table.rev select,textarea.paste{border:1px solid var(--line-soft);border-radius:2px;padding:6px 9px;font-size:.82rem;background:var(--surface);color:var(--ink);font-family:var(--font-body)}
+.studyrow input[type=time]{font-family:var(--font-mono);font-size:.76rem}
+
+/* ---- add / review ---- */
+.drop{border:1.5px dashed var(--line-soft);padding:30px;text-align:center;background:var(--surface-2);transition:border-color .15s,background .15s}
+.drop.hot{border-color:var(--accent);background:var(--accent-soft)}
+.drop h4{font-size:1.05rem;margin-bottom:6px;letter-spacing:-.02em}
+.drop p{font-size:.8rem;color:var(--ink-3);margin:0 0 15px}
+textarea.paste{width:100%;min-height:160px;font-family:var(--font-mono);font-size:.76rem;resize:vertical;line-height:1.6}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.hint{font-family:var(--font-mono);font-size:.65rem;letter-spacing:.05em;color:var(--ink-3)}
+.working{display:flex;align-items:center;gap:11px;font-size:.86rem;color:var(--ink-2);padding:14px 0}
+.spin{width:13px;height:13px;border:2px solid var(--line-soft);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite;flex:0 0 auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}*{transition:none!important}}
+.err{border:1px solid var(--line-soft);border-left:var(--accent-bar) solid var(--bad);background:var(--bad-soft);padding:13px 16px;font-size:.85rem;color:var(--ink-2);margin-top:14px}
+.err b{color:var(--bad)}
+.review{border:1px solid var(--line);background:var(--surface)}
+.review-head{padding:17px var(--gut-in);border-bottom:1px solid var(--line-soft);border-top:var(--accent-bar) solid var(--ck)}
+.fieldgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;padding:17px var(--gut-in);border-bottom:1px solid var(--line-soft)}
+label.f{display:block}
+label.f span{display:block;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
+label.f input{width:100%}
+table.rev{width:100%;border-collapse:collapse;font-size:.82rem}
+table.rev th{text-align:left;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:11px 8px;border-bottom:1px solid var(--line-soft);background:var(--surface-2)}
+table.rev td{padding:8px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+table.rev input,table.rev select{width:100%}
+table.rev input.dt{font-family:var(--font-mono);font-size:.74rem}
+table.rev tr.missing td{background:var(--warn-soft)}
+.flag{font-family:var(--font-mono);font-size:.53rem;letter-spacing:.09em;text-transform:uppercase;padding:3px 7px;background:var(--warn);color:#fff;white-space:nowrap}
+.rev-foot{padding:15px var(--gut-in);display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--surface-2);border-top:1px solid var(--line-soft)}
+
+/* ---- export / rights ---- */
+.exportgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:0;border:1px solid var(--line);border-right:0;border-bottom:0}
+.excard{border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);padding:19px var(--gut-in);background:var(--surface)}
+.excard h4{font-size:1.05rem;margin-bottom:6px;letter-spacing:-.02em}
+.excard p{font-size:.8rem;color:var(--ink-3);margin:0 0 14px}
+.callout{border:1px solid var(--line-soft);border-left:var(--accent-bar) solid var(--accent);background:var(--surface);padding:16px 19px;font-size:.86rem;color:var(--ink-2)}
+.callout h4{font-size:.95rem;margin-bottom:8px;color:var(--ink);letter-spacing:-.02em}
+.callout ul,.callout ol{margin:8px 0 0;padding-left:20px}
+.callout li{margin-bottom:6px}
+.prose{max-width:72ch}
+.prose h3{font-size:1.15rem;letter-spacing:-.025em;margin:26px 0 9px}
+.prose h3:first-child{margin-top:0}
+.prose p{color:var(--ink-2);margin:0 0 11px;font-size:.9rem}
+.prose ul{margin:0 0 13px;padding-left:20px;color:var(--ink-2);font-size:.9rem}
+.prose li{margin-bottom:6px}
+.prose .small{font-size:.78rem;color:var(--ink-3)}
+
+/* ---- footer ---- */
+.foot{border-top:1px solid var(--line);background:var(--inverse);color:var(--inverse-ink-2);margin-top:var(--band-lg)}
+.foot-in{display:grid;grid-template-columns:1fr auto;gap:26px;padding:var(--band) var(--gut);font-size:.74rem;font-family:var(--font-mono);letter-spacing:.02em;align-items:end}
+@media(max-width:900px){.foot-in{grid-template-columns:1fr;gap:16px}}
+.foot a{color:var(--inverse-ink);text-decoration:none;border-bottom:1px solid var(--inverse-ink-2)}
+.foot a:hover{border-bottom-color:var(--inverse-ink)}
+.maker{display:flex;align-items:center;gap:11px;flex-wrap:wrap;color:var(--inverse-ink-2)}
+.maker .by{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.jxc-logo{display:block;height:17px;width:auto;color:var(--inverse-ink)}
+.jxc-logo .jxc-x{fill:var(--jxc-gold)}
+.build{background:none;border:0;color:inherit;font:inherit;cursor:pointer;white-space:nowrap}
+.build:hover{color:var(--inverse-ink)}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap topbar-in">
+  <div class="brand"><span class="wm">Syllabus<b>Desk</b></span></div>
+  <nav class="tabs" aria-label="Sections">
+    <button class="tab" data-panel="p-weeks" aria-selected="true">Two weeks</button>
+    <button class="tab" data-panel="p-cal" aria-selected="false">Calendar</button>
+    <button class="tab" data-panel="p-courses" aria-selected="false">Courses</button>
+    <button class="tab" data-panel="p-export" aria-selected="false">Export</button>
+  </nav>
+  <div class="topacts">
+    <button class="btn sm" id="themebtn" title="Switch light and dark" aria-label="Switch theme">Theme</button>
+    <button class="btn primary sm" id="addbtn">Add course</button>
+  </div>
+</div></header>
+
+<main class="wrap">
+
+  <div class="panel on" id="p-weeks">
+    <div id="empty-state">
+      <section>
+        <div class="hero">
+          <div class="dots" aria-hidden="true"></div>
+          <div class="hero-in">
+            <div class="lab">Course outlines in · one calendar out</div>
+            <h1>Every deadline in your term, <em>on one page</em>.</h1>
+            <p class="lede">Add each course once. Claude reads the outline and pulls out the exams, quizzes, reports and deadlines — then you check its work before a single date is saved. What you get back is your term by the week, and a file that loads straight into the calendar on your phone.</p>
+            <div class="row">
+              <button class="btn primary" id="start1">Add my first course <span class="arw">&rarr;</span></button>
+              <button class="btn" id="loadsample">Load an example term</button>
+            </div>
+          </div>
+          <div class="steps">
+            <div class="step"><div class="lab">Step 01</div><h4>Feed it the outline</h4><p>Paste the text, or drop in the PDF or Word file your instructor posted. The file is read on your device.</p></div>
+            <div class="step"><div class="lab">Step 02</div><h4>Check what it found</h4><p>Every date lands in an editable table first. Anything the outline left blank is flagged, never guessed.</p></div>
+            <div class="step"><div class="lab">Step 03</div><h4>Take it with you</h4><p>Export to Google or Apple Calendar so the reminders follow you off this page.</p></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="loaded-state" class="hide">
+      <section>
+        <div class="sec-head"><h2>The next fourteen days</h2><span class="note" id="wk-note"></span></div>
+        <div class="weeks" id="weeks"></div>
+      </section>
+      <section>
+        <div class="sec-head"><h2>On the horizon</h2><span class="note" id="hz-note"></span></div>
+        <div class="horizon" id="horizon"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="panel" id="p-cal">
+    <section>
+      <div class="sec-head"><h2>Full term</h2><span class="note" id="cal-note">click any day</span></div>
+      <div class="filters" id="filters"></div>
+      <div class="months" id="months"></div>
+      <div class="daypanel" id="daypanel"><div class="empty">Pick a day to see everything scheduled on it.</div></div>
+    </section>
+  </div>
+
+  <div class="panel" id="p-courses">
+    <section>
+      <div class="sec-head"><h2>Course by course</h2><span class="note">weights · dates · study blocks</span></div>
+      <div id="courses"></div>
+      <div id="nocourses" class="callout hide"><h4>No courses yet</h4><p style="margin:0">Add one from the button in the top bar, or load the example term to see how it all fits together.</p></div>
+    </section>
+  </div>
+
+  <div class="panel" id="p-export">
+    <section>
+      <div class="sec-head"><h2>Send it to your calendar</h2><span class="note">so reminders reach your phone</span></div>
+      <div class="exportgrid">
+        <div class="excard">
+          <h4>Google Calendar</h4>
+          <p>A spreadsheet Google imports directly. On a computer, open Google Calendar, then Settings, then Import &amp; export.</p>
+          <button class="btn primary" id="exp-csv">Download .csv <span class="arw">&darr;</span></button>
+        </div>
+        <div class="excard">
+          <h4>Apple, Outlook, everything else</h4>
+          <p>The standard calendar format, zipped because that is what downloads here allow. Unzip, open the .ics, done. This one carries its reminders with it.</p>
+          <button class="btn" id="exp-ics">Download .ics <span class="arw">&darr;</span></button>
+        </div>
+        <div class="excard">
+          <h4>Your own copy</h4>
+          <p>Everything this page knows, as a JSON file — for moving to another browser, or just keeping a backup.</p>
+          <div class="row"><button class="btn" id="exp-json">Export data</button><button class="btn ghost" id="imp-json">Import</button></div>
+        </div>
+      </div>
+      <div style="margin-top:22px" class="callout">
+        <h4>Worth knowing before you import</h4>
+        <ul>
+          <li>An export is a <b>snapshot</b>. Change a date here afterwards and your calendar will not know — re-export, or fix that one event by hand.</li>
+          <li>Import into a <b>separate calendar</b>, not your main one. Google lets you choose during import, and if it comes out wrong you delete one calendar instead of hunting forty events.</li>
+          <li>The Google CSV format <b>cannot carry reminders</b>. Set one default reminder on that calendar and it applies to everything in it. The .ics does carry them.</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <div class="panel" id="p-add">
+    <section id="add-input">
+      <div class="sec-head"><h2>Add a course</h2><span class="note">one course at a time</span></div>
+      <div class="hero"><div class="hero-in">
+        <div class="drop" id="drop">
+          <h4>Drop your course outline here</h4>
+          <p>PDF, Word (.docx) or plain text. The file is read in your browser — it is not uploaded anywhere.</p>
+          <input type="file" id="file" accept=".pdf,.docx,.txt,.md" class="hide">
+          <button class="btn" id="pickfile">Choose a file</button>
+        </div>
+        <p style="margin:20px 0 9px;font-size:.85rem;color:var(--ink-3)">Or paste the outline text. The schedule table and the grading breakdown are the parts that carry the dates.</p>
+        <textarea class="paste" id="paste" placeholder="Paste your course outline here…"></textarea>
+        <div class="row" style="margin-top:14px">
+          <button class="btn primary" id="parse">Read this outline <span class="arw">&rarr;</span></button>
+          <button class="btn ghost" id="cancel-add">Cancel</button>
+          <span class="hint" id="charcount"></span>
+        </div>
+        <div id="parse-status"></div>
+      </div></div>
+    </section>
+    <section id="add-review" class="hide">
+      <div class="sec-head"><h2>Check before you save</h2><span class="note">nothing is saved until you say so</span></div>
+      <div class="review" id="review"></div>
+    </section>
+  </div>
+
+  <div class="panel" id="p-rights">
+    <section>
+      <div class="sec-head"><h2>All rights reserved</h2><span class="note">© <span id="r-year"></span> JohnsonXCorp</span></div>
+      <div class="prose">
+        <h3>Who owns this</h3>
+        <p>Syllabus Desk is published by <b>JohnsonXCorp</b>. Copyright &copy; <span class="r-year"></span> JohnsonXCorp. All rights reserved.</p>
+        <p>This is <b>not open source</b>. The page is published so it can be served to you and so that anyone can read it and verify what it does with their files. It is not published for reuse.</p>
+
+        <h3>What you may do</h3>
+        <ul>
+          <li>Use Syllabus Desk to plan your own studies, for as long as it is available.</li>
+          <li>Read the source in your browser to satisfy yourself about what it does.</li>
+          <li>Keep, edit and share the calendar files and data exports it makes from <b>your own</b> course material. Those are yours — this notice claims nothing over them.</li>
+        </ul>
+
+        <h3>What you may not do</h3>
+        <ul>
+          <li>Copy, republish, rehost, redistribute or sell this page or any part of it.</li>
+          <li>Build another product from it, whether or not for money.</li>
+          <li>Remove or alter this notice, the copyright line, or the JohnsonXCorp mark.</li>
+        </ul>
+        <p class="small">Because the page is served from a public address, anyone can save a copy of the file — that is how the web works, and it is not permission. Everything beyond reading requires prior written permission from the owner.</p>
+
+        <h3>Your course material stays yours</h3>
+        <p>Outlines you paste or upload are read <b>in your browser</b>. The file itself is never uploaded. Your schedule is stored only in this browser's local storage — not on a server, not visible to anyone else, and not visible to JohnsonXCorp.</p>
+        <p>One exception, stated plainly: when you press <b>Read this outline</b>, the extracted <b>text</b> of that outline is sent to Anthropic's Claude so it can be turned into dates, and it is processed under Anthropic's terms rather than this notice. Nothing else on this page is sent anywhere. If you would rather not, build your term by hand instead — every field is editable.</p>
+
+        <h3>No warranty</h3>
+        <p>Syllabus Desk is provided as is, without warranty of any kind. It reads outlines with an AI model and <b>it will sometimes get a date wrong</b>. It is a planning aid, not a source of truth: your course page and your instructor are. Check anything that matters, and do not rely on this page alone for an exam date.</p>
+
+        <h3>Third-party components</h3>
+        <p>This page bundles two open-source libraries, each under its own licence, which travel with any copy:</p>
+        <ul>
+          <li><b>PDF.js</b> — Apache License 2.0, &copy; Mozilla Foundation. Used to read text out of PDF outlines.</li>
+          <li><b>JSZip</b> — MIT License, &copy; Stuart Knightley. Used to read .docx files and to package calendar exports.</li>
+        </ul>
+        <p class="small">Typefaces are Inter, Inter Tight and JetBrains Mono, served by Google Fonts under the SIL Open Font License.</p>
+
+        <h3>Contact</h3>
+        <p class="small">Permission requests and anything else: <a href="mailto:johnsonandy242@gmail.com">johnsonandy242@gmail.com</a>.</p>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer class="foot"><div class="wrap foot-in">
+  <span>Claude proposes the dates and <b style="color:var(--inverse-ink)">you confirm every one</b>. Anything an outline left blank is flagged, not invented. Instructors move dates — your course page stays the final word.<span id="storage-note"></span></span>
+  <span class="maker">
+    <span class="by">Built by</span>
+    <svg class="jxc-logo" viewBox="0 0 648 104" role="img" aria-label="JohnsonXCorp" focusable="false">
+      <path class="jxc-word" fill="currentColor" d="M99.2 17.4c-0.1 0.2 -0.1 14.8 -0.1 32.4l0.1 32 6.8 -0 6.8 -0 0.1 -13.2c0.1 -11.2 0.1 -13.3 0.6 -13.6 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.8 0.5 -1.2 0 -0.6 0.2 -0.8 0.8 -0.8 0.4 -0 1 -0.2 1.2 -0.5 0.3 -0.4 1.2 -0.5 3.5 -0.5l3.1 -0 2.2 2.3 2.2 2.2 0.1 13.7 0.1 13.7 6.8 -0 6.8 -0 0.1 -15.2c0.1 -13.2 0 -15.3 -0.4 -15.6 -0.3 -0.3 -0.5 -1 -0.5 -2 0 -1 -0.2 -1.7 -0.5 -2 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.7 -1.4 -2 -2 -2 -0.3 -0 -0.9 -0.5 -1.5 -1 -0.5 -0.6 -1.2 -1 -1.5 -1 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 0.2 -2 0.5 -0.3 0.3 -1 0.5 -2 0.5 -1 -0 -1.7 0.2 -2 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.7 0.5 -1.1 0.5 -0.3 -0 -0.7 0.2 -0.8 0.5 -0.1 0.3 -0.4 0.5 -0.7 0.5 -0.4 -0 -0.5 -2 -0.5 -11.9l-0.1 -11.9 -6.8 -0.1c-5.2 -0.1 -6.8 -0 -6.9 0.3zM485.9 17.5c-0.1 0.4 -0.9 0.5 -3.8 0.5 -2.8 -0 -3.7 0.1 -4.1 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.7 -0 -9 8.3 -9 9 0 0.3 -0.2 0.7 -0.5 1 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.4 0.3 -0.5 1.6 -0.5 7 0 5.4 0.1 6.7 0.5 7 0.3 0.2 0.5 0.9 0.5 1.5 0 0.6 0.2 1.3 0.5 1.5 0.3 0.2 0.5 0.9 0.5 1.5 0 0.6 0.2 1.3 0.5 1.5 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.7 1.2 1.5 2 0.8 0.8 1.5 1.7 1.5 2 0 0.7 3.4 4 4 4 0.3 -0 1.2 0.7 2 1.5 0.8 0.8 1.7 1.5 2 1.5 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.3 0.3 1 0.5 2 0.5 1 -0 1.7 0.2 2 0.5 0.3 0.4 1.6 0.5 7.5 0.5 5.9 -0 7.2 -0.1 7.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 1 -0.4 1.5 -1 0.5 -0.5 1.2 -1 1.5 -1 0.7 -0 2 -1.4 2 -2 0 -0.3 -1.9 -2.4 -4.3 -4.7 -5 -5 -5.4 -5.1 -7.7 -2.7 -0.8 0.8 -1.7 1.5 -2 1.5 -0.3 -0 -0.7 0.2 -1 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.6 0.7 -9.4 0.7 -10 -0 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.7 -0 -6 -5.3 -6 -6 0 -0.3 -0.2 -0.7 -0.5 -1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.4 -0.3 -0.5 -1.5 -0.5 -6.5 0 -5 0.1 -6.2 0.5 -6.5 0.3 -0.2 0.5 -0.9 0.5 -1.5 0 -0.6 0.2 -1.3 0.5 -1.5 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.7 2.4 -3 3 -3 0.3 -0 0.9 -0.5 1.5 -1 0.7 -0.7 1.3 -1 2 -1 0.6 -0 1.2 -0.2 1.5 -0.5 0.3 -0.4 1.4 -0.5 6 -0.5 4.6 -0 5.7 0.1 6 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 1.2 0.7 2 1.5 0.9 0.9 1.7 1.5 2.1 1.4 0.5 -0.1 9.9 -9.1 9.9 -9.5 0 -0.3 -2.6 -2.4 -3 -2.4 -0.3 -0 -0.9 -0.5 -1.5 -1 -0.5 -0.6 -1.2 -1 -1.5 -1 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 -0.2 -2 -0.5 -0.3 -0.4 -1.2 -0.5 -4.1 -0.5 -2.9 -0 -3.7 -0.1 -3.8 -0.5 -0.1 -0.3 -0.4 -0.5 -0.6 -0.5 -0.2 -0 -0.5 0.2 -0.6 0.5zM30.2 18.2c-0.1 0.1 -0.2 10.2 -0.2 22.3 0 19.2 -0.1 22.1 -0.5 22.5 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.9 -0.4 1.5 -2.3 3.3l-2.3 2.2 -3 -0c-2.3 -0 -3.1 -0.1 -3.4 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -1 -0.5 -1.5 -1 -0.5 -0.5 -1.2 -1 -1.5 -1 -0.7 -0 -9 8.3 -9 9 0 0.7 3.4 4 4 4 0.3 -0 0.9 0.5 1.5 1 0.5 0.5 1.2 1 1.5 1 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.6 0.7 12.4 0.7 13 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.7 -0 6 -5.3 6 -6 0 -0.3 0.2 -0.7 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.9 0.5 -1.5 0 -0.6 0.2 -1.3 0.5 -1.5 0.4 -0.4 0.5 -3.4 0.4 -24.6l-0.1 -24.2 -6.7 -0.1c-3.7 -0 -6.8 0 -6.9 0.1zM70 37.5c-0.3 0.4 -1.1 0.5 -3 0.5 -1.9 -0 -2.7 0.1 -3 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2 1 -0.5 0.5 -1.2 1 -1.5 1 -0.7 -0 -5 4.3 -5 5 0 0.3 -0.4 0.9 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.2 0.7 -0.5 1 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.7 0.6 -0.7 11.4 0 12 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.9 0.5 1.5 0 0.6 0.2 1.3 0.5 1.5 0.3 0.2 0.5 0.7 0.5 1 0 0.7 7.3 8 8 8 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.6 0.7 11.4 0.7 12 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 1 -0.5 1.5 -1 0.5 -0.6 1.2 -1 1.5 -1 0.7 -0 5 -4.4 5 -5.1 0 -0.3 0.2 -0.7 0.5 -0.9 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.3 0.5 -1.1 0.5 -2.5 0 -1.4 0.2 -2.2 0.5 -2.5 0.3 -0.3 0.5 -1.1 0.5 -2.5 0 -1.4 -0.2 -2.2 -0.5 -2.5 -0.3 -0.3 -0.5 -1.1 -0.5 -2.5 0 -1.4 -0.2 -2.2 -0.5 -2.5 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.7 -1.2 -1.5 -2 -0.8 -0.8 -1.5 -1.7 -1.5 -2 0 -0.7 -1.4 -2 -2 -2 -0.3 -0 -1.2 -0.7 -2 -1.5 -0.8 -0.8 -1.7 -1.5 -2 -1.5 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 0.2 -2.5 0.5zm5 13c0.2 0.3 0.7 0.5 0.9 0.5 0.3 -0 1.6 1 2.8 2.2 2.2 2.1 2.3 2.3 2.3 3.8 0 1 0.2 1.7 0.5 2 0.3 0.2 0.5 0.7 0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.3 -0.5 1 -0.5 2 0 1 -0.2 1.7 -0.5 2 -0.3 0.2 -0.5 0.7 -0.5 0.9 0 0.7 -2.3 3.1 -3 3.1 -0.3 -0 -0.7 0.2 -1 0.5 -0.6 0.7 -7.4 0.7 -8 -0 -0.2 -0.3 -0.7 -0.5 -0.9 -0.5 -0.7 -0 -4.1 -3.3 -4.1 -4 0 -0.3 -0.2 -0.7 -0.5 -1 -0.4 -0.3 -0.5 -1.2 -0.5 -3.5 0 -2.3 0.1 -3.2 0.5 -3.5 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -0.9 0 -0.7 2.3 -3.1 3 -3.1 0.3 -0 0.7 -0.2 1 -0.5 0.3 -0.4 1.2 -0.5 3.5 -0.5 2.3 -0 3.2 0.1 3.5 0.5zM172 37.5c-0.3 0.3 -1.1 0.5 -2.5 0.5 -1.4 -0 -2.2 0.2 -2.5 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2 1 -1.4 1.4 -2.3 1.2 -2.5 -0.5l-0.2 -1.3 -6.8 -0 -6.8 -0 0 21.8 0 21.8 6.8 -0 6.8 -0 0.1 -13.2c0.1 -11.2 0.1 -13.3 0.6 -13.6 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.8 0.5 -1.2 0 -0.6 0.2 -0.8 0.8 -0.8 0.4 -0 1 -0.2 1.2 -0.5 0.3 -0.4 1.2 -0.5 3.5 -0.5l3.1 -0 2.2 2.3 2.2 2.2 0.1 13.7 0.1 13.7 6.8 -0 6.8 -0 0.1 -15.2c0.1 -13.2 0 -15.3 -0.4 -15.6 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.9 -0.5 -1.6 -3.3 -4.3 -1.8 -1.8 -3.5 -3.2 -3.8 -3.2 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 0.2 -1.5 0.5zM207 37.5c-0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2 1 -0.5 0.5 -1.2 1 -1.5 1 -0.7 -0 -3 2.4 -3 3.1 0 0.3 -0.2 0.7 -0.5 0.9 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.4 0.3 -0.5 1.1 -0.5 3 0 1.9 0.1 2.7 0.5 3 0.3 0.2 0.5 0.9 0.5 1.5 0 0.6 0.2 1.3 0.5 1.5 0.3 0.2 0.5 0.7 0.5 1 0 0.7 3.3 4 4.1 4 0.3 -0 0.7 0.2 0.9 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.3 0.3 1 0.5 2 0.5 1 -0 1.7 0.2 2 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.5 0.9 -0 2 1.4 2 2.5 0 0.6 -0.3 1.3 -0.8 1.7 -0.7 0.6 -1.2 0.7 -3.8 0.7 -2.3 -0 -3.1 -0.1 -3.4 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -1.2 -0.7 -2 -1.5 -0.8 -0.8 -1.7 -1.5 -2 -1.5 -0.7 -0 -8 7.3 -8 8 0 0.6 2.4 3 3 3 0.3 -0 0.9 0.5 1.5 1 0.5 0.6 1.2 1 1.5 1 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.3 0.3 1 0.5 2 0.5 1 -0 1.7 0.2 2 0.5 0.6 0.7 11.4 0.7 12 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.9 -0 1.5 -0.5 3.8 -2.8 2.2 -2.3 2.7 -2.9 2.7 -3.8 0 -0.6 0.2 -1.2 0.5 -1.5 0.4 -0.3 0.5 -1.2 0.5 -4.1 0 -2.9 -0.1 -3.7 -0.5 -3.8 -0.3 -0.1 -0.5 -0.6 -0.5 -1.1 0 -0.5 -0.2 -1 -0.5 -1.1 -0.3 -0.1 -0.5 -0.5 -0.5 -0.8 0 -0.7 -3.3 -4.1 -4.1 -4.1 -0.3 -0 -0.7 -0.2 -0.9 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.9 -0.4 -1.3 -0.8 -1 -1.1 -0.9 -3 0.2 -3.1 0.4 -0.1 0.9 -0.3 1.1 -0.6 0.5 -0.6 2.5 -0.6 3 0 0.3 0.3 1 0.5 2 0.5 1 -0 1.7 0.2 2 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.4 0.5 -0.1 8 -7.1 8 -7.5 0 -0.3 -3.6 -3.5 -4 -3.5 -0.3 -0 -0.9 -0.5 -1.5 -1 -0.7 -0.7 -1.3 -1 -2 -1 -0.6 -0 -1.2 -0.2 -1.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.3 -0.4 -1.4 -0.5 -5.5 -0.5 -4.1 -0 -5.2 0.1 -5.5 0.5zM252 37.5c-0.3 0.4 -1.1 0.5 -3 0.5 -1.9 -0 -2.7 0.1 -3 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2.5 1.5 -0.8 0.8 -1.7 1.5 -2 1.5 -0.7 -0 -3 2.4 -3 3 0 0.3 -0.4 0.9 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.2 0.7 -0.5 1 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.4 0.3 -0.5 1.3 -0.5 4.5 0 3.2 0.1 4.2 0.5 4.5 0.3 0.3 0.5 1 0.5 2 0 1 0.2 1.7 0.5 2 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.7 5.3 6 6 6 0.3 -0 0.9 0.5 1.5 1 0.7 0.7 1.3 1 2 1 0.6 -0 1.2 0.2 1.5 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.3 0.4 1.4 0.5 6 0.5 4.6 -0 5.7 -0.1 6 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.7 -0 7 -6.3 7 -7 0 -0.3 0.2 -0.7 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.3 0.5 -1 0.5 -2 0 -1 0.2 -1.7 0.5 -2 0.4 -0.3 0.5 -1.3 0.5 -4.5 0 -3.2 -0.1 -4.2 -0.5 -4.5 -0.3 -0.3 -0.5 -1 -0.5 -2 0 -1 -0.2 -1.7 -0.5 -2 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.2 -0.8 -0.5 -1 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.7 -3.4 -4 -4 -4 -0.3 -0 -0.9 -0.5 -1.5 -1 -0.5 -0.6 -1.2 -1 -1.5 -1 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 0.2 -2.5 0.5zm5 13c0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.6 0.5 0.9 0.5 0.7 -0 2.1 1.3 2.1 2 0 0.3 0.2 0.7 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.3 0.5 1.1 0.5 2.5 0 1.4 -0.2 2.2 -0.5 2.5 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.3 0.2 -0.5 0.7 -0.5 0.9 0 0.3 -0.8 1.3 -1.7 2.3l-1.7 1.8 -4.1 -0c-3.2 -0 -4.1 -0.1 -4.5 -0.5 -0.2 -0.3 -0.7 -0.5 -0.9 -0.5 -0.3 -0 -1.3 -0.8 -2.3 -1.7 -1.4 -1.4 -1.8 -2 -1.8 -2.8 0 -0.6 -0.2 -1.2 -0.5 -1.5 -0.3 -0.3 -0.5 -1.1 -0.5 -2.5 0 -1.4 0.2 -2.2 0.5 -2.5 0.3 -0.2 0.5 -0.9 0.5 -1.5 0 -0.8 0.3 -1.4 1 -2 0.6 -0.5 1 -1.3 1 -1.7 0 -0.6 0.2 -0.8 0.8 -0.8 0.4 -0 1 -0.2 1.2 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.3 -0.4 1.1 -0.5 3 -0.5 1.9 -0 2.7 0.1 3 0.5zM306 37.5c-0.3 0.3 -1.1 0.5 -2.5 0.5 -1.4 -0 -2.2 0.2 -2.5 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2 1 -1.4 1.4 -2.3 1.2 -2.5 -0.5l-0.2 -1.3 -6.8 -0 -6.8 -0 0 21.8 0 21.8 6.8 -0 6.8 -0 0.1 -13.2c0.1 -11.2 0.1 -13.3 0.6 -13.6 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.8 -1.3 1.8 -2.3l1.8 -1.7 3 -0c2.9 -0 3 0 4 1 0.5 0.5 1.3 1 1.7 1 0.6 -0 0.8 0.2 0.8 0.8 0 0.4 0.2 1 0.5 1.2 0.4 0.3 0.5 2.5 0.6 14.1l0.1 13.7 6.8 -0 6.8 -0 0.1 -15.7c0.1 -13.7 0 -15.8 -0.4 -16.1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.3 -1 -1.7 0 -0.6 -0.2 -0.8 -0.8 -0.8 -0.5 -0 -1.3 -0.6 -2.2 -1.5 -0.8 -0.8 -1.7 -1.5 -2 -1.5 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 0.2 -1.5 0.5zM533 37.5c-0.3 0.4 -1.1 0.5 -3 0.5 -1.9 -0 -2.7 0.1 -3 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -2.2 1.7 -4.3 3.8 -3.2 3.2 -3.7 3.9 -3.7 4.8 0 0.6 -0.2 1.2 -0.5 1.5 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.4 0.3 -0.5 1.1 -0.5 3.1 0 2 -0.1 2.7 -0.5 2.8 -0.3 0.1 -0.5 0.4 -0.5 0.6 0 0.2 0.2 0.5 0.5 0.6 0.4 0.1 0.5 0.8 0.5 3.3 0 2.4 0.1 3.3 0.5 3.6 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.7 2.4 3 3 3 0.3 -0 0.9 0.5 1.5 1 0.5 0.6 1.2 1 1.5 1 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.6 0.7 11.4 0.7 12 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 1.2 -0.7 2 -1.5 0.8 -0.8 1.7 -1.5 2 -1.5 0.7 -0 2 -1.4 2 -2 0 -0.3 0.7 -1.2 1.5 -2 0.8 -0.8 1.5 -1.7 1.5 -2 0 -0.3 0.2 -0.7 0.5 -1 0.3 -0.2 0.5 -0.9 0.5 -1.5 0 -0.6 0.2 -1.3 0.5 -1.5 0.4 -0.3 0.5 -1.1 0.5 -3.1 0 -2 0.1 -2.7 0.5 -2.8 0.3 -0.1 0.5 -0.4 0.5 -0.6 0 -0.2 -0.2 -0.5 -0.5 -0.6 -0.4 -0.1 -0.5 -0.8 -0.5 -2.8 0 -2 -0.1 -2.8 -0.5 -3.1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.2 -0.8 -0.5 -1 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.7 -6.3 -7 -7 -7 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.3 -0.4 -1.1 -0.5 -3 -0.5 -1.9 -0 -2.7 -0.1 -3 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 0.2 -2 0.5zm4 13c0.2 0.3 0.9 0.5 1.4 0.5 0.8 -0 1.4 0.4 2.8 1.7 1 1 1.8 2 1.8 2.3 0 0.3 0.2 0.7 0.5 1 0.4 0.3 0.5 1.2 0.5 4 0 2.8 -0.1 3.7 -0.5 4 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.2 -0.5 0.8 -0.5 1.2 0 0.6 -0.2 0.8 -0.8 0.8 -0.4 -0 -1.2 0.4 -1.7 1 -0.9 1 -1 1 -4.5 1 -2.7 -0 -3.6 -0.1 -4 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.8 -0.5 -1.2 -0.5 -0.6 -0 -0.8 -0.2 -0.8 -0.8 0 -0.4 -0.4 -1.2 -1 -1.7l-1 -1 0 -4.1c0 -3.2 0.1 -4.1 0.5 -4.5 0.3 -0.2 0.5 -0.7 0.5 -0.9 0 -0.7 3.3 -4.1 4 -4.1 0.3 -0 0.7 -0.2 1 -0.5 0.3 -0.4 1.1 -0.5 3 -0.5 1.9 -0 2.7 0.1 3 0.5zM585 37.5c-0.3 0.3 -1 0.5 -2 0.5 -1 -0 -1.7 0.2 -2 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.3 0.3 -1.9 1 -1.1 1.2 -1.6 1.3 -1.6 0.1 -0 -0.6 -0.3 -1.1 -0.8 -1.5 -0.7 -0.5 -1.5 -0.6 -6.9 -0.5l-6.1 0.1 0 21.8 0 21.8 6.8 -0 6.8 -0 0.1 -13.7c0.1 -11.7 0.1 -13.8 0.6 -14.1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.7 1.4 -2 2.1 -2 0.3 -0 0.7 -0.2 0.9 -0.5 0.6 -0.7 5.4 -0.7 6 -0 0.3 0.4 0.9 0.5 2.1 0.4 1.4 -0.1 1.7 -0.2 1.8 -0.8 0.1 -0.4 1 -1.6 2.1 -2.6 1.1 -1.1 2 -2.2 2 -2.5 0 -0.3 0.5 -1 1 -1.5 1.3 -1.2 1.3 -2.7 0.2 -3.8 -0.4 -0.4 -1 -0.7 -1.3 -0.7 -0.3 -0 -0.7 -0.2 -0.9 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 -0.2 -2 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 0.2 -2 0.5zM622 37.5c-0.3 0.3 -1 0.5 -2 0.5 -1 -0 -1.7 0.2 -2 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.7 0.5 -1.1 0.5 -0.3 -0 -0.7 0.2 -0.8 0.5 -0.4 1 -1.1 0.5 -1.2 -0.9l-0.1 -1.4 -6.8 -0 -6.8 -0 0 31.3 0 31.3 6.8 -0 6.8 -0 0.2 -10.3c0.2 -10.1 0.2 -10.3 0.8 -10.4 0.4 -0.1 1.1 0.3 1.7 0.9 0.7 0.7 1.3 1 2 1 0.6 -0 1.2 0.2 1.5 0.5 0.6 0.7 9.4 0.7 10 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.7 -0 5 -4.3 5 -5 0 -0.3 0.5 -0.9 1 -1.5 0.7 -0.7 1 -1.3 1 -2 0 -0.6 0.2 -1.2 0.5 -1.5 0.3 -0.3 0.5 -1 0.5 -2 0 -1 0.2 -1.7 0.5 -2 0.4 -0.3 0.5 -1.3 0.5 -4.5 0 -3.2 -0.1 -4.2 -0.5 -4.5 -0.3 -0.3 -0.5 -1 -0.5 -2 0 -1 -0.2 -1.7 -0.5 -2 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.2 -0.8 -0.5 -1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.8 -0.3 -1.4 -1.5 -2.5 -0.9 -0.9 -1.5 -1.8 -1.5 -2.2 0 -0.6 -0.2 -0.8 -0.8 -0.8 -0.5 -0 -1.3 -0.6 -2.2 -1.5 -0.8 -0.8 -1.7 -1.5 -2 -1.5 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.3 -0.4 -1.1 -0.5 -3 -0.5 -1.9 -0 -2.7 -0.1 -3 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 0.2 -1.5 0.5zm2 13c0.2 0.3 0.7 0.5 1 0.5 0.3 -0 1 0.4 1.5 1 0.5 0.5 1.3 1 1.7 1 0.6 -0 0.8 0.2 0.8 0.8 0 0.4 0.2 1 0.5 1.2 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.3 0.5 1.1 0.5 2.5 0 1.4 -0.2 2.2 -0.5 2.5 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.3 0.2 -0.5 0.7 -0.5 0.9 0 0.7 -2.3 3.1 -3 3.1 -0.3 -0 -0.7 0.2 -1 0.5 -0.3 0.4 -1.2 0.5 -4 0.5 -2.8 -0 -3.7 -0.1 -4 -0.5 -0.2 -0.3 -0.7 -0.5 -0.9 -0.5 -0.7 -0 -3.1 -2.3 -3.1 -3 0 -0.3 -0.2 -0.7 -0.5 -1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.3 0.5 -1 0.5 -2 0 -1 0.2 -1.7 0.5 -2 0.3 -0.2 0.5 -0.7 0.5 -0.9 0 -0.7 3.3 -4.1 4 -4.1 0.3 -0 0.7 -0.2 1 -0.5 0.3 -0.4 1.1 -0.5 3 -0.5 1.9 -0 2.7 0.1 3 0.5z"/>
+      <path class="jxc-x" d="M335.2 3.4c-0.1 0.2 -0.1 21.4 -0.1 46.9l0.1 46.5 13.8 -0 13.8 -0 0 -6.8 0 -6.8 -6.8 -0.2 -6.8 -0.2 0 -32.8 0 -32.8 6.9 -0.1 6.9 -0.1 0 -6.3c0 -6.1 -0 -6.3 -0.8 -7 -0.8 -0.7 -0.9 -0.7 -13.8 -0.7 -10.2 -0 -13.1 0.1 -13.2 0.4zM419.1 3.4c-0.1 0.2 -0.1 3.3 -0.1 6.9l0.1 6.5 6.2 0.1c6 0.1 6.2 0.1 6.9 0.8l0.7 0.8 -0.1 32.2 -0.1 32.1 -6.8 0.2 -6.8 0.2 0 6.8 0 6.8 13.8 -0 13.8 -0 0.1 -46.1 0.1 -46.2 -0.7 -0.8 -0.7 -0.8 -13.1 -0c-10.4 -0 -13.2 0.1 -13.3 0.4zM360 19.4c0 0.2 0.5 0.7 1 1.1 0.6 0.4 1 1 1 1.4 0 0.4 0.5 1.1 1 1.6 0.6 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.7 1.2 1.5 2 0.8 0.8 1.5 1.7 1.5 2 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.7 1.2 1.5 2 0.8 0.8 1.5 1.7 1.5 2 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.6 0 0.3 0.2 0.7 0.5 0.8 0.3 0.1 0.5 0.4 0.5 0.6 0 0.2 -0.2 0.5 -0.5 0.6 -0.3 0.1 -0.5 0.5 -0.5 0.8 0 0.3 -0.7 1.3 -1.5 2.1 -0.8 0.8 -1.5 1.7 -1.5 2 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.7 1.2 -1.5 2 -0.8 0.8 -1.5 1.7 -1.5 2 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.2 0.7 -0.5 0.9 -0.3 0.2 -0.5 0.5 -0.3 0.7 0.2 0.3 2.4 0.4 7.3 0.4l7.1 -0 1.2 -1.3c0.7 -0.7 1.2 -1.5 1.2 -1.8 0 -0.3 0.5 -0.9 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.2 -0.7 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.8 1.5 -2.1 2.2 -1.9 0.3 0.1 0.6 0.4 0.7 0.8 0.1 0.4 0.5 1.1 1.1 1.6 0.5 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.2 0.7 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.2 0.7 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.4 0.9 0.8 1.3 0.8 0.7 1 0.7 8.4 0.7 7.4 -0.1 7.6 -0.1 7.7 -0.8 0.1 -0.4 -0.3 -1.1 -0.9 -1.7 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.3 -1 -1.7 0 -0.4 -0.2 -0.8 -0.5 -0.9 -0.3 -0.1 -0.5 -0.5 -0.5 -0.9 0 -0.4 0.2 -0.8 0.5 -0.9 0.3 -0.1 0.5 -0.5 0.5 -0.9 0 -0.4 0.5 -1.2 1 -1.7 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.7 -1.2 1.5 -2 0.8 -0.8 1.5 -1.7 1.5 -2 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.3 1 -1.6 0 -0.4 0.4 -1 1 -1.4 2.1 -1.4 1.5 -1.5 -6.9 -1.4 -7.8 0.1 -7.9 0.1 -8 0.8 -0.1 0.4 -0.5 1.1 -1.1 1.6 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.2 0.7 -0.5 1 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.6 0.5 -1 1.2 -1.1 1.6 -0.1 0.6 -0.3 0.7 -1.4 0.7 -1.1 -0 -1.4 -0.1 -1.4 -0.7 -0.1 -0.4 -0.5 -1.1 -1.1 -1.6 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.2 -0.7 -0.5 -1 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.6 -0.5 -1 -1.2 -1.1 -1.6 -0.1 -0.7 -0.2 -0.7 -8.5 -0.8 -6.6 -0.1 -8.4 -0 -8.4 0.3z"/>
+    </svg>
+    <a href="#rights" id="rightslink">&copy; <span class="r-year"></span> JohnsonXCorp &middot; All rights reserved</a>
+    <button type="button" class="build" id="buildstamp"></button>
+  </span>
+</div></footer>
+
+<script>
+"use strict";
+var BUILD={v:"1.0",date:"9 September 2026",year:2026};
+/* ===================== helpers ===================== */
+var TODAY=new Date(); TODAY.setHours(0,0,0,0);
+var DOWN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+var MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
+var PALETTE=["--accent","--coral","--mint-deep","--warn","--bad","--ink-2","--accent-deep","--ok"];
+var KEY="syllabusdesk.v1";
+function ISO(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function P(s){var a=String(s).split("-");return new Date(+a[0],+a[1]-1,+a[2]);}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m];});}
+function fmtDay(d){return DOWN[d.getDay()].slice(0,3)+" "+MON[d.getMonth()].slice(0,3)+" "+d.getDate();}
+function daysTo(iso){return Math.round((P(iso)-TODAY)/864e5);}
+function isISO(s){return /^\d{4}-\d{2}-\d{2}$/.test(s)&&!isNaN(P(s).getTime());}
+function countdown(iso){var n=daysTo(iso);if(n<0)return "passed";if(n===0)return "today";if(n===1)return "tomorrow";if(n<7)return "in "+n+" days";var w=Math.floor(n/7);return "in "+n+" days · "+w+(w===1?" wk":" wks");}
+function t12(t){if(!t)return "";var a=t.split(":"),h=+a[0],m=a[1]||"00";var ap=h>=12?"pm":"am";h=h%12||12;return h+(m==="00"?"":":"+m)+ap;}
+function uid(){return Math.random().toString(36).slice(2,9);}
+function monOf(d){var x=new Date(d);var s=(x.getDay()+6)%7;x.setDate(x.getDate()-s);x.setHours(0,0,0,0);return x;}
+
+/* ===================== state ===================== */
+var S={courses:[],items:[],done:{},version:1};
+function load(){try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.courses)S=p;}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));document.getElementById("storage-note").textContent="";}
+  catch(e){document.getElementById("storage-note").innerHTML=' <b style="color:var(--jxc-gold)">This browser is refusing to save</b>, so your courses will go when the tab closes. Export your data to keep it.';}}
+function colorOf(k){var c=S.courses.filter(function(x){return x.key===k;})[0];return c?"var("+c.color+")":"var(--ink-3)";}
+function courseOf(k){return S.courses.filter(function(x){return x.key===k;})[0]||{key:k,code:k,title:"",color:"--ink-3"};}
+
+/* ===================== derived ===================== */
+function termRange(){
+  var ds=[];
+  S.items.forEach(function(i){if(i.d)ds.push(i.d);});
+  S.courses.forEach(function(c){(c.classes||[]).forEach(function(r){ds.push(r.date);});});
+  if(!ds.length)return null;
+  ds.sort();return [P(ds[0]),ds[ds.length-1]];
+}
+function studyEvents(){
+  var out=[],range=termRange();
+  if(range) S.courses.forEach(function(c){
+    if(!c.study||!c.study.on)return;
+    var d=new Date(range[0]),end=P(range[1]);
+    while(d<=end){
+      if(d.getDay()===c.study.dow)out.push({id:"st-"+c.key+"-"+ISO(d),c:c.key,d:ISO(d),t:c.study.label||"Study block",k:"study",from:c.study.from,to:c.study.to});
+      d=new Date(d.getTime()+864e5);
+    }
+  });
+  S.items.filter(function(i){return i.k==="exam"&&i.d;}).forEach(function(ex){
+    var c=courseOf(ex.c);if(!c.study||!c.study.on)return;
+    [5,3,1].forEach(function(off){
+      var dd=new Date(P(ex.d).getTime()-off*864e5);
+      out.push({id:"ramp-"+ex.id+"-"+off,c:ex.c,d:ISO(dd),t:"Exam prep — "+ex.t,k:"study",from:"20:30",to:"22:00"});
+    });
+  });
+  return out;
+}
+var STUDY=[];
+function eventsOn(iso){
+  var out=[];
+  S.items.forEach(function(i){if(i.d===iso)out.push({kind:i.k,c:i.c,t:i.t,w:i.w,id:i.id,ord:1});});
+  S.courses.forEach(function(c){(c.classes||[]).forEach(function(r){
+    if(r.date===iso)out.push({kind:r.off?"off":"class",c:c.key,t:r.topic,id:"cl-"+c.key+"-"+iso,ord:r.off?4:2,time:c.time&&c.time.indexOf(":")>-1?c.time:""});
+  });});
+  STUDY.forEach(function(s){if(s.d===iso)out.push({kind:"study",c:s.c,t:s.t,id:s.id,from:s.from,to:s.to,ord:3});});
+  out.sort(function(a,b){return a.ord-b.ord||(a.from||"").localeCompare(b.from||"");});
+  return out;
+}
+function itemHTML(ev,tick){
+  var col=colorOf(ev.c),badge="",when="";
+  if(ev.kind==="exam")badge='<span class="badge b-exam">exam'+(ev.w?" "+esc(ev.w):"")+'</span>';
+  else if(ev.kind==="due")badge='<span class="badge b-due">due'+(ev.w?" "+esc(ev.w):"")+'</span>';
+  else if(ev.kind==="pres")badge='<span class="badge b-due">present'+(ev.w?" "+esc(ev.w):"")+'</span>';
+  else if(ev.kind==="quiz")badge='<span class="badge b-quiz">quiz</span>';
+  else if(ev.kind==="study")badge='<span class="badge b-study">study</span>';
+  else if(ev.kind==="off")badge='<span class="badge b-off">no class</span>';
+  if(ev.from)when=t12(ev.from)+"–"+t12(ev.to);
+  else if(ev.kind==="class"&&ev.time)when=ev.time;
+  var done=!!S.done[ev.id];
+  return '<div class="it'+(done?" done":"")+'">'
+   +'<span class="rail" style="background:'+col+'"></span>'
+   +(tick&&ev.kind!=="off"?'<span class="tick"><input type="checkbox" data-tick="'+esc(ev.id)+'"'+(done?" checked":"")+' aria-label="mark done"></span>':'')
+   +'<span class="body"><span class="name"'+(ev.kind==="off"?' style="color:var(--ink-3)"':'')+'>'
+   +'<span class="ck" style="color:'+col+'">'+esc(courseOf(ev.c).key)+'</span> '+esc(ev.t)+'</span>'+badge
+   +(when?'<div class="when">'+esc(when)+'</div>':'')+'</span></div>';
+}
+
+/* ===================== render ===================== */
+function renderWeeks(){
+  var m0=monOf(TODAY),m1=new Date(m0.getTime()+7*864e5),html="";
+  [[m0,"This week",true],[m1,"Next week",false]].forEach(function(pr){
+    var start=pr[0],days="";
+    for(var i=0;i<7;i++){
+      var d=new Date(start.getTime()+i*864e5),iso=ISO(d),evs=eventsOn(iso);
+      days+='<div class="day'+(iso===ISO(TODAY)?" today":"")+(evs.length?"":" empty")+'">'
+        +'<div class="dstamp">'+DOWN[d.getDay()].slice(0,3).toUpperCase()+'<b>'+d.getDate()+'</b></div>'
+        +'<div class="items">'+(evs.length?evs.map(function(e){return itemHTML(e,true);}).join(""):"nothing scheduled")+'</div></div>';
+    }
+    var end=new Date(start.getTime()+6*864e5);
+    html+='<div><div class="wcol'+(pr[2]?" now":"")+'"><div class="wcol-head"><h3>'+pr[1]+'</h3><span class="rng">'
+      +MON[start.getMonth()].slice(0,3)+" "+start.getDate()+" – "+MON[end.getMonth()].slice(0,3)+" "+end.getDate()+'</span></div>'+days+'</div></div>';
+  });
+  document.getElementById("weeks").innerHTML=html;
+  document.getElementById("wk-note").textContent=fmtDay(TODAY)+", "+TODAY.getFullYear();
+}
+function renderHorizon(){
+  var up=S.items.filter(function(i){return i.d&&daysTo(i.d)>=0;}).sort(function(a,b){return P(a.d)-P(b.d);});
+  var tbd=S.items.filter(function(i){return !i.d;});
+  var total=up.length;up=up.slice(0,12);
+  var html=up.map(function(i){
+    var col=colorOf(i.c),n=daysTo(i.d);
+    var cd=n<=3?"var(--bad)":n<=10?"var(--warn)":"var(--ink-3)";
+    return '<div class="hcard" style="--hc:'+col+'"><div class="d" style="color:'+col+'">'+esc(courseOf(i.c).code)+'</div>'
+      +'<div class="t">'+esc(i.t)+'</div><div class="m">'+fmtDay(P(i.d))+(i.w?" · "+esc(i.w):"")+'</div>'
+      +'<div class="cd" style="color:'+cd+'">'+countdown(i.d)+'</div></div>';
+  }).join("");
+  html+=tbd.map(function(i){
+    var col=colorOf(i.c);
+    return '<div class="hcard unset" style="--hc:'+col+'"><div class="d" style="color:'+col+'">'+esc(courseOf(i.c).code)+'</div>'
+      +'<div class="t">'+esc(i.t)+'</div><div class="m">'+esc(i.note||"No date given in the outline.")+'</div>'
+      +'<div style="margin-top:10px"><button class="tbd" data-tbd="'+i.id+'">Set date</button></div></div>';
+  }).join("");
+  document.getElementById("horizon").innerHTML=html||'<div class="hcard"><div class="t">Nothing ahead</div><div class="m">Add a course to fill this in.</div></div>';
+  document.getElementById("hz-note").textContent=total?("next "+up.length+" of "+total):"";
+}
+var FILTER={};
+function renderFilters(){
+  var h=S.courses.map(function(c){
+    if(!(c.key in FILTER))FILTER[c.key]=1;
+    return '<button class="chip" data-f="'+esc(c.key)+'" aria-pressed="'+(FILTER[c.key]?"true":"false")+'" style="color:'+(FILTER[c.key]?"var("+c.color+")":"var(--ink-3)")+'"><span class="dot"></span>'+esc(c.code)+'</button>';
+  }).join("");
+  if(!("study" in FILTER))FILTER.study=1;
+  h+='<button class="chip" data-f="study" aria-pressed="'+(FILTER.study?"true":"false")+'"><span class="dot"></span>Study</button>';
+  document.getElementById("filters").innerHTML=h;
+}
+function visible(e){if(FILTER[e.c]===0)return false;if(e.kind==="study"&&!FILTER.study)return false;return true;}
+function renderMonths(){
+  var range=termRange();
+  if(!range){document.getElementById("months").innerHTML='<div class="month" style="padding:22px;color:var(--ink-3)">Add a course and your term appears here.</div>';return;}
+  var s=range[0],e=P(range[1]),out="",cur=new Date(s.getFullYear(),s.getMonth(),1);
+  while(cur<=e){
+    var y=cur.getFullYear(),m=cur.getMonth(),pad=(new Date(y,m,1).getDay()+6)%7,dim=new Date(y,m+1,0).getDate(),cells="",count=0;
+    for(var i=0;i<pad;i++)cells+='<div class="cell pad"></div>';
+    for(var day=1;day<=dim;day++){
+      var d=new Date(y,m,day),iso=ISO(d),evs=eventsOn(iso).filter(visible);
+      var graded=evs.filter(function(x){return x.kind==="exam"||x.kind==="due"||x.kind==="pres"||x.kind==="quiz";});
+      count+=graded.length;
+      var cls="cell"+(iso===ISO(TODAY)?" today":"")+(evs.some(function(x){return x.kind==="off";})?" off":"");
+      var mk=graded.length?'<div class="mk" style="color:'+colorOf(graded[0].c)+'" title="'+esc(graded[0].t)+'">'+esc(graded[0].t.slice(0,15))+'</div>':"";
+      var dots=evs.filter(function(x){return x.kind!=="off";}).slice(0,6).map(function(x){
+        return '<span class="dot-e'+((x.kind==="exam"||x.kind==="due"||x.kind==="pres"||x.kind==="quiz")?" big":"")+'" style="background:'+colorOf(x.c)+';opacity:'+(x.kind==="study"?.4:1)+'"></span>';
+      }).join("");
+      cells+='<button class="'+cls+'" data-day="'+iso+'"><span class="n">'+day+'</span>'+mk+'<span class="dots-row">'+dots+'</span></button>';
+    }
+    out+='<div class="month"><div class="mhead"><h3>'+MON[m]+" "+y+'</h3><span class="cnt">'+count+' graded</span></div>'
+      +'<div class="dow"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div><div class="grid">'+cells+'</div></div>';
+    cur=new Date(y,m+1,1);
+  }
+  document.getElementById("months").innerHTML=out;
+  document.getElementById("cal-note").textContent=fmtDay(s)+" – "+fmtDay(e);
+}
+function showDay(iso){
+  var evs=eventsOn(iso),d=P(iso);
+  document.getElementById("daypanel").innerHTML='<h4>'+DOWN[d.getDay()]+", "+MON[d.getMonth()]+" "+d.getDate()+'</h4>'
+    +(evs.length?'<div class="items">'+evs.map(function(e){return itemHTML(e,false);}).join("")+'</div>':'<div class="empty">Nothing scheduled.</div>');
+}
+function renderCourses(){
+  document.getElementById("nocourses").classList.toggle("hide",S.courses.length>0);
+  document.getElementById("courses").innerHTML=S.courses.map(function(c){
+    var col="var("+c.color+")";
+    var rows=S.items.filter(function(i){return i.c===c.key;}).map(function(i){
+      return '<tr><td style="width:100%"><span class="name">'+esc(i.t)+'</span>'+(i.note?'<div class="sub">'+esc(i.note)+'</div>':'')+'</td>'
+        +(i.d?'<td class="dt">'+fmtDay(P(i.d))+'</td>':'<td class="dt"><button class="tbd" data-tbd="'+i.id+'">set</button></td>')
+        +'<td class="wt">'+esc(i.w||"—")+'</td></tr>';
+    }).join("")||'<tr><td colspan="3" style="color:var(--ink-3)">No graded items found in this outline.</td></tr>';
+    var tot=(c.weights||[]).reduce(function(a,b){return a+(+b[1]||0);},0),bar="",key="";
+    (c.weights||[]).forEach(function(w,ix,arr){
+      var op=(0.4+0.6*(ix/Math.max(1,arr.length-1))).toFixed(2);
+      bar+='<span style="width:'+((+w[1]||0)/(tot||1)*100)+'%;background:'+col+';opacity:'+op+'" title="'+esc(w[0])+' '+esc(w[1])+'%"></span>';
+      key+='<span><i style="background:'+col+';opacity:'+op+'"></i>'+esc(w[0])+' '+esc(w[1])+'%</span>';
+    });
+    var sch=(c.classes||[]).map(function(r){
+      return '<div class="srow'+(P(r.date)<TODAY?" past":"")+(r.mark?" mark":"")+(r.off?" off":"")+'"><span class="sd">'+fmtDay(P(r.date))+'</span><span class="st">'+esc(r.topic)+'</span></div>';
+    }).join("")||'<div class="srow"><span class="sd">—</span><span class="st" style="color:var(--ink-3)">No class-by-class schedule in this outline.</span></div>';
+    var st=c.study||{on:false,dow:1,from:"19:00",to:"20:30"};
+    return '<article class="course" style="--ck:'+col+'">'
+      +'<div class="chead"><div class="ctop"><span class="ccode">'+esc(c.code)+'</span><span class="ctitle">'+esc(c.title)+'</span>'
+      +'<span class="cacts"><button class="btn sm danger" data-del="'+esc(c.key)+'">Remove</button></span></div><div class="cmeta">'
+      +(c.instructor?'<span>Instructor <b>'+esc(c.instructor)+'</b>'+(c.email?' · <a href="mailto:'+esc(c.email)+'">'+esc(c.email)+'</a>':'')+'</span>':'')
+      +(c.meets?'<span>Meets <b>'+esc(c.meets)+'</b>'+(c.time?', '+esc(c.time):'')+'</span>':'')
+      +(c.room?'<span>Room <b>'+esc(c.room)+'</b></span>':'')
+      +'</div></div><div class="cbody"><div>'
+      +'<div class="blk"><h4>Assessments</h4><table class="assess"><thead><tr><th>Item</th><th>Date</th><th style="text-align:right">Weight</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+      +'<div class="blk"><h4>Class schedule</h4><details class="sched"><summary>'+((c.classes||[]).length)+' meetings on record</summary><div class="schedlist">'+sch+'</div></details></div>'
+      +'</div><div>'
+      +((c.weights||[]).length?'<div class="blk"><h4>Grade weighting'+(tot&&tot!==100?' — adds to '+tot+'%':'')+'</h4><div class="wbar">'+bar+'</div><div class="wkey">'+key+'</div></div>':'')
+      +(c.rules?'<div class="blk"><h4>The rule that bites</h4><p style="font-size:.86rem;margin:0;color:var(--ink-2)">'+esc(c.rules)+'</p></div>':'')
+      +'<div class="blk"><h4>Weekly study block</h4><div class="studyrow">'
+        +'<label><input type="checkbox" data-styon="'+esc(c.key)+'"'+(st.on?" checked":"")+'> on</label>'
+        +'<select data-stydow="'+esc(c.key)+'">'+DOWN.map(function(n,ix){return '<option value="'+ix+'"'+(ix===st.dow?" selected":"")+'>'+n+'</option>';}).join("")+'</select>'
+        +'<input type="time" data-styfrom="'+esc(c.key)+'" value="'+esc(st.from)+'"><span class="hint">to</span>'
+        +'<input type="time" data-styto="'+esc(c.key)+'" value="'+esc(st.to)+'"></div>'
+        +'<p class="hint" style="margin:9px 0 0">Extra prep is added 5, 3 and 1 days before every exam here.</p></div>'
+      +'</div></div></article>';
+  }).join("");
+}
+function renderAll(){
+  STUDY=studyEvents();
+  var has=S.courses.length>0;
+  document.getElementById("empty-state").classList.toggle("hide",has);
+  document.getElementById("loaded-state").classList.toggle("hide",!has);
+  if(has){renderWeeks();renderHorizon();}
+  renderFilters();renderMonths();renderCourses();
+}
+
+/* ===================== extraction ===================== */
+function readFile(f){
+  var n=(f.name||"").toLowerCase();
+  if(n.endsWith(".pdf"))return readPDF(f);
+  if(n.endsWith(".docx"))return readDOCX(f);
+  return f.text();
+}
+function readPDF(f){
+  if(!window.pdfjsLib)return Promise.reject(new Error("The PDF reader did not load. Copy the outline text and paste it instead."));
+  try{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";}catch(e){}
+  return f.arrayBuffer().then(function(b){return pdfjsLib.getDocument({data:b}).promise;}).then(function(doc){
+    var ps=[];for(var i=1;i<=doc.numPages;i++)ps.push(i);
+    return Promise.all(ps.map(function(n){
+      return doc.getPage(n).then(function(p){return p.getTextContent();}).then(function(tc){
+        var last=null,out="";
+        tc.items.forEach(function(it){
+          if(last!==null&&Math.abs(last-it.transform[5])>3)out+="\n";
+          out+=it.str+(it.hasEOL?"\n":" ");last=it.transform[5];
+        });
+        return out;
+      });
+    }));
+  }).then(function(p){return p.join("\n\n");})
+   .catch(function(){throw new Error("Could not read that PDF here. Open it, copy the text, and paste it below instead.");});
+}
+function readDOCX(f){
+  if(!window.JSZip)return Promise.reject(new Error("The Word reader did not load. Paste the text instead."));
+  return JSZip.loadAsync(f).then(function(z){var x=z.file("word/document.xml");if(!x)throw new Error("x");return x.async("string");})
+   .then(function(xml){
+     return xml.replace(/<w:tab\/>/g," | ").replace(/<\/w:p>/g,"\n").replace(/<\/w:tr>/g,"\n").replace(/<\/w:tc>/g," | ")
+       .replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#\d+;/g," ")
+       .replace(/[ \t]+/g," ").replace(/\n{3,}/g,"\n\n").trim();
+   }).catch(function(){throw new Error("Could not read that Word file. Open it, copy the text, and paste it below instead.");});
+}
+
+/* ===================== parse ===================== */
+var sampleFn=null,downloadsFn=null,PENDING=null;
+var SCHEMA_PROMPT=
+'You are reading a university course outline and turning it into structured schedule data.\n'+
+'Return ONLY a JSON object, no prose, in exactly this shape:\n'+
+'{"code":"e.g. MKTG 2430-01","title":"course title","instructor":"","email":"","room":"","meets":"e.g. Mon / Thu","time":"e.g. 1:00 - 2:15 pm",\n'+
+' "weights":[["Component name",25],["Final exam",40]],\n'+
+' "rules":"one or two sentences on the attendance, late-work or submission rules that actually cost marks",\n'+
+' "items":[{"title":"Midterm 1","date":"2026-10-07","kind":"exam","weight":"25%","note":"short useful detail"}],\n'+
+' "classes":[{"date":"2026-09-09","topic":"Chapter 1","off":false,"mark":false}]}\n\n'+
+'RULES, follow all of them:\n'+
+'- "kind" is one of: exam, quiz, due, pres, other.\n'+
+'- Dates MUST be "YYYY-MM-DD". If the outline gives only a weekday and month-day, infer the year from the term named in the outline.\n'+
+'- If a date is genuinely not stated (very common for final exams), set "date": null and explain in "note". NEVER invent or guess a date.\n'+
+'- "items" = anything that earns or loses marks: exams, midterms, quizzes, assignments, reports, presentations, projects.\n'+
+'- "classes" = the class-by-class schedule if there is one. "off": true for holidays and cancelled classes, "mark": true where something is due or written.\n'+
+'- If a field is not stated use an empty string, or [] for lists. Never write "TBD" or "N/A".\n\n'+
+'THE OUTLINE:\n';
+function parseOutline(text){
+  var st=document.getElementById("parse-status");
+  if(!sampleFn){st.innerHTML='<div class="err"><b>Claude is not available on this page for you.</b> That is the piece that reads the outline, so automatic parsing is off. Load the example term to see the shape, then edit it by hand.</div>';return;}
+  st.innerHTML='<div class="working"><span class="spin"></span><span id="working-msg">Reading the outline…</span></div>';
+  sampleFn.json(SCHEMA_PROMPT+text.slice(0,60000),{
+    onText:function(u){var m=document.getElementById("working-msg");if(m)m.textContent="Reading the outline… "+Math.min(99,Math.round(u.text.length/40))+"%";}
+  }).then(function(d){st.innerHTML="";showReview(d);})
+   .catch(function(e){
+    var c=e&&e.code;
+    var msg=c==="declined"?"You declined the request, so nothing was read and nothing was saved."
+      :c==="rate_limited"?"Too many requests just now. Wait a moment and try again."
+      :c==="invalid_json"?"Claude's answer came back malformed. Try again, or paste a shorter chunk — just the schedule table and the grading breakdown."
+      :c==="not_granted"?"This page is not allowed to ask Claude on your account, so automatic reading is off."
+      :"Something went wrong reading that outline.";
+    st.innerHTML='<div class="err"><b>Did not work.</b> '+esc(msg)+'</div>';
+  });
+}
+function showReview(d){
+  var key=(String(d.code||"COURSE").split(/[\s-]/)[0]||"C").toUpperCase().slice(0,6);
+  if(S.courses.some(function(c){return c.key===key;}))key=key+"·"+uid().slice(0,2);
+  PENDING={
+    course:{key:key,code:d.code||"Untitled course",title:d.title||"",instructor:d.instructor||"",email:d.email||"",room:d.room||"",
+      meets:d.meets||"",time:d.time||"",weights:Array.isArray(d.weights)?d.weights:[],rules:d.rules||"",
+      color:PALETTE[S.courses.length%PALETTE.length],
+      classes:(Array.isArray(d.classes)?d.classes:[]).filter(function(r){return r&&isISO(r.date);}).map(function(r){return {date:r.date,topic:String(r.topic||"").slice(0,160),off:!!r.off,mark:!!r.mark};}),
+      study:{on:true,dow:[1,2,3,4,0][S.courses.length%5],from:"19:00",to:"20:30",label:"Study — "+(d.code||"course")}},
+    items:(Array.isArray(d.items)?d.items:[]).map(function(i){
+      return {id:uid(),c:key,t:String(i.title||"Untitled").slice(0,140),d:isISO(i.date)?i.date:null,
+        k:["exam","quiz","due","pres","other"].indexOf(i.kind)>-1?i.kind:"due",w:String(i.weight||""),note:String(i.note||"").slice(0,300)};
+    })
+  };
+  drawReview();
+  document.getElementById("add-input").classList.add("hide");
+  document.getElementById("add-review").classList.remove("hide");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function drawReview(){
+  var c=PENDING.course,its=PENDING.items,missing=its.filter(function(i){return !i.d;}).length;
+  var rows=its.map(function(i,ix){
+    return '<tr'+(i.d?"":' class="missing"')+'>'
+      +'<td><input data-ri="'+ix+'" data-rf="t" value="'+esc(i.t)+'"></td>'
+      +'<td style="width:150px"><input class="dt" type="date" data-ri="'+ix+'" data-rf="d" value="'+esc(i.d||"")+'"></td>'
+      +'<td style="width:112px"><select data-ri="'+ix+'" data-rf="k">'
+      +["exam","quiz","due","pres","other"].map(function(k){return '<option value="'+k+'"'+(i.k===k?" selected":"")+'>'+({exam:"Exam",quiz:"Quiz",due:"Due",pres:"Present",other:"Other"})[k]+'</option>';}).join("")
+      +'</select></td><td style="width:82px"><input data-ri="'+ix+'" data-rf="w" value="'+esc(i.w)+'" placeholder="—"></td>'
+      +'<td style="width:62px">'+(i.d?"":'<span class="flag">no date</span>')+'</td>'
+      +'<td style="width:36px"><button class="btn sm ghost" data-rdel="'+ix+'" aria-label="remove row">&times;</button></td></tr>';
+  }).join("");
+  document.getElementById("review").innerHTML=
+    '<div class="review-head" style="--ck:var('+c.color+')"><div class="ctop"><span class="ccode" style="color:var('+c.color+')">'+esc(c.code)+'</span><span class="ctitle">'+esc(c.title)+'</span></div>'
+    +'<p style="margin:10px 0 0;font-size:.86rem;color:var(--ink-2)">Found <b>'+its.length+'</b> graded item'+(its.length===1?"":"s")+' and <b>'+c.classes.length+'</b> class meeting'+(c.classes.length===1?"":"s")+'. '
+    +(missing?'<b style="color:var(--warn)">'+missing+' had no date in the outline</b> — fill them in now, or leave them flagged.':'Every item came back with a date. Still worth a glance.')+'</p></div>'
+    +'<div class="fieldgrid">'+fld("code","Course code",c.code)+fld("title","Title",c.title)+fld("instructor","Instructor",c.instructor)
+    +fld("email","Email",c.email)+fld("meets","Meets",c.meets)+fld("time","Time",c.time)+fld("room","Room",c.room)+'</div>'
+    +'<div style="overflow-x:auto"><table class="rev"><thead><tr><th>Item</th><th>Date</th><th>Type</th><th>Weight</th><th></th><th></th></tr></thead><tbody>'
+    +(rows||'<tr><td colspan="6" style="color:var(--ink-3);padding:16px 8px">Nothing graded was found. Add a row, or go back and paste more of the outline.</td></tr>')
+    +'</tbody></table></div>'
+    +'<div class="rev-foot"><button class="btn primary" id="commit">Save this course</button><button class="btn" id="addrow">Add a row</button>'
+    +'<button class="btn ghost" id="backtoinput">Start over</button><span class="hint" style="margin-left:auto">Saved to this browser only</span></div>';
+}
+function fld(k,l,v){return '<label class="f"><span>'+esc(l)+'</span><input data-cf="'+k+'" value="'+esc(v||"")+'"></label>';}
+
+/* ===================== export ===================== */
+function allExportEvents(){
+  var out=[];
+  S.items.forEach(function(i){
+    if(!i.d)return;var c=courseOf(i.c);
+    out.push({title:c.key+" — "+i.t+(i.w?" · "+i.w:""),date:i.d,allDay:true,desc:(i.note||"")+(c.title?"\n\n"+c.code+" "+c.title:""),loc:c.room||"",alarm:i.k!=="other"});
+  });
+  STUDY.forEach(function(s){var c=courseOf(s.c);out.push({title:"Study — "+c.key+": "+s.t,date:s.d,allDay:false,from:s.from,to:s.to,desc:"",loc:"",alarm:false});});
+  S.courses.forEach(function(c){(c.classes||[]).forEach(function(r){if(r.off)out.push({title:c.key+" — "+r.topic,date:r.date,allDay:true,desc:"",loc:"",alarm:false});});});
+  return out.sort(function(a,b){return a.date<b.date?-1:1;});
+}
+function csvE(s){s=String(s==null?"":s);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}
+function mdy(iso){var a=iso.split("-");return a[1]+"/"+a[2]+"/"+a[0];}
+function ampm(t){if(!t)return "";var a=t.split(":"),h=+a[0];var ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+a[1]+" "+ap;}
+function buildCSV(){
+  var lines=["Subject,Start Date,Start Time,End Date,End Time,All Day Event,Description,Location"];
+  allExportEvents().forEach(function(e){
+    lines.push([e.title,mdy(e.date),e.allDay?"":ampm(e.from),mdy(e.date),e.allDay?"":ampm(e.to),e.allDay?"True":"False",e.desc,e.loc].map(csvE).join(","));
+  });
+  return lines.join("\r\n");
+}
+function icsD(iso){return iso.replace(/-/g,"");}
+function icsE(s){return String(s).replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\n/g,"\\n");}
+function buildICS(){
+  var L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//JohnsonXCorp//Syllabus Desk//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH","X-WR-CALNAME:My term"];
+  var stamp=new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";
+  allExportEvents().forEach(function(e,ix){
+    L.push("BEGIN:VEVENT","UID:sd-"+ix+"-"+Date.now()+"@syllabusdesk","DTSTAMP:"+stamp);
+    if(e.allDay){L.push("DTSTART;VALUE=DATE:"+icsD(e.date),"DTEND;VALUE=DATE:"+icsD(ISO(new Date(P(e.date).getTime()+864e5))));}
+    else{L.push("DTSTART:"+icsD(e.date)+"T"+e.from.replace(":","")+"00","DTEND:"+icsD(e.date)+"T"+e.to.replace(":","")+"00");}
+    L.push("SUMMARY:"+icsE(e.title));
+    if(e.desc)L.push("DESCRIPTION:"+icsE(e.desc));
+    if(e.loc)L.push("LOCATION:"+icsE(e.loc));
+    if(e.alarm){
+      L.push("BEGIN:VALARM","TRIGGER:-P2D","ACTION:DISPLAY","DESCRIPTION:"+icsE(e.title),"END:VALARM");
+      L.push("BEGIN:VALARM","TRIGGER:-PT12H","ACTION:DISPLAY","DESCRIPTION:"+icsE(e.title),"END:VALARM");
+    }
+    L.push("END:VEVENT");
+  });
+  L.push("END:VCALENDAR");return L.join("\r\n");
+}
+function offer(fn,data,ok){
+  if(!downloadsFn){alert("Downloads are not available on this page for you. Try the hosted version instead.");return;}
+  downloadsFn.save({filename:fn,data:data}).then(function(){if(ok)alert(ok);})
+    .catch(function(e){if(e&&e.code==="declined")return;alert("Could not save that file"+(e&&e.message?": "+e.message:"."));});
+}
+
+/* ===================== ui ===================== */
+function showPanel(id){
+  document.querySelectorAll(".panel").forEach(function(p){p.classList.toggle("on",p.id===id);});
+  document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-selected",b.dataset.panel===id?"true":"false");});
+}
+function openAdd(){
+  document.getElementById("add-input").classList.remove("hide");
+  document.getElementById("add-review").classList.add("hide");
+  document.getElementById("parse-status").innerHTML="";
+  showPanel("p-add");window.scrollTo({top:0,behavior:"smooth"});
+}
+document.addEventListener("click",function(e){
+  var t=e.target,x;
+  if((x=t.closest(".tab"))){showPanel(x.dataset.panel);return;}
+  if(t.closest("#themebtn")){
+    var cur=document.documentElement.getAttribute("data-theme");
+    var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+    try{localStorage.setItem("sd.theme",dark?"light":"dark");}catch(err){}
+    return;
+  }
+  if(t.closest("#rightslink")){e.preventDefault();showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
+  if(t.closest("#buildstamp")){showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
+  if(t.closest("#addbtn")||t.closest("#start1")){openAdd();return;}
+  if(t.closest("#backtoinput")){PENDING=null;openAdd();return;}
+  if(t.closest("#cancel-add")){showPanel("p-weeks");return;}
+  if(t.closest("#pickfile")){document.getElementById("file").click();return;}
+  if(t.closest("#parse")){
+    var txt=document.getElementById("paste").value.trim();
+    if(txt.length<120){document.getElementById("parse-status").innerHTML='<div class="err"><b>That is not much to go on.</b> Paste more of the outline — the schedule table and the grading breakdown are the parts that carry the dates.</div>';return;}
+    parseOutline(txt);return;
+  }
+  if(t.closest("#loadsample")){loadSample();return;}
+  if((x=t.closest("[data-f]"))){FILTER[x.dataset.f]=FILTER[x.dataset.f]?0:1;renderFilters();renderMonths();return;}
+  if((x=t.closest("[data-day]"))&&!x.classList.contains("pad")){showDay(x.dataset.day);return;}
+  if((x=t.closest("[data-tbd]"))){
+    var it=S.items.filter(function(i){return i.id===x.dataset.tbd;})[0];if(!it)return;
+    var v=window.prompt("Date for “"+it.t+"”\n\nUse YYYY-MM-DD, e.g. 2026-12-15. Leave blank to clear.",it.d||"");
+    if(v===null)return;v=v.trim();
+    if(!v)it.d=null;else if(isISO(v))it.d=v;else{alert("That did not look like YYYY-MM-DD, so nothing changed.");return;}
+    save();renderAll();return;
+  }
+  if((x=t.closest("[data-del]"))){
+    var k=x.dataset.del;
+    if(!confirm("Remove "+courseOf(k).code+" and everything in it? This cannot be undone."))return;
+    S.courses=S.courses.filter(function(c){return c.key!==k;});
+    S.items=S.items.filter(function(i){return i.c!==k;});
+    save();renderAll();return;
+  }
+  if((x=t.closest("[data-rdel]"))&&PENDING){PENDING.items.splice(+x.dataset.rdel,1);drawReview();return;}
+  if(t.closest("#addrow")&&PENDING){PENDING.items.push({id:uid(),c:PENDING.course.key,t:"",d:null,k:"due",w:"",note:""});drawReview();return;}
+  if(t.closest("#commit")&&PENDING){
+    if(PENDING.items.some(function(i){return !i.t.trim();})){alert("Give every row a name, or remove the blank ones.");return;}
+    S.courses.push(PENDING.course);PENDING.items.forEach(function(i){S.items.push(i);});
+    PENDING=null;save();renderAll();showPanel("p-weeks");window.scrollTo({top:0,behavior:"smooth"});return;
+  }
+  if(t.closest("#exp-csv")){offer("my-term-google.csv",buildCSV(),"Saved. In Google Calendar on a computer: Settings → Import & export → Import, pick this file, and choose the calendar it lands in.");return;}
+  if(t.closest("#exp-ics")){
+    if(!window.JSZip){alert("The zip library did not load, so the .ics cannot be packaged. Use the Google CSV instead.");return;}
+    var z=new JSZip();z.file("my-term.ics",buildICS());
+    z.generateAsync({type:"blob"}).then(function(b){offer("my-term.zip",b,"Saved. Unzip it, then open my-term.ics — your calendar app takes it from there.");});
+    return;
+  }
+  if(t.closest("#exp-json")){offer("syllabus-desk-data.json",JSON.stringify(S,null,2),"Saved. Keep this if you switch browsers.");return;}
+  if(t.closest("#imp-json")){
+    var raw=window.prompt("Paste the contents of your exported JSON file.\n\nThis replaces everything currently on this page.");
+    if(!raw)return;
+    try{var p=JSON.parse(raw);if(!p.courses)throw 0;S=p;save();renderAll();alert("Imported.");}catch(err){alert("That did not parse as Syllabus Desk data.");}
+    return;
+  }
+});
+document.addEventListener("change",function(e){
+  var t=e.target,x;
+  if((x=t.closest("[data-tick]"))){
+    if(x.checked)S.done[x.dataset.tick]=1;else delete S.done[x.dataset.tick];
+    save();var r=x.closest(".it");if(r)r.classList.toggle("done",x.checked);return;
+  }
+  if(t.id==="file"&&t.files&&t.files[0]){
+    var f=t.files[0];
+    document.getElementById("parse-status").innerHTML='<div class="working"><span class="spin"></span><span>Reading '+esc(f.name)+'…</span></div>';
+    readFile(f).then(function(txt){
+      document.getElementById("paste").value=txt;
+      document.getElementById("parse-status").innerHTML='<div class="hint" style="padding:12px 0">Pulled '+txt.length.toLocaleString()+' characters out of '+esc(f.name)+'. Skim it, then read the outline.</div>';
+      updateCount();
+    }).catch(function(err){document.getElementById("parse-status").innerHTML='<div class="err"><b>Could not read that file.</b> '+esc(err.message||"")+'</div>';});
+    return;
+  }
+  if((x=t.closest("[data-cf]"))&&PENDING){PENDING.course[x.dataset.cf]=x.value;return;}
+  if((x=t.closest("[data-ri]"))&&PENDING){
+    var i=PENDING.items[+x.dataset.ri],f2=x.dataset.rf;
+    if(f2==="d"){i.d=isISO(x.value)?x.value:null;drawReview();}else i[f2]=x.value;
+    return;
+  }
+  ["styon","stydow","styfrom","styto"].forEach(function(a){
+    var el=t.closest("[data-"+a+"]");if(!el)return;
+    var c=courseOf(el.dataset[a]);c.study=c.study||{on:false,dow:1,from:"19:00",to:"20:30"};
+    if(a==="styon")c.study.on=el.checked;
+    if(a==="stydow")c.study.dow=+el.value;
+    if(a==="styfrom")c.study.from=el.value;
+    if(a==="styto")c.study.to=el.value;
+    c.study.label=c.study.label||("Study — "+c.code);
+    save();renderAll();
+  });
+});
+document.addEventListener("input",function(e){if(e.target.id==="paste")updateCount();});
+function updateCount(){
+  var n=document.getElementById("paste").value.trim().length;
+  document.getElementById("charcount").textContent=n?n.toLocaleString()+" characters":"";
+}
+var drop=document.getElementById("drop");
+["dragenter","dragover"].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add("hot");});});
+["dragleave","drop"].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove("hot");});});
+drop.addEventListener("drop",function(e){
+  var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(!f)return;
+  var inp=document.getElementById("file"),dt=new DataTransfer();dt.items.add(f);inp.files=dt.files;
+  inp.dispatchEvent(new Event("change",{bubbles:true}));
+});
+
+/* ===================== example term ===================== */
+function loadSample(){
+  if(S.courses.length&&!confirm("Loading the example term replaces what is here. Continue?"))return;
+  S={courses:[],items:[],done:{},version:1};
+  var C=[
+   {key:"ACCT",code:"ACCT 2210-02",title:"Financial Accounting",instructor:"Tony Bell",email:"",room:"",meets:"Mon / Wed",time:"",color:"--accent",
+    weights:[["Homework & professionalism",10],["Midterm 1",25],["Midterm 2",25],["Final exam",40]],
+    rules:"Handwritten homework due at the start of almost every class, in person. Late work is not accepted and each miss costs a point.",
+    study:{on:true,dow:2,from:"19:00",to:"20:30",label:"Study — ACCT homework"},
+    classes:[{date:"2026-10-07",topic:"Midterm 1 — Chapters 1–4",mark:true},{date:"2026-11-09",topic:"Midterm 2 — Chapters 5–10",mark:true},
+     {date:"2026-09-30",topic:"No class — Truth and Reconciliation",off:true},{date:"2026-10-12",topic:"No class — Thanksgiving",off:true},
+     {date:"2026-11-11",topic:"No class — Remembrance Day",off:true},{date:"2026-12-09",topic:"Ch 14 — Performance measurement"}],
+    items:[{t:"Midterm 1 — Chapters 1–4",d:"2026-10-07",k:"exam",w:"25%",note:"Regular class time."},
+     {t:"Midterm 2 — Chapters 5–10",d:"2026-11-09",k:"exam",w:"25%",note:"Regular class time."},
+     {t:"Final exam — cumulative",d:null,k:"exam",w:"40%",note:"Set centrally in the Dec 10–23 exam period. Must be passed to pass the course."}]},
+   {key:"MKTG",code:"MKTG 2430-01",title:"Introduction to Marketing",instructor:"Dr. Joyce Shang",email:"",room:"OM 1240",meets:"Mon / Thu",time:"1:00 – 2:15 pm",color:"--coral",
+    weights:[["Attendance",5],["Exam 1",15],["Exam 2",15],["Final exam",30],["Report 1",8],["Report 2",8],["Report 3",11],["Presentation",8]],
+    rules:"Miss five classes and you are withdrawn with a DNC. Reports 1 and 2 are graded individually even though the project is a team of four.",
+    study:{on:true,dow:3,from:"19:00",to:"20:30",label:"Study — MKTG reading & project"},
+    classes:[{date:"2026-10-08",topic:"Exam 1",mark:true},{date:"2026-11-16",topic:"Exam 2",mark:true},{date:"2026-12-03",topic:"Group presentations",mark:true},
+     {date:"2026-10-12",topic:"No class — Thanksgiving",off:true},{date:"2026-11-12",topic:"No class — midterm break",off:true}],
+    items:[{t:"Group project topic selection",d:"2026-09-28",k:"due",w:"",note:"In class."},
+     {t:"Exam 1",d:"2026-10-08",k:"exam",w:"15%",note:"Closed book."},
+     {t:"Written Report 1",d:"2026-10-22",k:"due",w:"8%",note:"Individual."},
+     {t:"Exam 2",d:"2026-11-16",k:"exam",w:"15%",note:"Closed book."},
+     {t:"Written Report 2 — STP",d:"2026-11-19",k:"due",w:"8%",note:"Individual."},
+     {t:"Group presentation",d:"2026-12-03",k:"pres",w:"8%",note:"Or Dec 7, depending on your slot."},
+     {t:"Written Report 3",d:"2026-12-10",k:"due",w:"11%",note:"Team grade."},
+     {t:"Final exam",d:null,k:"exam",w:"30%",note:"Set centrally in the exam period."}]},
+   {key:"HRMN",code:"HRMN 2820-01",title:"Human Resource Management",instructor:"Melanie Reed",email:"",room:"IB 1014",meets:"Tuesday",time:"11:30 am – 2:20 pm",color:"--mint-deep",
+    weights:[["Attendance & participation",10],["Group project",15],["Quizzes",15],["Midterm exam",25],["Final exam",35]],
+    rules:"Six to eight unannounced quizzes given at the START of class. Miss the class, miss the quiz — no rewrites. Lowest two are dropped.",
+    study:{on:true,dow:1,from:"18:00",to:"19:00",label:"Study — HRMN chapter & quiz prep"},
+    classes:[{date:"2026-10-20",topic:"MIDTERM EXAM",mark:true},{date:"2026-11-24",topic:"Labour relations + group presentations",mark:true},
+     {date:"2026-09-15",topic:"Online lesson — no face-to-face class",off:true}],
+    items:[{t:"Academic Integrity lesson + quiz",d:"2026-09-11",k:"due",w:"",note:"Must score 100% to unlock Module 1."},
+     {t:"Midterm exam",d:"2026-10-20",k:"exam",w:"25%",note:"Full class block."},
+     {t:"Group project presentation",d:"2026-11-24",k:"pres",w:"15%",note:"Runs Nov 24, Dec 1 and Dec 8 — confirm your slot."},
+     {t:"Final exam — cumulative",d:null,k:"exam",w:"35%",note:"Set centrally in the exam period."}]},
+   {key:"MATH",code:"MATH 1170-01",title:"Calculus for Business & Economics",instructor:"Josh Sorge",email:"",room:"",meets:"Quizzes Wednesdays",time:"",color:"--warn",
+    weights:[],
+    rules:"A quiz almost every Wednesday and a WeBWorK assignment almost every Sunday — the steadiest drumbeat of the term and the easiest to let slide.",
+    study:{on:true,dow:0,from:"16:00",to:"17:30",label:"Study — calculus practice"},
+    classes:[{date:"2026-10-14",topic:"Midterm Test 1",mark:true},{date:"2026-11-18",topic:"Midterm Test 2",mark:true},
+     {date:"2026-11-11",topic:"No classes Nov 11–13 — mid-semester break",off:true}],
+    items:[{t:"Quiz 1",d:"2026-09-16",k:"quiz",w:"",note:"In class."},{t:"Assignment 1 (WeBWorK)",d:"2026-09-20",k:"due",w:"",note:"Due Sunday."},
+     {t:"Quiz 2",d:"2026-09-23",k:"quiz",w:"",note:"In class."},{t:"Assignment 2 (WeBWorK)",d:"2026-09-27",k:"due",w:"",note:"Due Sunday."},
+     {t:"Assignment 3 (WeBWorK)",d:"2026-10-04",k:"due",w:"",note:"Due Sunday."},{t:"Quiz 3",d:"2026-10-07",k:"quiz",w:"",note:"In class."},
+     {t:"Assignment 4 (WeBWorK)",d:"2026-10-11",k:"due",w:"",note:"Due Sunday."},{t:"Midterm Test 1",d:"2026-10-14",k:"exam",w:"",note:"In class."},
+     {t:"Quiz 4",d:"2026-10-21",k:"quiz",w:"",note:"In class."},{t:"Assignment 5 (WeBWorK)",d:"2026-10-25",k:"due",w:"",note:"Due Sunday."},
+     {t:"Quiz 5",d:"2026-10-28",k:"quiz",w:"",note:"In class."},{t:"Assignment 6 (WeBWorK)",d:"2026-11-01",k:"due",w:"",note:"Due Sunday."},
+     {t:"Quiz 6",d:"2026-11-04",k:"quiz",w:"",note:"In class."},{t:"Assignment 7 (WeBWorK)",d:"2026-11-08",k:"due",w:"",note:"Due Sunday."},
+     {t:"Midterm Test 2",d:"2026-11-18",k:"exam",w:"",note:"In class."},{t:"Quiz 7",d:"2026-11-25",k:"quiz",w:"",note:"In class."},
+     {t:"Assignment 8 (WeBWorK)",d:"2026-11-29",k:"due",w:"",note:"Due Sunday — last one."},{t:"Quiz 8",d:"2026-12-02",k:"quiz",w:"",note:"Last quiz."},
+     {t:"Final exam",d:null,k:"exam",w:"",note:"Set centrally in the exam period."}]},
+   {key:"ECON",code:"ECON 2320-03",title:"Economics & Business Statistics 1",instructor:"",email:"",room:"",meets:"",time:"",color:"--ink-2",
+    weights:[],
+    rules:"The Important Dates block was published empty — midterm, Report 2 and final are all unset. A good example of what this page flags rather than guesses.",
+    study:{on:true,dow:4,from:"18:00",to:"19:30",label:"Study — ECON problem set"},
+    classes:[{date:"2026-09-30",topic:"No class",off:true},{date:"2026-10-12",topic:"No class",off:true},{date:"2026-11-11",topic:"No class",off:true}],
+    items:[{t:"Midterm exam",d:null,k:"exam",w:"",note:"Not posted by the instructor."},
+     {t:"Report 2 deadline",d:null,k:"due",w:"",note:"Not posted by the instructor."},
+     {t:"Final exam",d:null,k:"exam",w:"",note:"Not posted by the instructor."}]}
+  ];
+  C.forEach(function(c){
+    var items=c.items;delete c.items;S.courses.push(c);
+    items.forEach(function(i){S.items.push({id:uid(),c:c.key,t:i.t,d:i.d,k:i.k,w:i.w,note:i.note});});
+  });
+  save();renderAll();showPanel("p-weeks");
+}
+
+/* ===================== boot ===================== */
+try{var th=localStorage.getItem("sd.theme");if(th)document.documentElement.setAttribute("data-theme",th);}catch(e){}
+document.getElementById("buildstamp").textContent="· v"+BUILD.v+" · "+BUILD.date;
+document.getElementById("r-year").textContent=BUILD.year;
+Array.prototype.forEach.call(document.querySelectorAll(".r-year"),function(el){el.textContent=BUILD.year;});
+load();renderAll();showDay(ISO(TODAY));
+if(window.claude&&window.claude.use){
+  window.claude.use("sample").then(function(x){sampleFn=x;}).catch(function(){});
+  window.claude.use("downloads").then(function(x){
+    downloadsFn=x;
+    if(!x)["exp-csv","exp-ics","exp-json"].forEach(function(id){var b=document.getElementById(id);if(b)b.disabled=true;});
+  }).catch(function(){});
+}else{
+  /* hosted copy: no claude runtime — use a normal browser download */
+  downloadsFn={save:function(r){return new Promise(function(res){
+    var blob=(r.data instanceof Blob)?r.data:new Blob([r.data],{type:"text/plain"});
+    var u=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=u;a.download=r.filename;document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(u);a.remove();},900);res({status:"saved"});
+  });}};
+}
+</script>
+</body>
+</html>

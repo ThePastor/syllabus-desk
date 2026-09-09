@@ -1,0 +1,96 @@
+Syllabus Desk — Proprietary Software Licence
+Copyright © 2026 JohnsonXCorp. All rights reserved.
+
+"JohnsonXCorp" is the trade name under which the copyright owner publishes this
+software. Where this licence says "the Owner", it means that person or entity.
+
+
+1. THIS IS NOT OPEN SOURCE
+
+This repository is published so that the application can be served from GitHub
+Pages and so that anyone can verify what the page does with their files. It is
+NOT published for reuse. No permission is granted to any person to copy,
+reproduce, modify, adapt, translate, merge, publish, distribute, sublicense,
+sell, host, or create derivative works from this software or any part of it,
+whether or not for commercial purposes, except as expressly stated below.
+
+Reading the source in your browser, or on this repository page, is permitted.
+Everything beyond reading requires the Owner's prior written permission.
+
+
+2. WHAT YOU MAY DO
+
+You may:
+
+  (a) use the application at https://thepastor.github.io/syllabus-desk/ , or a
+      copy installed to your own device from that address, to plan your own
+      studies;
+  (b) read the source code to satisfy yourself about what it does with your
+      files;
+  (c) keep, edit and share the calendar files, data exports and schedules the
+      application builds from your own course material.
+
+The material you put in and the files you get out are yours. This licence
+claims nothing over them.
+
+
+3. WHAT YOU MAY NOT DO
+
+You may not republish, rehost, redistribute or sell this software or any part
+of it; you may not build another product or service from it; and you may not
+remove or alter the copyright notice, this licence, or the JohnsonXCorp mark
+from any copy.
+
+
+4. FORKING
+
+This repository is public. GitHub's Terms of Service allow any GitHub user to
+fork a public repository, and nothing in this licence overrides that. A fork is
+a licence to fork and nothing more: it grants no right to publish, host, run as
+a service, distribute, or otherwise use the software beyond what section 2
+permits. The Owner reserves every right not expressly granted here.
+
+Because the application is served to your browser, you necessarily receive a
+copy of it. Receiving that copy is not permission to redistribute it.
+
+
+5. YOUR DATA
+
+The application runs in your browser. Course outlines you upload are read on
+your device and the file is never uploaded. Your schedule is stored only in
+your own browser's local storage.
+
+One exception, stated plainly: when you ask the application to read an outline,
+the extracted text of that outline is sent to Anthropic's Claude to be turned
+into structured dates, and that processing is governed by Anthropic's terms
+rather than this licence. Nothing else leaves the page.
+
+
+6. NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+The application extracts dates using an AI model and WILL sometimes be wrong.
+It is a planning aid, not a source of truth. Your course page and your
+instructor are authoritative. IN NO EVENT SHALL THE OWNER BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY — including a missed deadline, examination
+or assessment — ARISING FROM OR IN CONNECTION WITH THE SOFTWARE OR ITS USE.
+
+
+7. THIRD-PARTY COMPONENTS
+
+The built page bundles:
+
+  PDF.js  — Apache License 2.0, © Mozilla Foundation and contributors
+  JSZip   — MIT License, © Stuart Knightley and contributors
+
+Each remains under its own licence, and those notices must travel with any
+copy of this file. Typefaces (Inter, Inter Tight, JetBrains Mono) are served by
+Google Fonts under the SIL Open Font License 1.1.
+
+
+8. CONTACT
+
+Permission requests and all other enquiries: johnsonandy242@gmail.com
