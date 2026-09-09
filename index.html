@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v1.1  (9 September 2026)
+  Syllabus Desk  v1.2  (9 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -308,6 +308,12 @@ table.rev tr.missing td{background:var(--warn-soft)}
 .jxc-logo .jxc-x{fill:var(--jxc-gold)}
 .build{background:none;border:0;color:inherit;font:inherit;cursor:pointer;white-space:nowrap}
 .build:hover{color:var(--inverse-ink)}
+.demobar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);
+  border-left:var(--accent-bar) solid var(--warn);background:var(--warn-soft);padding:13px 17px;margin-bottom:20px}
+.demobar .tag{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+  background:var(--warn);color:#fff;padding:3px 8px}
+.demobar p{margin:0;font-size:.86rem;color:var(--ink-2);flex:1 1 320px}
+.demobar .acts{display:flex;gap:8px;flex-wrap:wrap}
 .hide{display:none!important}
 </style>
 </head>
@@ -354,6 +360,15 @@ table.rev tr.missing td{background:var(--warn-soft)}
     </div>
 
     <div id="loaded-state" class="hide">
+      <div class="demobar hide" id="demobar">
+        <span class="tag">Example</span>
+        <p>These are <b>invented courses</b> with invented instructors and rooms, laid out around today so you can see how a real term would look. Add one of your own outlines and the example disappears.</p>
+        <span class="acts">
+          <button class="btn primary sm" id="demo-add">Add my course <span class="arw">&rarr;</span></button>
+          <button class="btn sm" id="demo-shuffle">Shuffle</button>
+          <button class="btn ghost sm" id="demo-clear">Clear</button>
+        </span>
+      </div>
       <section>
         <div class="sec-head"><h2>The next fourteen days</h2><span class="note" id="wk-note"></span></div>
         <div class="weeks" id="weeks"></div>
@@ -443,6 +458,7 @@ table.rev tr.missing td{background:var(--warn-soft)}
   <div class="panel" id="p-owner">
     <section>
       <div class="sec-head"><h2>Owner</h2><span class="note" id="owner-note"></span></div>
+      <p class="hint" style="margin:-8px 0 18px">Status: <b id="owner-who"></b></p>
       <div class="exportgrid" style="margin-bottom:22px">
         <div class="excard">
           <h4>My term</h4>
@@ -478,8 +494,10 @@ table.rev tr.missing td{background:var(--warn-soft)}
         <p>One source, two outputs, so they cannot drift: <span class="mono">body.html</span> plus <span class="mono">build.py</span> writes the artifact body and the standalone <span class="mono">index.html</span> together. The JohnsonXCorp mark is injected from <span class="mono">jxc-logo.svg</span> at build time and the build fails if it is missing. Never edit the outputs directly.</p>
         <p>Design tokens are the UNI Made EZ system: teal <span class="mono">#0E7C86</span>, lime <span class="mono">#D9F56B</span>, coral <span class="mono">#FF7A59</span>, Inter Tight over Inter with JetBrains Mono, 2px corners, inverted footer.</p>
 
-        <h3>What this gate is and is not</h3>
-        <p>The access code is in this page's source, where anyone who opens View Source can read it. <b>It is a convenience switch, not security.</b> Treat everything shipped in this file — including the schedule loaded by Load my schedule — as public, because on a public web address it is.</p>
+        <h3>What this sign-in is and is not</h3>
+        <p>The username and password are stored as a <b>SHA-256 hash</b> in <span class="mono">OWNER_HASH</span>, so the password itself is not sitting in the source in readable form. That is better than plain text, and it is still <b>not security</b>: the check runs in your browser, on a page anyone can read and edit, so a determined person gets past it. Treat it as a lock on a glass door.</p>
+        <p>Which means: treat everything shipped in this file — including the schedule behind <b>Load my schedule</b> — as public, because on a public web address it is.</p>
+        <p class="small">To change the credentials: compute <span class="mono">sha256("username:password")</span>, replace <span class="mono">OWNER_HASH</span> in <span class="mono">src/body.html</span>, rebuild and republish.</p>
         <p>If you want a schedule that is genuinely private, keep it out of the build and bring it in through <b>Import</b> on the Export tab from a JSON file you hold yourself.</p>
       </div>
     </section>
@@ -546,7 +564,7 @@ table.rev tr.missing td{background:var(--warn-soft)}
 
 <script>
 "use strict";
-var BUILD={v:"1.1",date:"9 September 2026",year:2026};
+var BUILD={v:"1.2",date:"9 September 2026",year:2026};
 /* ===================== helpers ===================== */
 var TODAY=new Date(); TODAY.setHours(0,0,0,0);
 var DOWN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -754,6 +772,7 @@ function renderAll(){
   document.getElementById("empty-state").classList.toggle("hide",has);
   document.getElementById("loaded-state").classList.toggle("hide",!has);
   if(has){renderWeeks();renderHorizon();}
+  var db=document.getElementById("demobar"); if(db)db.classList.toggle("hide",!(has&&S.demo));
   renderFilters();renderMonths();renderCourses();
 }
 
@@ -942,7 +961,9 @@ document.addEventListener("click",function(e){
   }
   if(t.closest("#rightslink")){e.preventDefault();showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
   if(t.closest("#buildstamp")){showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
-  if(t.closest("#addbtn")||t.closest("#start1")){openAdd();return;}
+  if(t.closest("#addbtn")||t.closest("#start1")||t.closest("#demo-add")){openAdd();return;}
+  if(t.closest("#demo-shuffle")){loadSample(true);return;}
+  if(t.closest("#demo-clear")){S={courses:[],items:[],done:{},version:1};save();renderAll();showPanel("p-weeks");return;}
   if(t.closest("#backtoinput")){PENDING=null;openAdd();return;}
   if(t.closest("#cancel-add")){showPanel("p-weeks");return;}
   if(t.closest("#pickfile")){document.getElementById("file").click();return;}
@@ -975,6 +996,7 @@ document.addEventListener("click",function(e){
   if(t.closest("#addrow")&&PENDING){PENDING.items.push({id:uid(),c:PENDING.course.key,t:"",d:null,k:"due",w:"",note:""});drawReview();return;}
   if(t.closest("#commit")&&PENDING){
     if(PENDING.items.some(function(i){return !i.t.trim();})){alert("Give every row a name, or remove the blank ones.");return;}
+    if(S.demo){ S={courses:[],items:[],done:{},version:1}; }
     S.courses.push(PENDING.course);PENDING.items.forEach(function(i){S.items.push(i);});
     PENDING=null;save();renderAll();showPanel("p-weeks");window.scrollTo({top:0,behavior:"smooth"});return;
   }
@@ -1112,74 +1134,119 @@ function loadOwnerTerm(){
 }
 
 
-function loadSample(){
-  if(S.courses.length&&!confirm("Loading the example term replaces what is here. Continue?"))return;
-  S={courses:[],items:[],done:{},version:1};
-  var C=[
-   {key:"BIOL",code:"BIOL 1150-02",title:"Cell Biology",instructor:"Dr. Priya Raghunathan",email:"",room:"LS 2214",meets:"Mon / Wed / Fri",time:"9:30 – 10:20 am",color:"--accent",
-    weights:[["Labs",20],["Midterm 1",20],["Midterm 2",20],["Final exam",40]],
-    rules:"Labs are worth a fifth of the grade and cannot be made up. Miss one without documentation and it scores zero.",
-    study:{on:true,dow:2,from:"19:00",to:"20:30",label:"Study — BIOL lab prep"},
-    classes:[{date:"2026-10-07",topic:"Midterm 1 — membranes and transport",mark:true},{date:"2026-11-09",topic:"Midterm 2 — cell signalling",mark:true},
-     {date:"2026-10-12",topic:"No class — Thanksgiving",off:true},{date:"2026-11-11",topic:"No class — Remembrance Day",off:true},
-     {date:"2026-12-04",topic:"Review and wrap-up"}],
-    items:[{t:"Lab report 1",d:"2026-09-25",k:"due",w:"5%",note:"Submitted at the start of lab."},
-     {t:"Midterm 1",d:"2026-10-07",k:"exam",w:"20%",note:"In class."},
-     {t:"Lab report 2",d:"2026-10-23",k:"due",w:"5%",note:""},
-     {t:"Midterm 2",d:"2026-11-09",k:"exam",w:"20%",note:"In class."},
-     {t:"Lab report 3",d:"2026-11-27",k:"due",w:"5%",note:""},
-     {t:"Final exam",d:null,k:"exam",w:"40%",note:"Set centrally in the December exam period."}]},
-   {key:"COMM",code:"COMM 2210-01",title:"Business Communication",instructor:"Marcus Delaine",email:"",room:"WB 1108",meets:"Tue / Thu",time:"2:00 – 3:15 pm",color:"--coral",
-    weights:[["Participation",10],["Memo assignment",15],["Report",25],["Presentation",15],["Final exam",35]],
-    rules:"Written work is submitted before class and late submissions drop a full letter grade per day.",
-    study:{on:true,dow:3,from:"19:00",to:"20:30",label:"Study — COMM writing block"},
-    classes:[{date:"2026-10-15",topic:"Report workshop",mark:true},{date:"2026-11-26",topic:"Presentations begin",mark:true},
-     {date:"2026-10-12",topic:"No class — Thanksgiving",off:true}],
-    items:[{t:"Memo assignment",d:"2026-09-29",k:"due",w:"15%",note:"One page, to a named audience."},
-     {t:"Report outline",d:"2026-10-15",k:"due",w:"",note:"Ungraded but required."},
-     {t:"Formal report",d:"2026-11-12",k:"due",w:"25%",note:"Individual."},
-     {t:"Presentation",d:"2026-11-26",k:"pres",w:"15%",note:"Ten minutes, no slides read aloud."},
-     {t:"Final exam",d:null,k:"exam",w:"35%",note:"Set centrally in the December exam period."}]},
-   {key:"PSYC",code:"PSYC 1100-04",title:"Introduction to Psychology",instructor:"Dr. Helena Osei",email:"",room:"NH 3021",meets:"Mon / Wed",time:"11:00 am – 12:15 pm",color:"--mint-deep",
-    weights:[["Weekly quizzes",15],["Research participation",5],["Midterm exam",30],["Final exam",50]],
-    rules:"A short quiz opens every Friday and closes Sunday night. The lowest three are dropped, so a missed weekend is survivable but a habit is not.",
-    study:{on:true,dow:5,from:"17:00",to:"18:00",label:"Study — PSYC weekly quiz"},
-    classes:[{date:"2026-10-21",topic:"MIDTERM EXAM",mark:true},{date:"2026-10-12",topic:"No class — Thanksgiving",off:true}],
-    items:[{t:"Quiz 1",d:"2026-09-20",k:"quiz",w:"",note:"Opens Friday, closes Sunday."},
-     {t:"Quiz 2",d:"2026-09-27",k:"quiz",w:"",note:""},{t:"Quiz 3",d:"2026-10-04",k:"quiz",w:"",note:""},
-     {t:"Midterm exam",d:"2026-10-21",k:"exam",w:"30%",note:"In class."},
-     {t:"Quiz 4",d:"2026-11-01",k:"quiz",w:"",note:""},{t:"Quiz 5",d:"2026-11-15",k:"quiz",w:"",note:""},
-     {t:"Research participation credits",d:"2026-11-30",k:"due",w:"5%",note:"Two hours of study participation, or the written alternative."},
-     {t:"Final exam",d:null,k:"exam",w:"50%",note:"Set centrally in the December exam period."}]},
-   {key:"STAT",code:"STAT 2040-03",title:"Statistics for the Sciences",instructor:"Dr. Aaron Whitfield",email:"",room:"SC 1440",meets:"Tue / Thu",time:"8:30 – 9:45 am",color:"--warn",
-    weights:[],
-    rules:"Problem sets are due Sunday night on the online system and the marks are released immediately, so there is no waiting to find out.",
-    study:{on:true,dow:0,from:"16:00",to:"17:30",label:"Study — STAT problem set"},
-    classes:[{date:"2026-10-20",topic:"Midterm test",mark:true},{date:"2026-11-24",topic:"Midterm test 2",mark:true}],
-    items:[{t:"Problem set 1",d:"2026-09-20",k:"due",w:"",note:"Due Sunday night."},
-     {t:"Problem set 2",d:"2026-10-04",k:"due",w:"",note:""},
-     {t:"Midterm test",d:"2026-10-20",k:"exam",w:"",note:"In class."},
-     {t:"Problem set 3",d:"2026-11-01",k:"due",w:"",note:""},
-     {t:"Midterm test 2",d:"2026-11-24",k:"exam",w:"",note:"In class."},
-     {t:"Final exam",d:null,k:"exam",w:"",note:"Set centrally in the December exam period."}]},
-   {key:"HIST",code:"HIST 2310-01",title:"Modern World History",instructor:"Dr. Ingrid Lovgren",email:"",room:"AH 2075",meets:"",time:"",color:"--ink-2",
-    weights:[],
-    rules:"The instructor has posted the reading list but not the assessment dates — this is what an outline with holes looks like, and the page flags it instead of guessing.",
-    study:{on:true,dow:4,from:"18:00",to:"19:30",label:"Study — HIST reading"},
-    classes:[{date:"2026-10-12",topic:"No class — Thanksgiving",off:true},{date:"2026-11-11",topic:"No class — Remembrance Day",off:true}],
-    items:[{t:"Essay 1",d:null,k:"due",w:"",note:"Date not posted by the instructor."},
-     {t:"Midterm exam",d:null,k:"exam",w:"",note:"Date not posted by the instructor."},
-     {t:"Final exam",d:null,k:"exam",w:"",note:"Date not posted by the instructor."}]}
-  ];
-  C.forEach(function(c){
-    var items=c.items;delete c.items;S.courses.push(c);
-    items.forEach(function(i){S.items.push({id:uid(),c:c.key,t:i.t,d:i.d,k:i.k,w:i.w,note:i.note});});
+/* ---------- demo term: invented courses, dates generated around today ----------
+   Regenerated relative to the current week, so the landing view always has something
+   in it whatever month someone arrives in. Nothing here is real. */
+var DEMO_INSTRUCTORS=["Dr. Priya Raghunathan","Marcus Delaine","Dr. Helena Osei","Dr. Aaron Whitfield",
+  "Dr. Ingrid Lovgren","Dr. Samuel Okonkwo","Renata Bilodeau","Dr. Tomas Vrabec","Dr. Yuki Tanaka","Claire Mbeki"];
+var DEMO_BUILDINGS=["LS","WB","NH","SC","AH","OM","IB","CT","MC","HL"];
+var DEMO_COURSES=[
+ {code:"BIOL 1150",title:"Cell Biology",kind:"lab",meets:"Mon / Wed / Fri",time:"9:30 – 10:20 am",
+  weights:[["Labs",20],["Midterm 1",20],["Midterm 2",20],["Final exam",40]],
+  rules:"Labs are a fifth of the grade and cannot be made up. Miss one without documentation and it scores zero."},
+ {code:"COMM 2210",title:"Business Communication",kind:"essay",meets:"Tue / Thu",time:"2:00 – 3:15 pm",
+  weights:[["Participation",10],["Memo",15],["Report",25],["Presentation",15],["Final exam",35]],
+  rules:"Written work is due before class and drops a full letter grade per day late."},
+ {code:"PSYC 1100",title:"Introduction to Psychology",kind:"quiz",meets:"Mon / Wed",time:"11:00 am – 12:15 pm",
+  weights:[["Weekly quizzes",15],["Research participation",5],["Midterm",30],["Final exam",50]],
+  rules:"A quiz opens every Friday and closes Sunday night. The lowest three are dropped — a missed weekend survivable, a habit not."},
+ {code:"STAT 2040",title:"Statistics for the Sciences",kind:"problem",meets:"Tue / Thu",time:"8:30 – 9:45 am",
+  weights:[["Problem sets",20],["Midterm 1",20],["Midterm 2",20],["Final exam",40]],
+  rules:"Problem sets are due Sunday night on the online system and marks come back immediately."},
+ {code:"HIST 2310",title:"Modern World History",kind:"blank",meets:"",time:"",
+  weights:[],
+  rules:"The instructor posted a reading list but no assessment dates. This is what an outline with holes looks like — the page flags it instead of guessing."},
+ {code:"ECON 1950",title:"Principles of Macroeconomics",kind:"problem",meets:"Mon / Wed",time:"1:00 – 2:15 pm",
+  weights:[["Assignments",15],["Midterm 1",25],["Midterm 2",20],["Final exam",40]],
+  rules:"Assignments are submitted online and close on the hour — the system does not accept late work at all."},
+ {code:"CMNS 1290",title:"Introduction to Professional Writing",kind:"essay",meets:"Wed",time:"6:00 – 8:50 pm",
+  weights:[["Drafts",20],["Portfolio",30],["Presentation",15],["Final exam",35]],
+  rules:"Every draft must be submitted to get credit for the portfolio, even the ones that are not graded."},
+ {code:"GEOG 1210",title:"Human Geography",kind:"quiz",meets:"Tue / Thu",time:"10:00 – 11:15 am",
+  weights:[["Map quizzes",20],["Field report",20],["Midterm",25],["Final exam",35]],
+  rules:"Map quizzes are written in the first ten minutes of class and there are no makeups."}
+];
+function rndOf(a){return a[Math.floor(Math.random()*a.length)];}
+function rndRoom(){return rndOf(DEMO_BUILDINGS)+" "+(1+Math.floor(Math.random()*4))+String(10+Math.floor(Math.random()*89));}
+function shuffled(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+/* date `w` weeks from THIS week's Monday, on weekday `dow` (1=Mon … 0=Sun) */
+function demoDate(w,dow){
+  var m=monOf(TODAY);
+  var off=(dow===0?6:dow-1);
+  return ISO(new Date(m.getTime()+(w*7+off)*864e5));
+}
+function demoItems(kind){
+  var out=[];
+  if(kind==="lab"){
+    [[0,3,"Lab report 1"],[3,3,"Lab report 2"],[6,3,"Lab report 3"],[9,3,"Lab report 4"]].forEach(function(r,ix){
+      out.push({t:r[2],d:demoDate(r[0],r[1]),k:"due",w:"5%",note:"Handed in at the start of lab."});
+    });
+    out.push({t:"Midterm 1",d:demoDate(4,1),k:"exam",w:"20%",note:"In class."});
+    out.push({t:"Midterm 2",d:demoDate(9,1),k:"exam",w:"20%",note:"In class."});
+  } else if(kind==="quiz"){
+    for(var w=-1;w<=9;w++) if(w!==4&&w!==8) out.push({t:"Quiz "+(w+2),d:demoDate(w,5),k:"quiz",w:"",note:"Written in class."});
+    out.push({t:"Midterm exam",d:demoDate(4,3),k:"exam",w:"25%",note:"Full class block."});
+    out.push({t:"Field report",d:demoDate(7,2),k:"due",w:"20%",note:"Submitted online."});
+  } else if(kind==="problem"){
+    [0,2,4,6,8].forEach(function(w,ix){
+      out.push({t:"Problem set "+(ix+1),d:demoDate(w,0),k:"due",w:"4%",note:"Due Sunday night."});
+    });
+    out.push({t:"Midterm 1",d:demoDate(3,2),k:"exam",w:"25%",note:"In class."});
+    out.push({t:"Midterm 2",d:demoDate(8,2),k:"exam",w:"20%",note:"In class."});
+  } else if(kind==="essay"){
+    out.push({t:"Memo assignment",d:demoDate(1,2),k:"due",w:"15%",note:"One page, to a named audience."});
+    out.push({t:"Report outline",d:demoDate(3,4),k:"due",w:"",note:"Ungraded but required."});
+    out.push({t:"Formal report",d:demoDate(6,4),k:"due",w:"25%",note:"Individual."});
+    out.push({t:"Presentation",d:demoDate(9,2),k:"pres",w:"15%",note:"Ten minutes."});
+    out.push({t:"Midterm exam",d:demoDate(4,4),k:"exam",w:"20%",note:"In class."});
+  } else {
+    out.push({t:"Essay 1",d:null,k:"due",w:"",note:"Date not posted by the instructor."});
+    out.push({t:"Midterm exam",d:null,k:"exam",w:"",note:"Date not posted by the instructor."});
+  }
+  out.push({t:"Final exam",d:null,k:"exam",w:"",note:"Set centrally in the exam period — not published yet."});
+  return out;
+}
+function loadSample(quiet){
+  if(!quiet&&S.courses.length&&!confirm("Loading the example term replaces what is here. Continue?"))return;
+  S={courses:[],items:[],done:{},version:1,demo:true};
+  var pick=shuffled(DEMO_COURSES).slice(0,5);
+  /* always keep one course with nothing posted, so the flagging behaviour is visible */
+  if(!pick.some(function(c){return c.kind==="blank";})){
+    pick[4]=DEMO_COURSES.filter(function(c){return c.kind==="blank";})[0];
+  }
+  var used={};
+  pick.forEach(function(tpl,ix){
+    var sec="-0"+(1+Math.floor(Math.random()*6));
+    var key=tpl.code.split(" ")[0];
+    var inst;do{inst=rndOf(DEMO_INSTRUCTORS);}while(used[inst]);used[inst]=1;
+    var c={key:key,code:tpl.code+sec,title:tpl.title,
+      instructor:tpl.kind==="blank"?inst:inst,email:"",room:tpl.meets?rndRoom():"",
+      meets:tpl.meets,time:tpl.time,color:PALETTE[ix%PALETTE.length],
+      weights:tpl.weights,rules:tpl.rules,
+      study:{on:true,dow:[1,2,3,4,0][ix%5],from:["18:00","19:00","19:00","18:00","16:00"][ix%5],
+             to:["19:00","20:30","20:30","19:30","17:30"][ix%5],label:"Study — "+tpl.code},
+      classes:[{date:demoDate(2,1),topic:"No class — statutory holiday",off:true},
+               {date:demoDate(6,3),topic:"No class — mid-semester break",off:true}]};
+    S.courses.push(c);
+    demoItems(tpl.kind).forEach(function(i){
+      S.items.push({id:uid(),c:key,t:i.t,d:i.d,k:i.k,w:i.w,note:i.note});
+      if(i.d&&(i.k==="exam"||i.k==="pres"))c.classes.push({date:i.d,topic:i.t,mark:true});
+    });
   });
   save();renderAll();showPanel("p-weeks");
 }
 
 /* ===================== owner gate ===================== */
-var OWNER_CODE="JXC-ANNDY-2026";
+/* SHA-256 of "username:password". A hash rather than plain text so the credentials
+   are not sitting in the source in readable form — but this page is public and the
+   check runs in the browser, so treat it as a lock on a glass door, not security. */
+var OWNER_HASH="12fcefe1c16076f536d4cd0fd7a0910e516eae80e947682cdb9f11606701371d";
+function sha256Hex(str){
+  if(!(window.crypto&&crypto.subtle))return Promise.resolve(null);
+  return crypto.subtle.digest("SHA-256",new TextEncoder().encode(str)).then(function(buf){
+    return Array.prototype.map.call(new Uint8Array(buf),function(b){return b.toString(16).padStart(2,"0");}).join("");
+  });
+}
 function isOwner(){try{return localStorage.getItem("sd.owner")==="1";}catch(e){return false;}}
 function setOwner(v){
   try{v?localStorage.setItem("sd.owner","1"):localStorage.removeItem("sd.owner");}catch(e){}
@@ -1188,19 +1255,22 @@ function setOwner(v){
 function paintOwner(){
   var on=isOwner();
   document.getElementById("ownertab").classList.toggle("hide",!on);
-  var b=document.getElementById("ownerbtn");
-  b.textContent=on?"Owner ✓":"Owner";
-  var n=document.getElementById("owner-note");
-  if(n)n.textContent="JohnsonXCorp · v"+BUILD.v;
-  var ob=document.getElementById("owner-build");
-  if(ob)ob.textContent="v"+BUILD.v+" · "+BUILD.date;
+  document.getElementById("ownerbtn").textContent=on?"Owner ✓":"Owner";
+  var n=document.getElementById("owner-note"); if(n)n.textContent="JohnsonXCorp · v"+BUILD.v;
+  var ob=document.getElementById("owner-build"); if(ob)ob.textContent="v"+BUILD.v+" · "+BUILD.date;
+  var ou=document.getElementById("owner-who"); if(ou)ou.textContent=on?"signed in":"signed out";
 }
 function askOwner(){
   if(isOwner()){showPanel("p-owner");window.scrollTo({top:0,behavior:"smooth"});return;}
-  var v=window.prompt("Owner access code\n\nThis unlocks the owner panel and the saved term. It is a convenience switch, not security — the code sits in this page's source.");
-  if(v===null)return;
-  if(v.trim().toUpperCase()===OWNER_CODE){setOwner(true);showPanel("p-owner");window.scrollTo({top:0,behavior:"smooth"});}
-  else alert("That code did not match. Nothing has changed.");
+  var u=window.prompt("Owner username");
+  if(u===null)return;
+  var pw=window.prompt("Password for “"+u.trim()+"”");
+  if(pw===null)return;
+  sha256Hex(u.trim().toLowerCase()+":"+pw).then(function(h){
+    if(h===null){alert("This browser cannot run the check (no Web Crypto). Try a different browser.");return;}
+    if(h===OWNER_HASH){setOwner(true);showPanel("p-owner");window.scrollTo({top:0,behavior:"smooth"});}
+    else alert("That username and password did not match. Nothing has changed.");
+  });
 }
 
 /* ===================== boot ===================== */
@@ -1208,7 +1278,9 @@ try{var th=localStorage.getItem("sd.theme");if(th)document.documentElement.setAt
 document.getElementById("buildstamp").textContent="· v"+BUILD.v+" · "+BUILD.date;
 document.getElementById("r-year").textContent=BUILD.year;
 Array.prototype.forEach.call(document.querySelectorAll(".r-year"),function(el){el.textContent=BUILD.year;});
-load();paintOwner();renderAll();showDay(ISO(TODAY));
+load();paintOwner();
+if(!S.courses.length){ loadSample(true); }   /* first visit: show a worked example, not an empty shell */
+renderAll();showDay(ISO(TODAY));
 if(window.claude&&window.claude.use){
   window.claude.use("sample").then(function(x){sampleFn=x;}).catch(function(){});
   window.claude.use("downloads").then(function(x){
