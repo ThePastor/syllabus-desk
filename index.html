@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v1.0  (9 September 2026)
+  Syllabus Desk  v1.1  (9 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -319,8 +319,10 @@ table.rev tr.missing td{background:var(--warn-soft)}
     <button class="tab" data-panel="p-cal" aria-selected="false">Calendar</button>
     <button class="tab" data-panel="p-courses" aria-selected="false">Courses</button>
     <button class="tab" data-panel="p-export" aria-selected="false">Export</button>
+    <button class="tab hide" id="ownertab" data-panel="p-owner" aria-selected="false">Owner</button>
   </nav>
   <div class="topacts">
+    <button class="btn sm" id="ownerbtn" title="Owner access">Owner</button>
     <button class="btn sm" id="themebtn" title="Switch light and dark" aria-label="Switch theme">Theme</button>
     <button class="btn primary sm" id="addbtn">Add course</button>
   </div>
@@ -437,6 +439,52 @@ table.rev tr.missing td{background:var(--warn-soft)}
     </section>
   </div>
 
+
+  <div class="panel" id="p-owner">
+    <section>
+      <div class="sec-head"><h2>Owner</h2><span class="note" id="owner-note"></span></div>
+      <div class="exportgrid" style="margin-bottom:22px">
+        <div class="excard">
+          <h4>My term</h4>
+          <p>Load the real Fall 2026 schedule built from the TRU outlines and Moodle — five courses, every dated item, the study rhythm.</p>
+          <button class="btn primary" id="load-owner-term">Load my schedule <span class="arw">&rarr;</span></button>
+        </div>
+        <div class="excard">
+          <h4>Back to the demo</h4>
+          <p>Swap to the fictional example term that visitors see. Useful before showing the page to someone.</p>
+          <button class="btn" id="load-demo-term">Load example term</button>
+        </div>
+        <div class="excard">
+          <h4>Sign out</h4>
+          <p>Locks the Owner tab again on this browser. Your saved schedule stays where it is.</p>
+          <button class="btn ghost" id="owner-signout">Sign out</button>
+        </div>
+      </div>
+      <div class="prose">
+        <h3>Project record</h3>
+        <table class="assess" style="margin-bottom:20px"><tbody>
+          <tr><td style="width:36%"><span class="name">Product</span></td><td>Syllabus Desk</td></tr>
+          <tr><td><span class="name">Owner</span></td><td>JohnsonXCorp <span class="sub">trade name — the legal owner is Anndy Johnson personally</span></td></tr>
+          <tr><td><span class="name">Contact</span></td><td><a href="mailto:johnsonandy242@gmail.com">johnsonandy242@gmail.com</a></td></tr>
+          <tr><td><span class="name">Copyright</span></td><td>&copy; <span class="r-year"></span> JohnsonXCorp. All rights reserved.</td></tr>
+          <tr><td><span class="name">Licence</span></td><td>Proprietary. Public repo, legal notices, no registration filed.</td></tr>
+          <tr><td><span class="name">Repository</span></td><td><a href="https://github.com/ThePastor/syllabus-desk">ThePastor/syllabus-desk</a> <span class="sub">public</span></td></tr>
+          <tr><td><span class="name">Hosted at</span></td><td><a href="https://thepastor.github.io/syllabus-desk/">thepastor.github.io/syllabus-desk</a></td></tr>
+          <tr><td><span class="name">Build</span></td><td><span id="owner-build"></span></td></tr>
+          <tr><td><span class="name">Sits alongside</span></td><td>UNI Made EZ &middot; Read Fast &middot; Hablemos &middot; Vamos &middot; Invest EZ</td></tr>
+        </tbody></table>
+
+        <h3>How this page is built</h3>
+        <p>One source, two outputs, so they cannot drift: <span class="mono">body.html</span> plus <span class="mono">build.py</span> writes the artifact body and the standalone <span class="mono">index.html</span> together. The JohnsonXCorp mark is injected from <span class="mono">jxc-logo.svg</span> at build time and the build fails if it is missing. Never edit the outputs directly.</p>
+        <p>Design tokens are the UNI Made EZ system: teal <span class="mono">#0E7C86</span>, lime <span class="mono">#D9F56B</span>, coral <span class="mono">#FF7A59</span>, Inter Tight over Inter with JetBrains Mono, 2px corners, inverted footer.</p>
+
+        <h3>What this gate is and is not</h3>
+        <p>The access code is in this page's source, where anyone who opens View Source can read it. <b>It is a convenience switch, not security.</b> Treat everything shipped in this file — including the schedule loaded by Load my schedule — as public, because on a public web address it is.</p>
+        <p>If you want a schedule that is genuinely private, keep it out of the build and bring it in through <b>Import</b> on the Export tab from a JSON file you hold yourself.</p>
+      </div>
+    </section>
+  </div>
+
   <div class="panel" id="p-rights">
     <section>
       <div class="sec-head"><h2>All rights reserved</h2><span class="note">© <span id="r-year"></span> JohnsonXCorp</span></div>
@@ -498,7 +546,7 @@ table.rev tr.missing td{background:var(--warn-soft)}
 
 <script>
 "use strict";
-var BUILD={v:"1.0",date:"9 September 2026",year:2026};
+var BUILD={v:"1.1",date:"9 September 2026",year:2026};
 /* ===================== helpers ===================== */
 var TODAY=new Date(); TODAY.setHours(0,0,0,0);
 var DOWN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -903,7 +951,10 @@ document.addEventListener("click",function(e){
     if(txt.length<120){document.getElementById("parse-status").innerHTML='<div class="err"><b>That is not much to go on.</b> Paste more of the outline — the schedule table and the grading breakdown are the parts that carry the dates.</div>';return;}
     parseOutline(txt);return;
   }
-  if(t.closest("#loadsample")){loadSample();return;}
+  if(t.closest("#loadsample")||t.closest("#load-demo-term")){loadSample();return;}
+  if(t.closest("#load-owner-term")){loadOwnerTerm();return;}
+  if(t.closest("#ownerbtn")){askOwner();return;}
+  if(t.closest("#owner-signout")){setOwner(false);showPanel("p-weeks");return;}
   if((x=t.closest("[data-f]"))){FILTER[x.dataset.f]=FILTER[x.dataset.f]?0:1;renderFilters();renderMonths();return;}
   if((x=t.closest("[data-day]"))&&!x.classList.contains("pad")){showDay(x.dataset.day);return;}
   if((x=t.closest("[data-tbd]"))){
@@ -989,9 +1040,9 @@ drop.addEventListener("drop",function(e){
   inp.dispatchEvent(new Event("change",{bubbles:true}));
 });
 
-/* ===================== example term ===================== */
-function loadSample(){
-  if(S.courses.length&&!confirm("Loading the example term replaces what is here. Continue?"))return;
+/* ===================== terms ===================== */
+function loadOwnerTerm(){
+  if(S.courses.length&&!confirm("Loading your term replaces what is here. Continue?"))return;
   S={courses:[],items:[],done:{},version:1};
   var C=[
    {key:"ACCT",code:"ACCT 2210-02",title:"Financial Accounting",instructor:"Tony Bell",email:"",room:"",meets:"Mon / Wed",time:"",color:"--accent",
@@ -1060,12 +1111,104 @@ function loadSample(){
   save();renderAll();showPanel("p-weeks");
 }
 
+
+function loadSample(){
+  if(S.courses.length&&!confirm("Loading the example term replaces what is here. Continue?"))return;
+  S={courses:[],items:[],done:{},version:1};
+  var C=[
+   {key:"BIOL",code:"BIOL 1150-02",title:"Cell Biology",instructor:"Dr. Priya Raghunathan",email:"",room:"LS 2214",meets:"Mon / Wed / Fri",time:"9:30 – 10:20 am",color:"--accent",
+    weights:[["Labs",20],["Midterm 1",20],["Midterm 2",20],["Final exam",40]],
+    rules:"Labs are worth a fifth of the grade and cannot be made up. Miss one without documentation and it scores zero.",
+    study:{on:true,dow:2,from:"19:00",to:"20:30",label:"Study — BIOL lab prep"},
+    classes:[{date:"2026-10-07",topic:"Midterm 1 — membranes and transport",mark:true},{date:"2026-11-09",topic:"Midterm 2 — cell signalling",mark:true},
+     {date:"2026-10-12",topic:"No class — Thanksgiving",off:true},{date:"2026-11-11",topic:"No class — Remembrance Day",off:true},
+     {date:"2026-12-04",topic:"Review and wrap-up"}],
+    items:[{t:"Lab report 1",d:"2026-09-25",k:"due",w:"5%",note:"Submitted at the start of lab."},
+     {t:"Midterm 1",d:"2026-10-07",k:"exam",w:"20%",note:"In class."},
+     {t:"Lab report 2",d:"2026-10-23",k:"due",w:"5%",note:""},
+     {t:"Midterm 2",d:"2026-11-09",k:"exam",w:"20%",note:"In class."},
+     {t:"Lab report 3",d:"2026-11-27",k:"due",w:"5%",note:""},
+     {t:"Final exam",d:null,k:"exam",w:"40%",note:"Set centrally in the December exam period."}]},
+   {key:"COMM",code:"COMM 2210-01",title:"Business Communication",instructor:"Marcus Delaine",email:"",room:"WB 1108",meets:"Tue / Thu",time:"2:00 – 3:15 pm",color:"--coral",
+    weights:[["Participation",10],["Memo assignment",15],["Report",25],["Presentation",15],["Final exam",35]],
+    rules:"Written work is submitted before class and late submissions drop a full letter grade per day.",
+    study:{on:true,dow:3,from:"19:00",to:"20:30",label:"Study — COMM writing block"},
+    classes:[{date:"2026-10-15",topic:"Report workshop",mark:true},{date:"2026-11-26",topic:"Presentations begin",mark:true},
+     {date:"2026-10-12",topic:"No class — Thanksgiving",off:true}],
+    items:[{t:"Memo assignment",d:"2026-09-29",k:"due",w:"15%",note:"One page, to a named audience."},
+     {t:"Report outline",d:"2026-10-15",k:"due",w:"",note:"Ungraded but required."},
+     {t:"Formal report",d:"2026-11-12",k:"due",w:"25%",note:"Individual."},
+     {t:"Presentation",d:"2026-11-26",k:"pres",w:"15%",note:"Ten minutes, no slides read aloud."},
+     {t:"Final exam",d:null,k:"exam",w:"35%",note:"Set centrally in the December exam period."}]},
+   {key:"PSYC",code:"PSYC 1100-04",title:"Introduction to Psychology",instructor:"Dr. Helena Osei",email:"",room:"NH 3021",meets:"Mon / Wed",time:"11:00 am – 12:15 pm",color:"--mint-deep",
+    weights:[["Weekly quizzes",15],["Research participation",5],["Midterm exam",30],["Final exam",50]],
+    rules:"A short quiz opens every Friday and closes Sunday night. The lowest three are dropped, so a missed weekend is survivable but a habit is not.",
+    study:{on:true,dow:5,from:"17:00",to:"18:00",label:"Study — PSYC weekly quiz"},
+    classes:[{date:"2026-10-21",topic:"MIDTERM EXAM",mark:true},{date:"2026-10-12",topic:"No class — Thanksgiving",off:true}],
+    items:[{t:"Quiz 1",d:"2026-09-20",k:"quiz",w:"",note:"Opens Friday, closes Sunday."},
+     {t:"Quiz 2",d:"2026-09-27",k:"quiz",w:"",note:""},{t:"Quiz 3",d:"2026-10-04",k:"quiz",w:"",note:""},
+     {t:"Midterm exam",d:"2026-10-21",k:"exam",w:"30%",note:"In class."},
+     {t:"Quiz 4",d:"2026-11-01",k:"quiz",w:"",note:""},{t:"Quiz 5",d:"2026-11-15",k:"quiz",w:"",note:""},
+     {t:"Research participation credits",d:"2026-11-30",k:"due",w:"5%",note:"Two hours of study participation, or the written alternative."},
+     {t:"Final exam",d:null,k:"exam",w:"50%",note:"Set centrally in the December exam period."}]},
+   {key:"STAT",code:"STAT 2040-03",title:"Statistics for the Sciences",instructor:"Dr. Aaron Whitfield",email:"",room:"SC 1440",meets:"Tue / Thu",time:"8:30 – 9:45 am",color:"--warn",
+    weights:[],
+    rules:"Problem sets are due Sunday night on the online system and the marks are released immediately, so there is no waiting to find out.",
+    study:{on:true,dow:0,from:"16:00",to:"17:30",label:"Study — STAT problem set"},
+    classes:[{date:"2026-10-20",topic:"Midterm test",mark:true},{date:"2026-11-24",topic:"Midterm test 2",mark:true}],
+    items:[{t:"Problem set 1",d:"2026-09-20",k:"due",w:"",note:"Due Sunday night."},
+     {t:"Problem set 2",d:"2026-10-04",k:"due",w:"",note:""},
+     {t:"Midterm test",d:"2026-10-20",k:"exam",w:"",note:"In class."},
+     {t:"Problem set 3",d:"2026-11-01",k:"due",w:"",note:""},
+     {t:"Midterm test 2",d:"2026-11-24",k:"exam",w:"",note:"In class."},
+     {t:"Final exam",d:null,k:"exam",w:"",note:"Set centrally in the December exam period."}]},
+   {key:"HIST",code:"HIST 2310-01",title:"Modern World History",instructor:"Dr. Ingrid Lovgren",email:"",room:"AH 2075",meets:"",time:"",color:"--ink-2",
+    weights:[],
+    rules:"The instructor has posted the reading list but not the assessment dates — this is what an outline with holes looks like, and the page flags it instead of guessing.",
+    study:{on:true,dow:4,from:"18:00",to:"19:30",label:"Study — HIST reading"},
+    classes:[{date:"2026-10-12",topic:"No class — Thanksgiving",off:true},{date:"2026-11-11",topic:"No class — Remembrance Day",off:true}],
+    items:[{t:"Essay 1",d:null,k:"due",w:"",note:"Date not posted by the instructor."},
+     {t:"Midterm exam",d:null,k:"exam",w:"",note:"Date not posted by the instructor."},
+     {t:"Final exam",d:null,k:"exam",w:"",note:"Date not posted by the instructor."}]}
+  ];
+  C.forEach(function(c){
+    var items=c.items;delete c.items;S.courses.push(c);
+    items.forEach(function(i){S.items.push({id:uid(),c:c.key,t:i.t,d:i.d,k:i.k,w:i.w,note:i.note});});
+  });
+  save();renderAll();showPanel("p-weeks");
+}
+
+/* ===================== owner gate ===================== */
+var OWNER_CODE="JXC-ANNDY-2026";
+function isOwner(){try{return localStorage.getItem("sd.owner")==="1";}catch(e){return false;}}
+function setOwner(v){
+  try{v?localStorage.setItem("sd.owner","1"):localStorage.removeItem("sd.owner");}catch(e){}
+  paintOwner();
+}
+function paintOwner(){
+  var on=isOwner();
+  document.getElementById("ownertab").classList.toggle("hide",!on);
+  var b=document.getElementById("ownerbtn");
+  b.textContent=on?"Owner ✓":"Owner";
+  var n=document.getElementById("owner-note");
+  if(n)n.textContent="JohnsonXCorp · v"+BUILD.v;
+  var ob=document.getElementById("owner-build");
+  if(ob)ob.textContent="v"+BUILD.v+" · "+BUILD.date;
+}
+function askOwner(){
+  if(isOwner()){showPanel("p-owner");window.scrollTo({top:0,behavior:"smooth"});return;}
+  var v=window.prompt("Owner access code\n\nThis unlocks the owner panel and the saved term. It is a convenience switch, not security — the code sits in this page's source.");
+  if(v===null)return;
+  if(v.trim().toUpperCase()===OWNER_CODE){setOwner(true);showPanel("p-owner");window.scrollTo({top:0,behavior:"smooth"});}
+  else alert("That code did not match. Nothing has changed.");
+}
+
 /* ===================== boot ===================== */
 try{var th=localStorage.getItem("sd.theme");if(th)document.documentElement.setAttribute("data-theme",th);}catch(e){}
 document.getElementById("buildstamp").textContent="· v"+BUILD.v+" · "+BUILD.date;
 document.getElementById("r-year").textContent=BUILD.year;
 Array.prototype.forEach.call(document.querySelectorAll(".r-year"),function(el){el.textContent=BUILD.year;});
-load();renderAll();showDay(ISO(TODAY));
+load();paintOwner();renderAll();showDay(ISO(TODAY));
 if(window.claude&&window.claude.use){
   window.claude.use("sample").then(function(x){sampleFn=x;}).catch(function(){});
   window.claude.use("downloads").then(function(x){
