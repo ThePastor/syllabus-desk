@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v1.3  (9 September 2026)
+  Syllabus Desk  v1.4  (9 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -18,13 +18,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Paste or upload your course outlines and get one calendar for the whole term - exams, quizzes, deadlines and study blocks, exportable to Google or Apple Calendar.">
+<meta name="description" content="Course outlines in, one calendar out. Paste or upload your outlines and get every exam, quiz and deadline laid out week by week - exportable to Google or Apple Calendar.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F2F8F9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0C0C0D" media="(prefers-color-scheme: dark)">
 <meta name="author" content="JohnsonXCorp">
 <meta name="copyright" content="Copyright (c) 2026 JohnsonXCorp. All rights reserved.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E7C86'/%3E%3Crect x='6' y='9' width='20' height='2.4' fill='%23fff'/%3E%3Crect x='6' y='15' width='20' height='2.4' fill='%23D9F56B'/%3E%3Crect x='6' y='21' width='12' height='2.4' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="canonical" href="https://thepastor.github.io/syllabus-desk/">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23DEF47F'/%3E%3Crect x='10.29' y='12.57' width='43.43' height='4.57' fill='%230C0C0D'/%3E%3Crect x='10.29' y='19.43' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='21.72' y='19.43' width='9.14' height='9.14' fill='%23387A84'/%3E%3Crect x='33.15' y='19.43' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='44.58' y='19.43' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='10.29' y='30.86' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='21.72' y='30.86' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='33.15' y='30.86' width='9.14' height='9.14' fill='%23387A84'/%3E%3Crect x='44.58' y='30.86' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='10.29' y='42.29' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='21.72' y='42.29' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='33.15' y='42.29' width='9.14' height='9.14' fill='%23387A84'/%3E%3Crect x='44.58' y='42.29' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3C/svg%3E">
+<link rel="alternate icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Syllabus Desk">
+<meta property="og:title" content="Syllabus Desk - your whole term, on one page">
+<meta property="og:description" content="Course outlines in, one calendar out. Every exam, quiz and deadline laid out week by week, exportable to the calendar on your phone.">
+<meta property="og:url" content="https://thepastor.github.io/syllabus-desk/">
+<meta property="og:image" content="https://thepastor.github.io/syllabus-desk/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Syllabus Desk - your whole term, on one page">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Syllabus Desk - your whole term, on one page">
+<meta name="twitter:description" content="Course outlines in, one calendar out. Every exam, quiz and deadline laid out week by week.">
+<meta name="twitter:image" content="https://thepastor.github.io/syllabus-desk/og-image.png">
 <style>html{background:#F2F8F9}@media(prefers-color-scheme:dark){html{background:#0C0C0D}}
 img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Syllabus Desk — turn your course outlines into one calendar</title>
@@ -94,8 +110,9 @@ a{color:var(--accent-deep)}
 .topbar{border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:30}
 .topbar-in{display:flex;align-items:stretch;min-height:56px;gap:0}
 .brand{display:flex;align-items:center;gap:10px;padding-right:var(--gut-in);border-right:1px solid var(--line-soft);margin-right:var(--gut-in)}
-.brand .wm{font-family:var(--font-display);font-size:1.05rem;font-weight:700;letter-spacing:-.035em;white-space:nowrap}
-.brand .wm b{color:var(--accent-deep);font-weight:700}
+.brand .wm{font-family:var(--font-display);font-size:1.05rem;font-weight:800;letter-spacing:-.04em;white-space:nowrap;color:var(--ink)}
+.sd-mark{width:26px;height:26px;display:block;flex:0 0 auto}
+.home-hero .sd-mark{width:64px;height:64px;margin-bottom:14px}
 .tabs{display:flex;align-items:stretch;overflow-x:auto;flex:1;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{border:0;border-bottom:var(--accent-bar) solid transparent;background:transparent;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding:0 15px;cursor:pointer;white-space:nowrap}
@@ -352,7 +369,21 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 </script>
 
 <header class="topbar"><div class="wrap topbar-in">
-  <div class="brand"><span class="wm">Syllabus<b>Desk</b></span></div>
+  <div class="brand"><svg class="sd-mark" viewBox="0 0 64 64" role="img" aria-label="Syllabus Desk" focusable="false"><rect width="64" height="64" fill="#DEF47F"/>
+<rect x="10.29" y="12.57" width="43.43" height="4.57" fill="#0C0C0D"/>
+<rect x="10.29" y="19.43" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="21.72" y="19.43" width="9.14" height="9.14" fill="#387A84"/>
+<rect x="33.15" y="19.43" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="44.58" y="19.43" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="10.29" y="30.86" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="21.72" y="30.86" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="33.15" y="30.86" width="9.14" height="9.14" fill="#387A84"/>
+<rect x="44.58" y="30.86" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="10.29" y="42.29" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="21.72" y="42.29" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="33.15" y="42.29" width="9.14" height="9.14" fill="#387A84"/>
+<rect x="44.58" y="42.29" width="9.14" height="9.14" fill="#0C0C0D"/>
+</svg><span class="wm">Syllabus Desk</span></div>
   <nav class="tabs" aria-label="Sections">
     <button class="tab" data-panel="p-weeks" aria-selected="true">Two weeks</button>
     <button class="tab" data-panel="p-cal" aria-selected="false">Calendar</button>
@@ -439,6 +470,21 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
       <div class="home-hero">
         <div class="dots" aria-hidden="true"></div>
         <div class="inner">
+          <svg class="sd-mark" viewBox="0 0 64 64" role="img" aria-label="Syllabus Desk" focusable="false"><rect width="64" height="64" fill="#DEF47F"/>
+<rect x="10.29" y="12.57" width="43.43" height="4.57" fill="#0C0C0D"/>
+<rect x="10.29" y="19.43" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="21.72" y="19.43" width="9.14" height="9.14" fill="#387A84"/>
+<rect x="33.15" y="19.43" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="44.58" y="19.43" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="10.29" y="30.86" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="21.72" y="30.86" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="33.15" y="30.86" width="9.14" height="9.14" fill="#387A84"/>
+<rect x="44.58" y="30.86" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="10.29" y="42.29" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="21.72" y="42.29" width="9.14" height="9.14" fill="#0C0C0D"/>
+<rect x="33.15" y="42.29" width="9.14" height="9.14" fill="#387A84"/>
+<rect x="44.58" y="42.29" width="9.14" height="9.14" fill="#0C0C0D"/>
+</svg>
           <div class="lab">Syllabus Desk · a JohnsonXCorp project</div>
           <h1>Your whole term, <em>on one page</em>.</h1>
           <p class="lede">Feed it your course outlines. It pulls out every exam, quiz, report and deadline, lays them out week by week, and hands you a file your phone's calendar understands.</p>
@@ -667,7 +713,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"1.3",date:"9 September 2026",year:2026};
+var BUILD={v:"1.4",date:"9 September 2026",year:2026};
 /* ===================== helpers ===================== */
 var TODAY=new Date(); TODAY.setHours(0,0,0,0);
 var DOWN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
