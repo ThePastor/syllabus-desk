@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v1.2  (9 September 2026)
+  Syllabus Desk  v1.3  (9 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -308,6 +308,33 @@ table.rev tr.missing td{background:var(--warn-soft)}
 .jxc-logo .jxc-x{fill:var(--jxc-gold)}
 .build{background:none;border:0;color:inherit;font:inherit;cursor:pointer;white-space:nowrap}
 .build:hover{color:var(--inverse-ink)}
+.home-hero{border:1px solid var(--line);background:var(--surface);position:relative;overflow:hidden;margin-bottom:0}
+.home-hero .inner{padding:var(--band-lg) var(--gut)}
+.home-hero h1{font-size:clamp(1.9rem,4.6vw,3.1rem);letter-spacing:-.045em;line-height:1.05;margin:10px 0 14px;max-width:19ch}
+.home-hero h1 em{font-style:normal;color:var(--accent-deep)}
+.home-hero .lede{font-size:1.05rem;color:var(--ink-2);max-width:58ch;margin:0 0 22px}
+.probgrid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-top:0}
+@media(max-width:820px){.probgrid{grid-template-columns:1fr}}
+.probgrid>div{padding:var(--band) var(--gut);background:var(--surface)}
+.probgrid>div+div{border-left:1px solid var(--line-soft)}
+@media(max-width:820px){.probgrid>div+div{border-left:0;border-top:1px solid var(--line-soft)}}
+.probgrid h3{font-size:1.15rem;letter-spacing:-.025em;margin-bottom:10px}
+.probgrid p{font-size:.9rem;color:var(--ink-2);margin:0 0 10px;max-width:52ch}
+.probgrid p:last-child{margin-bottom:0}
+.probgrid .bad{color:var(--bad)}
+.howto{counter-reset:step;border:1px solid var(--line);border-top:0}
+.howto .row{display:grid;grid-template-columns:64px 1fr;gap:var(--gut-in);padding:var(--band) var(--gut);border-bottom:1px solid var(--line-soft);background:var(--surface)}
+.howto .row:last-child{border-bottom:0}
+.howto .num{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);padding-top:4px}
+.howto h4{font-size:1.1rem;letter-spacing:-.025em;margin-bottom:6px}
+.howto p{font-size:.9rem;color:var(--ink-2);margin:0 0 8px;max-width:60ch}
+.howto p:last-child{margin-bottom:0}
+.howto .tip{font-size:.82rem;color:var(--ink-3);border-left:2px solid var(--line-soft);padding-left:12px;margin-top:10px}
+.limits{border:1px solid var(--line);border-top:0;background:var(--surface-2);padding:var(--band) var(--gut)}
+.limits h3{font-size:1.1rem;letter-spacing:-.025em;margin-bottom:12px}
+.limits ul{margin:0;padding-left:20px;font-size:.9rem;color:var(--ink-2)}
+.limits li{margin-bottom:9px;max-width:62ch}
+.limits li:last-child{margin-bottom:0}
 .demobar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);
   border-left:var(--accent-bar) solid var(--warn);background:var(--warn-soft);padding:13px 17px;margin-bottom:20px}
 .demobar .tag{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
@@ -318,6 +345,12 @@ table.rev tr.missing td{background:var(--warn-soft)}
 </style>
 </head>
 <body>
+<script>
+/* Light is the default look. The viewer's own choice, if they made one, wins. */
+(function(){try{var t=localStorage.getItem("sd.theme");document.documentElement.setAttribute("data-theme",t==="dark"?"dark":"light");}
+catch(e){document.documentElement.setAttribute("data-theme","light");}})();
+</script>
+
 <header class="topbar"><div class="wrap topbar-in">
   <div class="brand"><span class="wm">Syllabus<b>Desk</b></span></div>
   <nav class="tabs" aria-label="Sections">
@@ -328,6 +361,7 @@ table.rev tr.missing td{background:var(--warn-soft)}
     <button class="tab hide" id="ownertab" data-panel="p-owner" aria-selected="false">Owner</button>
   </nav>
   <div class="topacts">
+    <button class="btn sm" id="guidebtn" aria-expanded="false" title="What this is and how to use it">Guide</button>
     <button class="btn sm" id="ownerbtn" title="Owner access">Owner</button>
     <button class="btn sm" id="themebtn" title="Switch light and dark" aria-label="Switch theme">Theme</button>
     <button class="btn primary sm" id="addbtn">Add course</button>
@@ -348,6 +382,7 @@ table.rev tr.missing td{background:var(--warn-soft)}
             <div class="row">
               <button class="btn primary" id="start1">Add my first course <span class="arw">&rarr;</span></button>
               <button class="btn" id="loadsample">Load an example term</button>
+              <button class="btn ghost" id="guidebtn3">How it works</button>
             </div>
           </div>
           <div class="steps">
@@ -367,6 +402,7 @@ table.rev tr.missing td{background:var(--warn-soft)}
           <button class="btn primary sm" id="demo-add">Add my course <span class="arw">&rarr;</span></button>
           <button class="btn sm" id="demo-shuffle">Shuffle</button>
           <button class="btn ghost sm" id="demo-clear">Clear</button>
+          <button class="btn ghost sm" id="guidebtn2">How it works</button>
         </span>
       </div>
       <section>
@@ -394,6 +430,73 @@ table.rev tr.missing td{background:var(--warn-soft)}
       <div class="sec-head"><h2>Course by course</h2><span class="note">weights · dates · study blocks</span></div>
       <div id="courses"></div>
       <div id="nocourses" class="callout hide"><h4>No courses yet</h4><p style="margin:0">Add one from the button in the top bar, or load the example term to see how it all fits together.</p></div>
+    </section>
+  </div>
+
+
+  <div class="panel" id="p-home">
+    <section style="margin-bottom:0">
+      <div class="home-hero">
+        <div class="dots" aria-hidden="true"></div>
+        <div class="inner">
+          <div class="lab">Syllabus Desk · a JohnsonXCorp project</div>
+          <h1>Your whole term, <em>on one page</em>.</h1>
+          <p class="lede">Feed it your course outlines. It pulls out every exam, quiz, report and deadline, lays them out week by week, and hands you a file your phone's calendar understands.</p>
+          <div class="row">
+            <button class="btn primary" id="home-add">Add my first course <span class="arw">&rarr;</span></button>
+            <button class="btn" id="home-close">Back to my term</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="probgrid">
+        <div>
+          <div class="lab">The problem</div>
+          <h3>The dates exist. Nobody can see them.</h3>
+          <p>Every course hands you a PDF with the schedule buried in a table on page four, in a different layout from the last one. Five courses means five documents, five formats, and no single place that says what is due this week.</p>
+          <p>So most people read the outline once in September and never again — and find out about the midterm when someone mentions it in the hallway.</p>
+          <p class="bad"><b>Worse: the outline is not the whole story.</b> Instructors post quizzes, lessons and gated activities on the course site that the outline never mentions.</p>
+        </div>
+        <div>
+          <div class="lab">What this does</div>
+          <h3>One pass, then it is just there.</h3>
+          <p>You add each course once. Claude reads the outline and proposes the dated items — and then <b>you confirm every one</b> before anything is saved. Nothing is guessed: if the outline never gave a date, it comes back flagged, not invented.</p>
+          <p>After that you get your term three ways: <b>this week and next</b> for what is actually coming, a <b>full-term calendar</b> for the shape of it, and <b>course by course</b> for the weightings and the rules that quietly cost marks.</p>
+          <p>Then export it, so the reminders reach you when you are not looking at this page.</p>
+        </div>
+      </div>
+
+      <div class="howto">
+        <div class="row"><div class="num">Step 01</div><div>
+          <h4>Add a course</h4>
+          <p>Press <b>Add course</b>. Drop in the PDF or Word file your instructor posted, or paste the text straight from it. The file is read on your own device — it is not uploaded anywhere.</p>
+          <p class="tip">If you only paste part of it, paste the <b>schedule table and the grading breakdown</b>. Those two carry almost every date.</p>
+        </div></div>
+        <div class="row"><div class="num">Step 02</div><div>
+          <h4>Check what it found</h4>
+          <p>Everything lands in an editable table before it is saved. Fix a title, correct a date, change a weight, delete a row that is not really graded.</p>
+          <p class="tip">Rows marked <b>no date</b> are the ones the outline left blank — usually final exams. Fill them in when your school publishes them, or leave them flagged so you remember they are open.</p>
+        </div></div>
+        <div class="row"><div class="num">Step 03</div><div>
+          <h4>Do the rest, then set your study blocks</h4>
+          <p>Repeat for each course. On the <b>Courses</b> tab, each one gets a weekly study block you can move to whatever evening suits you — and extra prep is added automatically five, three and one days before every exam.</p>
+        </div></div>
+        <div class="row"><div class="num">Step 04</div><div>
+          <h4>Send it to your phone</h4>
+          <p>On <b>Export</b>, take the <b>.csv</b> for Google Calendar or the <b>.ics</b> for Apple Calendar and everything else. Import it into a <b>separate calendar</b>, not your main one — if it comes out wrong you delete one calendar instead of forty events.</p>
+          <p class="tip">The export is a snapshot. Change a date here afterwards and your calendar will not know, so re-export or fix that one event by hand.</p>
+        </div></div>
+      </div>
+
+      <div class="limits">
+        <h3>What it will not do</h3>
+        <ul>
+          <li><b>It will sometimes get a date wrong.</b> It reads outlines with an AI model, and outlines are messy. This is a planning aid, not a source of truth — your course page and your instructor are. Check anything that matters.</li>
+          <li><b>It only knows what you give it.</b> If your instructor posts a quiz on the course site that never appears in the outline, it will not be here. Worth a look at your course page every couple of weeks.</li>
+          <li><b>Your term is saved in this browser only.</b> Not on a server, not visible to anyone else — but also not on your phone, and gone if you clear site data. <b>Export data</b> on the Export tab is your backup.</li>
+          <li><b>Reading an outline sends its text to Claude.</b> That one step, and only that step, leaves your device. Everything else — the file itself, your schedule, your edits — stays local.</li>
+        </ul>
+      </div>
     </section>
   </div>
 
@@ -564,7 +667,7 @@ table.rev tr.missing td{background:var(--warn-soft)}
 
 <script>
 "use strict";
-var BUILD={v:"1.2",date:"9 September 2026",year:2026};
+var BUILD={v:"1.3",date:"9 September 2026",year:2026};
 /* ===================== helpers ===================== */
 var TODAY=new Date(); TODAY.setHours(0,0,0,0);
 var DOWN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -939,9 +1042,20 @@ function offer(fn,data,ok){
 }
 
 /* ===================== ui ===================== */
+var LAST_PANEL="p-weeks";
+function currentPanel(){var e=document.querySelector(".panel.on");return e?e.id:"p-weeks";}
 function showPanel(id){
+  var cur=currentPanel();
+  if(cur!=="p-home"&&id==="p-home")LAST_PANEL=cur;
   document.querySelectorAll(".panel").forEach(function(p){p.classList.toggle("on",p.id===id);});
   document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-selected",b.dataset.panel===id?"true":"false");});
+  var g=document.getElementById("guidebtn");
+  if(g){var on=id==="p-home";g.setAttribute("aria-expanded",on?"true":"false");g.textContent=on?"Close guide":"Guide";}
+}
+function toggleGuide(){
+  if(currentPanel()==="p-home")showPanel(LAST_PANEL);
+  else showPanel("p-home");
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 function openAdd(){
   document.getElementById("add-input").classList.remove("hide");
@@ -953,15 +1067,17 @@ document.addEventListener("click",function(e){
   var t=e.target,x;
   if((x=t.closest(".tab"))){showPanel(x.dataset.panel);return;}
   if(t.closest("#themebtn")){
-    var cur=document.documentElement.getAttribute("data-theme");
-    var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;
-    document.documentElement.setAttribute("data-theme",dark?"light":"dark");
-    try{localStorage.setItem("sd.theme",dark?"light":"dark");}catch(err){}
+    var dark=document.documentElement.getAttribute("data-theme")==="dark";
+    var next=dark?"light":"dark";
+    document.documentElement.setAttribute("data-theme",next);
+    try{localStorage.setItem("sd.theme",next);}catch(err){}
     return;
   }
   if(t.closest("#rightslink")){e.preventDefault();showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
   if(t.closest("#buildstamp")){showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
-  if(t.closest("#addbtn")||t.closest("#start1")||t.closest("#demo-add")){openAdd();return;}
+  if(t.closest("#guidebtn")||t.closest("#guidebtn2")||t.closest("#guidebtn3")){toggleGuide();return;}
+  if(t.closest("#home-close")){showPanel(LAST_PANEL);window.scrollTo({top:0,behavior:"smooth"});return;}
+  if(t.closest("#addbtn")||t.closest("#start1")||t.closest("#demo-add")||t.closest("#home-add")){openAdd();return;}
   if(t.closest("#demo-shuffle")){loadSample(true);return;}
   if(t.closest("#demo-clear")){S={courses:[],items:[],done:{},version:1};save();renderAll();showPanel("p-weeks");return;}
   if(t.closest("#backtoinput")){PENDING=null;openAdd();return;}
@@ -1274,7 +1390,6 @@ function askOwner(){
 }
 
 /* ===================== boot ===================== */
-try{var th=localStorage.getItem("sd.theme");if(th)document.documentElement.setAttribute("data-theme",th);}catch(e){}
 document.getElementById("buildstamp").textContent="· v"+BUILD.v+" · "+BUILD.date;
 document.getElementById("r-year").textContent=BUILD.year;
 Array.prototype.forEach.call(document.querySelectorAll(".r-year"),function(el){el.textContent=BUILD.year;});
