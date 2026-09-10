@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v1.9  (10 September 2026)
+  Syllabus Desk  v2.1  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -59,6 +59,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
   --mint:#D9F56B; --mint-deep:#0E7C86; --mint-ink:#0E2A3A;
   --coral:#FF7A59; --coral-soft:#FFE0D6;
   --ok:#17835B; --ok-soft:#D3F3E3; --bad:#C0341A; --bad-soft:#FFE0D6;
+  --ok-deep:#0B774F; --bad-deep:#BC3016;
   --warn:#8C6100; --warn-soft:#FFF0B8;
   --warn-ink:#FFFFFF; --bad-ink:#FFFFFF; --ok-ink:#FFFFFF;
   --sky:#CFEAF3; --dot:#16405A; --shape:#C3DAE3;
@@ -80,6 +81,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
     --mint:#A6F0C5; --mint-deep:#6FE0A4; --mint-ink:#0C0C0D;
     --coral:#FF8A6E; --coral-soft:#3A2119;
     --ok:#6FE0A4; --ok-soft:#123324; --bad:#FF8A78; --bad-soft:#3A1D18;
+    --ok-deep:#6FE0A4; --bad-deep:#FF8A78;
     --warn:#F2C94C; --warn-soft:#3A2F0E;
     --warn-ink:#0C0C0D; --bad-ink:#0C0C0D; --ok-ink:#0C0C0D;
     --sky:#14303A; --dot:#F4F4F2; --shape:#2A2A2E;
@@ -96,6 +98,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
   --mint:#A6F0C5; --mint-deep:#6FE0A4; --mint-ink:#0C0C0D;
   --coral:#FF8A6E; --coral-soft:#3A2119;
   --ok:#6FE0A4; --ok-soft:#123324; --bad:#FF8A78; --bad-soft:#3A1D18;
+  --ok-deep:#6FE0A4; --bad-deep:#FF8A78;
   --warn:#F2C94C; --warn-soft:#3A2F0E;
   --warn-ink:#0C0C0D; --bad-ink:#0C0C0D; --ok-ink:#0C0C0D;
   --sky:#14303A; --dot:#F4F4F2; --shape:#2A2A2E;
@@ -455,6 +458,62 @@ table.rev tr.missing td{background:var(--warn-soft)}
   background:var(--warn);color:var(--warn-ink);padding:3px 8px}
 .demobar p{margin:0;font-size:.86rem;color:var(--ink-2);flex:1 1 320px}
 .demobar .acts{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ---- accounts ---- */
+.acctgrid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line)}
+@media(max-width:820px){.acctgrid{grid-template-columns:1fr}}
+.acctcard{padding:var(--band) var(--gut-in);background:var(--surface);display:grid;gap:12px;align-content:start}
+.acctcard+.acctcard{border-left:1px solid var(--line-soft)}
+@media(max-width:820px){.acctcard+.acctcard{border-left:0;border-top:1px solid var(--line)}}
+.acctcard h3{font-size:1.3rem;letter-spacing:-.03em}
+.acctcard .acct-lede{font-size:.86rem;color:var(--ink-2);margin:-4px 0 4px}
+.acctcard label.f input{width:100%;min-height:42px}
+.acctcard .btn{justify-content:center;min-height:46px;margin-top:4px}
+.acctcard .btn.ghost{min-height:0;margin-top:0;border:0;justify-content:flex-start;padding-left:0;
+  text-transform:none;letter-spacing:.02em;font-family:var(--font-body);font-size:.8rem;
+  text-decoration:underline;text-underline-offset:3px}
+.acct-fine{font-size:.75rem;color:var(--ink-3);line-height:1.5;margin:2px 0 0}
+.acctbar{display:flex;gap:18px;flex-wrap:wrap;align-items:center;border:1px solid var(--line);
+  border-left:var(--accent-bar) solid var(--accent);background:var(--surface);padding:16px var(--gut-in)}
+.acct-who{font-family:var(--font-display);font-size:1.25rem;font-weight:600;letter-spacing:-.03em;
+  margin-top:5px;word-break:break-all}
+.acct-sub{font-family:var(--font-mono);font-size:.66rem;color:var(--ink-3);margin-top:6px}
+.acct-acts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:620px){.acct-acts{margin-left:0;width:100%}.acct-acts .btn{flex:1 1 auto}}
+.msg{border:1px solid var(--line-soft);padding:13px 16px;font-size:.86rem;margin-top:18px;line-height:1.5}
+.msg b{display:block;margin-bottom:3px}
+.msg.bad{border-left:var(--accent-bar) solid var(--bad);background:var(--bad-soft);color:var(--ink-2)}
+.msg.bad b{color:var(--bad-deep)}
+.msg.ok{border-left:var(--accent-bar) solid var(--ok);background:var(--ok-soft);color:var(--ink-2)}
+.msg.ok b{color:var(--ok-deep)}
+.msg.work{border-left:var(--accent-bar) solid var(--accent);background:var(--accent-soft);color:var(--ink-2)}
+.syncdot{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:.62rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.syncdot i{width:7px;height:7px;border-radius:50%;background:var(--ink-3);flex:0 0 auto}
+.syncdot.on{color:var(--ok-deep)}
+.syncdot.on i{background:var(--ok)}
+.syncdot.busy i{background:var(--warn)}
+.syncdot.err{color:var(--bad-deep)}
+.syncdot.err i{background:var(--bad)}
+/* who is using this */
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;
+  border:1px solid var(--line);border-right:0;border-bottom:0;margin-bottom:18px}
+.statgrid .s{border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
+  padding:15px 17px;background:var(--surface)}
+.statgrid .s b{display:block;font-family:var(--font-display);font-size:2rem;font-weight:600;
+  letter-spacing:-.04em;line-height:1;color:var(--ink)}
+.statgrid .s span{display:block;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);margin-top:7px}
+.userwrap{overflow-x:auto;border:1px solid var(--line-soft)}
+table.users{width:100%;border-collapse:collapse;font-size:.82rem;min-width:560px}
+table.users th{text-align:left;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:10px 12px;
+  border-bottom:1px solid var(--line-soft);background:var(--surface-2);white-space:nowrap}
+table.users td{padding:9px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+table.users tr:last-child td{border-bottom:0}
+table.users td.em{font-family:var(--font-mono);font-size:.76rem;word-break:break-all}
+table.users td.n{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-2);white-space:nowrap}
+
 /* ---- the update prompt ----
    A toast that fades is not a way to tell somebody the page has changed, and a bare icon is not
    either. This is a card that stays until it is answered, and answering it is the only thing that
@@ -526,6 +585,385 @@ table.rev tr.missing td{background:var(--warn-soft)}
 catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 </script>
 
+<script>
+/* ============================================================================
+   Built-in outline reader — no AI, no network, works on every surface.
+
+   Course outlines are laid out as tables, and by the time text is pulled out of
+   a .docx or a PDF a table is just cells in reading order. So the unit here is
+   the CELL, not the line: a date in one cell and its topic in the next is the
+   same shape whether the original put them side by side or stacked.
+
+   Everything it finds still lands in the review table before anything is saved,
+   which is what makes a pattern reader honest enough to ship: it proposes, the
+   student confirms.
+   ========================================================================== */
+(function (root) {
+  var MONTHS = ["january","february","march","april","may","june","july",
+                "august","september","october","november","december"];
+  var MON3 = MONTHS.map(function (m) { return m.slice(0, 3); });
+  var DOW = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+
+  function monthIndex(w) {
+    w = String(w || "").toLowerCase().replace(/\./g, "");
+    var i = MONTHS.indexOf(w); if (i > -1) return i;
+    return MON3.indexOf(w.slice(0, 3));
+  }
+  function pad(n) { return String(n).padStart(2, "0"); }
+  function iso(y, m, d) { return y + "-" + pad(m + 1) + "-" + pad(d); }
+  function valid(y, m, d) {
+    var dt = new Date(y, m, d);
+    return dt.getFullYear() === y && dt.getMonth() === m && dt.getDate() === d;
+  }
+
+  /* ---------------------------------------------------------------- dates */
+  /* Returns {m, d, dow} or null. Year is decided later, once, for the whole
+     outline — a single date never carries enough information to guess it. */
+  function readDate(s) {
+    s = String(s || "").replace(/–|—/g, "-").trim();
+    if (!s || s.length > 60) return null;
+    var dow = null;
+    var dm = s.match(/\b(sun|mon|tues?|wed(?:nes)?|thur?s?|fri|sat(?:ur)?)(day)?\b/i);
+    if (dm) {
+      var t = dm[1].toLowerCase();
+      dow = DOW.findIndex(function (n) { return n.slice(0, 3) === t.slice(0, 3); });
+    }
+    var m;
+    // September 28 / Sept. 28 / Sep 28, 2026
+    if ((m = s.match(/\b([A-Za-z]{3,9})\.?\s+(\d{1,2})(?:\s*,\s*(\d{4}))?\b/))) {
+      var mi = monthIndex(m[1]);
+      if (mi > -1 && +m[2] >= 1 && +m[2] <= 31)
+        return { m: mi, d: +m[2], y: m[3] ? +m[3] : null, dow: dow };
+    }
+    // 28 September
+    if ((m = s.match(/\b(\d{1,2})\s+([A-Za-z]{3,9})\.?(?:\s*,?\s*(\d{4}))?\b/))) {
+      var mi2 = monthIndex(m[2]);
+      if (mi2 > -1 && +m[1] >= 1 && +m[1] <= 31)
+        return { m: mi2, d: +m[1], y: m[3] ? +m[3] : null, dow: dow };
+    }
+    // 2026-09-28
+    if ((m = s.match(/\b(\d{4})-(\d{1,2})-(\d{1,2})\b/)))
+      return { m: +m[2] - 1, d: +m[3], y: +m[1], dow: dow };
+    // 09/28/2026 — month first, the North American campus convention
+    if ((m = s.match(/\b(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/))) {
+      var mm = +m[1] - 1, dd = +m[2];
+      if (mm >= 0 && mm <= 11 && dd >= 1 && dd <= 31) {
+        var yy = m[3] ? (+m[3] < 100 ? 2000 + +m[3] : +m[3]) : null;
+        return { m: mm, d: dd, y: yy, dow: dow };
+      }
+    }
+    return null;
+  }
+
+  /* A term runs across at most two calendar years. Pick the year that makes the
+     most weekday names come out right — outlines that print "Monday, September
+     28" hand us a checksum, and using it beats assuming. */
+  function pickYear(hits, text) {
+    var years = [];
+    var ym = String(text).match(/\b(20\d{2})\b/g);
+    if (ym) ym.forEach(function (y) { if (years.indexOf(+y) < 0) years.push(+y); });
+    var f = String(text).match(/\b(?:fall|winter|spring|summer|f|w|s)\s?(\d{2})\b/i);
+    if (f) { var y2 = 2000 + +f[1]; if (years.indexOf(y2) < 0) years.push(y2); }
+    var now = new Date().getFullYear();
+    [now, now + 1, now - 1].forEach(function (y) { if (years.indexOf(y) < 0) years.push(y); });
+
+    var best = null, bestScore = -1;
+    years.forEach(function (y) {
+      var score = 0;
+      hits.forEach(function (h) {
+        if (h.y && h.y !== y) return;
+        if (!valid(y, h.m, h.d)) { score -= 2; return; }
+        if (h.dow != null) score += (new Date(y, h.m, h.d).getDay() === h.dow) ? 3 : -3;
+        else score += 1;
+      });
+      if (score > bestScore) { bestScore = score; best = y; }
+    });
+    return best || now;
+  }
+
+  /* ------------------------------------------------------------ vocabulary */
+  var KINDS = [
+    { k: "pres", re: /\b(presentations?|presenting|oral\s*(?:presentation|exam)?s?|pitch(?:es)?|demo\s*days?)\b/i },
+    { k: "exam", re: /\b(final\s*exams?|final\s*examinations?|midterms?|mid-?terms?|exams?\s*\d*|examinations?|tests?\s*\d*)\b/i },
+    { k: "quiz", re: /\b(quiz(?:zes)?|in-?class\s*quiz(?:zes)?)\b/i },
+    { k: "due",  re: /\b(assignments?|reports?|essays?|papers?|projects?|problem\s*sets?|homework|labs?(?:\s*reports?)?|webwork|submissions?|deliverables?|case\s*stud(?:y|ies)|portfolios?|drafts?|memos?|reflections?|journals?|milestones?)\b/i }
+  ];
+  function kindOf(s) {
+    for (var i = 0; i < KINDS.length; i++) if (KINDS[i].re.test(s)) return KINDS[i].k;
+    if (/\bdue\b|\bdeadline\b/i.test(s)) return "due";
+    return null;
+  }
+  /* schedule rows that name a class topic; the assessment word in them is a
+     subject, not a deadline */
+  var TOPICY = /\b(session|library|wrap-?up|review\s*(?:session|class|day)?|introduction|overview|guest\s*speaker|reading\s*day|lecture|chapter\s*\d|\(ch\s*\d)/i;
+  var NOCLASS = /\b(no\s*class(?:es)?|cancell?ed|holiday|reading\s*(?:week|break)|mid-?semester\s*break|midterm\s*break|study\s*(?:day|break)|thanksgiving|remembrance|truth\s+and\s+reconciliation|family\s*day|labour\s*day|labor\s*day)\b/i;
+  /* words that look like assessments but are talking about rules, not events */
+  var PROSE = /\b(policy|policies|will not be accepted|must pass|prohibited|misconduct|integrity|guidelines?|regulations?|please note|see appendix|if you|students who|electronic devices)\b/i;
+
+  function looksLikeSentence(s) {
+    return s.split(/\s+/).length > 16 || PROSE.test(s);
+  }
+  function tidy(s) {
+    return String(s || "").replace(/\s+/g, " ").replace(/^[\s|–—-]+|[\s|]+$/g, "").trim();
+  }
+
+  /* --------------------------------------------------------------- cells */
+  /* Flatten to cells in reading order. Table pipes and newlines both separate
+     cells, because by this point they mean the same thing. */
+  function cellsOf(text) {
+    var out = [];
+    String(text).split(/\r?\n/).forEach(function (line) {
+      line.split("|").forEach(function (c) {
+        var v = tidy(c);
+        if (v) out.push(v);
+      });
+    });
+    return out;
+  }
+
+  /* ------------------------------------------------------------- weights */
+  function cleanName(s) {
+    return tidy(s).replace(/[*†‡]+/g, "").replace(/[:–\-]+$/, "").replace(/\s{2,}/g, " ").trim();
+  }
+  function plausibleName(c) {
+    if (!c) return false;
+    var n = cleanName(c);
+    if (n.length < 2 || n.length > 46) return false;
+    if (!/[a-z]/i.test(n)) return false;
+    if (/^total\b/i.test(n)) return false;
+    if (readDate(n)) return false;
+    if (/^[\d.%\s]+$/.test(n)) return false;
+    return !looksLikeSentence(n);
+  }
+  /* A grading table is a RUN of name-then-number pairs that adds up to about a
+     hundred. Reading pairs one at a time picks up "Exam 1" next to a week number
+     in the schedule; reading them as a run does not. */
+  function readWeights(cells) {
+    var cand = [];
+    for (var i = 0; i < cells.length; i++) {
+      var c = cells[i], m;
+      if ((m = c.match(/^(.{2,46}?)[\s.…:]*?(\d{1,3})(?:\.\d+)?\s*%$/)) && plausibleName(m[1]))
+        { cand.push({ i: i, n: cleanName(m[1]), p: +m[2] }); continue; }
+      if ((m = c.match(/^(\d{1,3})(?:\.\d+)?\s*%\s*[-–:]?\s*(.{2,46})$/)) && plausibleName(m[2]))
+        { cand.push({ i: i, n: cleanName(m[2]), p: +m[1] }); continue; }
+      if (/^[\d.]{1,5}\s*%?$/.test(c)) continue;
+      var nxt = cells[i + 1];
+      if (nxt && /^(\d{1,3})(\.\d+)?\s*%?$/.test(nxt) && plausibleName(c)) {
+        var p = Math.round(parseFloat(nxt));
+        if (p >= 1 && p <= 100) cand.push({ i: i, n: cleanName(c), p: p });
+      }
+    }
+    if (!cand.length) return [];
+    var runs = [], cur = [cand[0]];
+    for (var j = 1; j < cand.length; j++) {
+      if (cand[j].i - cur[cur.length - 1].i <= 6) cur.push(cand[j]);
+      else { runs.push(cur); cur = [cand[j]]; }
+    }
+    runs.push(cur);
+    var best = null, bestScore = -1e9;
+    runs.forEach(function (r) {
+      var seen = {}, uniq = [];
+      r.forEach(function (x) { var k = x.n.toLowerCase(); if (!seen[k]) { seen[k] = 1; uniq.push(x); } });
+      var sum = uniq.reduce(function (a, x) { return a + x.p; }, 0);
+      var score = uniq.length * 2 - Math.abs(sum - 100) * 1.5;
+      if (sum >= 95 && sum <= 105) score += 40;
+      if (uniq.length < 2) score -= 20;
+      if (score > bestScore) { bestScore = score; best = uniq; }
+    });
+    return (best || []).map(function (x) { return [x.n, x.p]; });
+  }
+
+  /* --------------------------------------------------------------- header */
+  function readHeader(text, cells) {
+    var h = { code: "", title: "", instructor: "", email: "", room: "", meets: "", time: "" };
+    /* "MKTG 2430&3430-01" is one cross-listed course: keep the first number and
+       the section that trails the whole group. */
+    var m = text.match(/\b([A-Z]{2,5})\s?-?\s?(\d{4})((?:\s*&\s*\d{4})*)\s*[-–]\s*(\d{2,3})\b/);
+    if (m) h.code = m[1] + " " + m[2] + "-" + m[4];
+    else {
+      m = text.match(/\b([A-Z]{2,5})\s?-?\s?(\d{4})\b/);
+      if (m) h.code = m[1] + " " + m[2];
+    }
+
+    var em = text.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/);
+    if (em) h.email = em[0];
+
+    var lines = String(text).split(/\r?\n/).map(tidy).filter(Boolean);
+
+    /* "Name: Melanie Reed   Office: IB 2042" is two fields on one line, so a
+       label's value ends where the next label begins, not at end of line. */
+    var LABEL = /\b(instructor|professor|lecturer|taught\s*by|facilitator|name|e-?mail|office\s*hours?|office|class\s*(?:hours?|time|times|meets)|lecture\s*(?:hours?|time)?|classroom|room|location|section|term|semester|phone|telephone|credits?|prereq\w*)\s*:/ig;
+    function fields(line) {
+      var out = [], m, marks = [];
+      LABEL.lastIndex = 0;
+      while ((m = LABEL.exec(line))) marks.push({ key: m[1].toLowerCase().replace(/[-\s]+/g, ""), at: m.index, end: m.index + m[0].length });
+      for (var k = 0; k < marks.length; k++) {
+        var stop = (k + 1 < marks.length) ? marks[k + 1].at : line.length;
+        out.push({ key: marks[k].key, val: tidy(line.slice(marks[k].end, stop)) });
+      }
+      return out;
+    }
+    var classTime = "", officeTime = "";
+    for (var i = 0; i < Math.min(lines.length, 120); i++) {
+      var L = lines[i];
+      var ff = fields(L);
+      /* "Instructor" alone on a line, value underneath — common in .docx tables */
+      if (!ff.length && !h.instructor &&
+          /^(instructor|professor|lecturer|taught\s*by|facilitator)$/i.test(L) && lines[i + 1] &&
+          lines[i + 1].length < 60 && /[a-z]/i.test(lines[i + 1]) && !/:/.test(lines[i + 1]))
+        h.instructor = tidy(lines[i + 1]).replace(/,?\s*(ph\.?d|m\.?sc|m\.?a|cpa|ca|cma|mba)\b.*$/i, "").trim();
+      ff.forEach(function (f) {
+        var v = f.val;
+        if (!v) return;
+        if (!h.instructor && /^(instructor|professor|lecturer|taughtby|facilitator|name)$/.test(f.key))
+          h.instructor = v.replace(/,?\s*(ph\.?d|m\.?sc|m\.?a|cpa|ca|cma|mba)\b.*$/i, "").trim().slice(0, 60);
+        if (!h.room && /^(classroom|room|location)$/.test(f.key)) h.room = v.slice(0, 40);
+        if (/^class(hours|time|times|meets)$|^lecture/.test(f.key)) { if (!classTime) classTime = v; }
+        if (/^officehours?$/.test(f.key)) { if (!officeTime) officeTime = v; }
+      });
+      /* an unlabelled meeting line, e.g. "M/R 1:00 pm – 2:15 pm, OM 1240".
+         Only when the line carries no labels at all — otherwise an office-hours
+         line wins the race against the class-hours line below it. */
+      if (!classTime && !ff.length && /\d/.test(L) && L.length < 70 &&
+          /\b(?:mon|tue|wed|thu|fri|sat|[MTWRFS]{1,5})\b/.test(L) &&
+          /\d{1,2}(?::\d{2})?\s*(?:am|pm)?\s*[-–]\s*\d{1,2}/i.test(L)) classTime = L;
+
+      if (!h.title && h.code) {
+        var codeWord = h.code.split(" ")[0];
+        if (L.toUpperCase().indexOf(codeWord) > -1) {
+          var after = tidy(L.replace(/\b[A-Z]{2,5}\s?-?\s?\d{4}(?:\s*&\s*\d{4})?\s*[-–]?\s*\d{0,3}\b/g, " ")
+                            .replace(/\(\s*[\d,\s]+\)/g, " ").replace(/[:–]+/g, " "));
+          after = after.replace(/\b(fall|winter|spring|summer)\s*(?:20)?\d{2}\b/ig, "").trim();
+          after = after.replace(/\bcourse\s*outline\b/ig, "").trim();
+          if (after.length > 3 && after.length < 70 && /[a-z]/.test(after)) h.title = after;
+          else {
+            var nxt = lines[i + 1] || "";
+            nxt = tidy(nxt.replace(/\(\s*[\d,\s]+\)/g, " "));
+            if (nxt.length > 3 && nxt.length < 70 && /[a-z]/.test(nxt) &&
+                !/course outline|department|faculty|school of|instructor|name\s*:/i.test(nxt)) h.title = nxt;
+          }
+        }
+      }
+    }
+    var src = classTime || "";
+    var tm = src.match(/(\d{1,2}(?::\d{2})?\s*(?:am|pm)?\s*[-–]\s*\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/i);
+    if (tm) h.time = tidy(tm[1]);
+    var dm2 = src.match(/\b((?:mon|tue|wed|thu|fri|sat|sun)[a-z]*(?:\s*[\/&,+]\s*(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*)*)\b/i);
+    if (dm2) h.meets = tidy(dm2[1]).replace(/\s*[\/&,+]\s*/g, " / ");
+    else {
+      var short = src.match(/\b([MTWRF](?:\s*\/\s*[MTWRF])+|[MTWRF]{2,5})\b/);
+      if (short) h.meets = short[1].replace(/\s+/g, "");
+    }
+    if (!h.room) {
+      var rm = src.match(/\b([A-Z]{2,4}\s?\d{3,4})\b/);
+      if (rm) h.room = rm[1];
+    }
+    if (h.title) h.title = tidy(h.title.replace(/\bcourse\s*outline\b/i, ""));
+    return h;
+  }
+
+  /* ----------------------------------------------------------------- main */
+  function parse(text) {
+    text = String(text || "");
+    var cells = cellsOf(text);
+
+    /* pass 1: every cell that is a date, with the cell that follows it */
+    var raw = [];
+    for (var i = 0; i < cells.length; i++) {
+      var d = readDate(cells[i]);
+      if (!d) continue;
+      // the topic is the next cell that is not itself a date and not a bare number
+      var topic = "";
+      for (var j = i + 1; j < Math.min(i + 4, cells.length); j++) {
+        var c = cells[j];
+        if (readDate(c)) break;
+        if (/^[\d.]{1,4}$/.test(c)) continue;
+        if (c.length < 2) continue;
+        topic = c; break;
+      }
+      // or, on one line: "Oct 08 — Exam 1"
+      if (!topic) {
+        var rest = tidy(cells[i].replace(/^[^A-Za-z0-9]*/, ""));
+        var strip = rest.replace(/^(?:[A-Za-z]{3,9}\.?,?\s*)?[A-Za-z]{3,9}\.?\s+\d{1,2}(?:\s*,\s*\d{4})?/, "");
+        strip = tidy(strip.replace(/^[-–:\s]+/, ""));
+        if (strip.length > 2) topic = strip;
+      }
+      raw.push({ d: d, topic: topic });
+    }
+
+    var year = pickYear(raw.map(function (r) { return r.d; }), text);
+
+    var classes = [], items = [], seenItem = {};
+    raw.forEach(function (r) {
+      var y = r.d.y || year;
+      if (!valid(y, r.d.m, r.d.d)) return;
+      var date = iso(y, r.d.m, r.d.d);
+      var topic = r.topic || "";
+      if (!topic) return;
+      var off = NOCLASS.test(topic);
+      var k = off ? null : kindOf(topic);
+      var mark = !!k;
+      classes.push({ date: date, topic: topic.slice(0, 160), off: off, mark: mark });
+      if (k && !looksLikeSentence(topic) && !(k === "due" && TOPICY.test(topic))) {
+        var key = (topic.toLowerCase() + "|" + date);
+        if (!seenItem[key]) {
+          seenItem[key] = 1;
+          items.push({ title: topic.slice(0, 140), date: date, kind: k, weight: "", note: "" });
+        }
+      }
+    });
+
+    /* pass 2: the grading table. Anything weighted that pass 1 never dated is a
+       real assessment with an unknown date — exactly the case this app exists to
+       flag rather than invent. */
+    var weights = readWeights(cells);
+    weights.forEach(function (w) {
+      var name = w[0], pct = w[1];
+      var norm = name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+      var hit = items.filter(function (it) {
+        var t = it.title.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+        return t.indexOf(norm) > -1 || norm.indexOf(t) > -1;
+      });
+      if (hit.length) { hit.forEach(function (it) { if (!it.weight) it.weight = pct + "%"; }); return; }
+      /* "Midterm exams 50%" is a heading over sittings the schedule already
+         dated separately — no number of its own, and plural. Split it between
+         them rather than adding a third, dateless midterm. A named row like
+         "Exam 1" is specific and never splits. */
+      if (!/\d/.test(name) && /s\b/i.test(norm)) {
+        var stem = norm.split(" ")[0].replace(/s$/, "");
+        var k0 = kindOf(name);
+        var fam = items.filter(function (it) {
+          return it.date && it.kind === k0 && !it.weight &&
+                 it.title.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().split(" ")[0].replace(/s$/, "") === stem;
+        });
+        if (fam.length > 1) {
+          var each = Math.round((pct / fam.length) * 10) / 10;
+          fam.forEach(function (it) { it.weight = each + "%"; });
+          return;
+        }
+      }
+      var k = kindOf(name);
+      if (!k) return;
+      items.push({ title: name, date: null, kind: k, weight: pct + "%",
+                   note: "Weighted in the grading table, but the outline gives no date." });
+    });
+
+    var h = readHeader(text, cells);
+    classes.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    items.sort(function (a, b) { return (a.date || "9") < (b.date || "9") ? -1 : 1; });
+
+    return {
+      code: h.code || "", title: h.title || "", instructor: h.instructor || "",
+      email: h.email || "", room: h.room || "", meets: h.meets || "", time: h.time || "",
+      weights: weights, rules: "", items: items, classes: classes,
+      _engine: "built-in"
+    };
+  }
+
+  root.SDParse = { parse: parse, readDate: readDate, cellsOf: cellsOf };
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+
 <header class="topbar"><div class="wrap topbar-in">
   <div class="brand"><svg class="sd-mark" viewBox="0 0 64 64" role="img" aria-label="Syllabus Desk" focusable="false"><rect width="64" height="64" fill="#DEF47F"/>
 <rect x="10.29" y="12.57" width="43.43" height="4.57" fill="#0C0C0D"/>
@@ -547,6 +985,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
     <button class="tab" data-panel="p-cal" aria-selected="false">Calendar</button>
     <button class="tab" data-panel="p-courses" aria-selected="false">Courses</button>
     <button class="tab" data-panel="p-export" aria-selected="false">Export</button>
+    <button class="tab hide" id="accounttab" data-panel="p-account" aria-selected="false">Account</button>
     <button class="tab hide" id="ownertab" data-panel="p-owner" aria-selected="false">Owner</button>
   </nav>
   <div class="topacts">
@@ -704,7 +1143,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         <ul>
           <li><b>It will sometimes get a date wrong.</b> It reads outlines with an AI model, and outlines are messy. This is a planning aid, not a source of truth — your course page and your instructor are. Check anything that matters.</li>
           <li><b>It only knows what you give it.</b> If your instructor posts a quiz on the course site that never appears in the outline, it will not be here. Worth a look at your course page every couple of weeks.</li>
-          <li><b>Your term is saved in this browser only.</b> Not on a server, not visible to anyone else — but also not on your phone, and gone if you clear site data. <b>Export data</b> on the Export tab is your backup.</li>
+          <li><b>Without an account, your term is saved in this browser only.</b> Not on a server, not visible to anyone else — but also not on your phone, and gone if you clear site data. <b>Export data</b> on the Export tab is your backup. <b>With</b> an account, your email and your term are stored on a server run by JohnsonXCorp so they can follow you between devices, and your email is visible to the site owner. Your password is not — only a one-way hash of it is kept, which nobody can read back. Accounts are optional and the Account tab can delete what is stored.</li>
           <li><b>Reading an outline sends its text to Claude.</b> That one step, and only that step, leaves your device. Everything else — the file itself, your schedule, your edits — stays local.</li>
         </ul>
       </div>
@@ -769,6 +1208,93 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
   </div>
 
 
+
+  <div class="panel" id="p-account">
+    <section>
+      <div class="sec-head"><h2>Your account</h2><span class="note" id="acct-note"></span></div>
+
+      <div id="acct-out">
+        <div class="callout" style="margin-bottom:22px">
+          <h4>You do not need an account to use this</h4>
+          <p style="margin:0 0 8px">Everything works without one, exactly as it does now — your term lives in this
+          browser and never leaves it. An account does one job: it lets the same term open on your phone, your
+          laptop and a library computer, and survives clearing your browser data.</p>
+          <p style="margin:0"><b>What signing up means in plain words.</b> Your email address and your term
+          — courses, dates, ticks and study blocks — are stored on a server run by JohnsonXCorp, and
+          <b>your email is visible to the owner of this site</b>. Your password is not: it is stored as a
+          one-way hash that nobody, the owner included, can read or recover. You can delete everything from
+          this page at any time.</p>
+        </div>
+
+        <div class="acctgrid">
+          <form class="acctcard" id="signup-form" novalidate>
+            <div class="lab">New here</div>
+            <h3>Create an account</h3>
+            <p class="acct-lede">One email, one password. Nothing else is asked for.</p>
+            <label class="f"><span>Email</span>
+              <input type="email" id="su-email" autocomplete="email" required
+                     placeholder="you@school.ca" inputmode="email"></label>
+            <label class="f"><span>Password &mdash; at least 8 characters</span>
+              <input type="password" id="su-pass" autocomplete="new-password" required minlength="8"></label>
+            <label class="f"><span>Password again</span>
+              <input type="password" id="su-pass2" autocomplete="new-password" required minlength="8"></label>
+            <button class="btn primary" type="submit" id="su-go">Create account <span class="arw">&rarr;</span></button>
+            <p class="acct-fine">By creating an account you agree that your email and your term are stored as
+            described above. Use a password you do not use anywhere else.</p>
+          </form>
+
+          <form class="acctcard" id="signin-form" novalidate>
+            <div class="lab">Been here before</div>
+            <h3>Sign in</h3>
+            <p class="acct-lede">Your saved term comes back on this device.</p>
+            <label class="f"><span>Email</span>
+              <input type="email" id="si-email" autocomplete="email" required
+                     placeholder="you@school.ca" inputmode="email"></label>
+            <label class="f"><span>Password</span>
+              <input type="password" id="si-pass" autocomplete="current-password" required></label>
+            <button class="btn primary" type="submit" id="si-go">Sign in <span class="arw">&rarr;</span></button>
+            <button class="btn ghost sm" type="button" id="si-forgot">Forgotten your password?</button>
+          </form>
+        </div>
+        <div id="acct-msg"></div>
+      </div>
+
+      <div id="acct-in" class="hide">
+        <div class="acctbar">
+          <div>
+            <div class="lab">Signed in as</div>
+            <div class="acct-who" id="acct-email"></div>
+            <div class="acct-sub" id="acct-since"></div>
+          </div>
+          <div class="acct-acts">
+            <button class="btn primary sm" id="acct-push">Save my term now</button>
+            <button class="btn sm" id="acct-pull">Load my saved term</button>
+            <button class="btn ghost sm" id="acct-signout">Sign out</button>
+          </div>
+        </div>
+        <div id="acct-msg2"></div>
+        <div class="exportgrid" style="margin-top:22px">
+          <div class="excard">
+            <h4>How saving works</h4>
+            <p style="margin:0">Every change you make is sent up a few seconds later — there is no save button to
+            forget. The <b>Save my term now</b> button is only there for when you want to be certain before
+            closing a borrowed computer.</p>
+          </div>
+          <div class="excard">
+            <h4>On another device</h4>
+            <p style="margin:0">Open this page, sign in with the same email, and your term is pulled down. If that
+            device already has courses on it, you are asked which copy to keep — nothing is overwritten silently.</p>
+          </div>
+          <div class="excard">
+            <h4>Delete what is stored</h4>
+            <p>Removes your saved term from the server. What is in this browser stays until you clear it.</p>
+            <button class="btn danger sm" id="acct-wipe">Delete my saved term</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <div class="panel" id="p-owner">
     <section>
       <div class="sec-head"><h2>Owner</h2><span class="note" id="owner-note"></span></div>
@@ -789,6 +1315,11 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           <p>Locks the Owner tab again on this browser. Your saved schedule stays where it is.</p>
           <button class="btn ghost" id="owner-signout">Sign out</button>
         </div>
+      </div>
+      <div id="owner-users" class="hide" style="margin-bottom:22px">
+        <div class="sec-head" style="margin-top:6px"><h2 style="font-size:1.15rem">Who is using this</h2>
+          <span class="note"><button class="btn ghost sm" id="stats-refresh">Refresh</button></span></div>
+        <div id="stats-body"><p class="hint">Loading…</p></div>
       </div>
       <div class="prose">
         <h3>Project record</h3>
@@ -841,7 +1372,9 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         <p class="small">Because the page is served from a public address, anyone can save a copy of the file — that is how the web works, and it is not permission. Everything beyond reading requires prior written permission from the owner.</p>
 
         <h3>Your course material stays yours</h3>
-        <p>Outlines you paste or upload are read <b>in your browser</b>. The file itself is never uploaded. Your schedule is stored only in this browser's local storage — not on a server, not visible to anyone else, and not visible to JohnsonXCorp.</p>
+        <p>Outlines you paste or upload are read <b>in your browser</b>. The file itself is never uploaded.</p>
+        <p><b>Without an account</b>, your schedule is stored only in this browser's local storage — not on a server, not visible to anyone else, and not visible to JohnsonXCorp.</p>
+        <p><b>With an account</b>, two things are stored on a server so they can reach your other devices: the <b>email address</b> you signed up with, and your <b>term</b> — courses, dates, ticks and study blocks. Your email address is visible to the owner of this site, along with when you joined and when you last signed in. Your <b>password is never visible to anyone</b>, the owner included: only a one-way hash of it is kept, and a hash cannot be turned back into a password. Access is enforced per row in the database, so no other signed-in person can read your term. Accounts are entirely optional, nothing about them is sold or shared, and <b>Delete my saved term</b> on the Account tab removes what is stored whenever you want.</p>
         <p>One exception, stated plainly: when you press <b>Read this outline</b>, the extracted <b>text</b> of that outline is sent to Anthropic's Claude so it can be turned into dates, and it is processed under Anthropic's terms rather than this notice. Nothing else on this page is sent anywhere. If you would rather not, build your term by hand instead — every field is editable.</p>
 
         <h3>No warranty</h3>
@@ -886,11 +1419,13 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"1.9",date:"10 September 2026",year:2026};
+var BUILD={v:"2.1",date:"10 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["2.1","Outlines are now read on your own device, so adding a course works on the website and not only inside Claude. It finds the schedule table, the grading breakdown, the exam and quiz dates and the days with no class \u2014 and everything still lands in the review table for you to check before it saves."],
+  ["2.0","accounts","Accounts, if you want one. Sign up with an email and your courses, dates, ticks and study blocks follow you to your phone and any other computer. Everything still works without an account, exactly as before."],
   ["1.9","An update that asks first. When a new version goes up, a card explains what is waiting and refreshes only when you say so \u2014 and this list tells you what moved."],
   ["1.8","The page notices when a new version has been published, instead of leaving you on an old one until you happen to reload."],
   ["1.7","Text that was invisible in light mode on a computer set to dark. Every button now takes its colour from the page rather than from the operating system."],
@@ -911,6 +1446,21 @@ var DOWN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"
 var MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
 var PALETTE=["--accent","--coral","--mint-deep","--warn","--bad","--ink-2","--accent-deep","--ok"];
 var KEY="syllabusdesk.v1";
+/* ===================== accounts =====================
+   Optional, and off until these two are filled in: with SB.url empty the whole
+   account feature hides itself and the page behaves exactly as it did before,
+   so a build without keys is still a good build.
+   The publishable ("anon") key belongs in client source — it carries no
+   privilege of its own; row-level security in the database is what actually
+   keeps one person's term away from another's. The service_role / sb_secret_
+   key must NEVER appear here. */
+var SB={
+  url:"",   /* https://xxxxxxxx.supabase.co */
+  key:""    /* sb_publishable_… or the legacy eyJ… anon key */
+};
+var SB_TABLE="syllabus_desk_terms";
+var SESS_KEY="sd.session";
+
 function ISO(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function P(s){var a=String(s).split("-");return new Date(+a[0],+a[1]-1,+a[2]);}
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m];});}
@@ -925,7 +1475,8 @@ function monOf(d){var x=new Date(d);var s=(x.getDay()+6)%7;x.setDate(x.getDate()
 /* ===================== state ===================== */
 var S={courses:[],items:[],done:{},version:1};
 function load(){try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.courses)S=p;}}catch(e){}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));document.getElementById("storage-note").textContent="";}
+function save(){syncSoon();
+  try{localStorage.setItem(KEY,JSON.stringify(S));document.getElementById("storage-note").textContent="";}
   catch(e){document.getElementById("storage-note").innerHTML=' <b style="color:var(--jxc-gold)">This browser is refusing to save</b>, so your courses will go when the tab closes. Export your data to keep it.';}}
 /* ---------- contrast engine ----------
    A course colour has two jobs: a fill behind text, and text on a page ground.
@@ -1330,6 +1881,10 @@ function readDOCX(f){
 
 /* ===================== parse ===================== */
 var sampleFn=null,downloadsFn=null,PENDING=null;
+/* The Claude capability only exists inside the claude.ai artifact viewer, and
+   even there it resolves late. Hold the promise so a click can wait a moment
+   for it instead of deciding "unavailable" the instant the page loads. */
+var SAMPLE_PROBE=null;
 var SCHEMA_PROMPT=
 'You are reading a university course outline and turning it into structured schedule data.\n'+
 'Return ONLY a JSON object, no prose, in exactly this shape:\n'+
@@ -1346,24 +1901,65 @@ var SCHEMA_PROMPT=
 '- "classes" = the class-by-class schedule if there is one. "off": true for holidays and cancelled classes, "mark": true where something is due or written.\n'+
 '- If a field is not stated use an empty string, or [] for lists. Never write "TBD" or "N/A".\n\n'+
 'THE OUTLINE:\n';
+/* Two readers, and the page must work with either.
+
+   The built-in one is pattern matching over the text — no network, no account,
+   no cost — and it is the ONLY one available on the hosted site, because the
+   Claude capability is something the claude.ai artifact viewer provides and an
+   ordinary web page cannot have. Where Claude IS available it reads better, so
+   it goes first and the built-in reader catches it if anything goes wrong.
+
+   Either way the result lands in the review table before a single date is saved,
+   which is what makes a pattern reader honest enough to ship. */
+function localRead(text){
+  var d=SDParse.parse(text);
+  d._engine="built-in";
+  return d;
+}
+function haveClaude(){
+  if(sampleFn)return Promise.resolve(true);
+  if(!SAMPLE_PROBE)return Promise.resolve(false);
+  /* it can take a few seconds to answer; do not make someone stare at a spinner
+     for ten of them when a working reader is sitting right here */
+  return Promise.race([
+    SAMPLE_PROBE.then(function(x){return !!x;}),
+    new Promise(function(r){setTimeout(function(){r(!!sampleFn);},2500);})
+  ]);
+}
 function parseOutline(text){
   var st=document.getElementById("parse-status");
-  if(!sampleFn){st.innerHTML='<div class="err"><b>Claude is not available on this page for you.</b> That is the piece that reads the outline, so automatic parsing is off. Load the example term to see the shape, then edit it by hand.</div>';return;}
   st.innerHTML='<div class="working"><span class="spin"></span><span id="working-msg">Reading the outline…</span></div>';
-  sampleFn.json(SCHEMA_PROMPT+text.slice(0,60000),{
-    onText:function(u){var m=document.getElementById("working-msg");if(m)m.textContent="Reading the outline… "+Math.min(99,Math.round(u.text.length/40))+"%";}
-  }).then(function(d){st.innerHTML="";showReview(d);})
-   .catch(function(e){
-    var c=e&&e.code;
-    var msg=c==="declined"?"You declined the request, so nothing was read and nothing was saved."
-      :c==="rate_limited"?"Too many requests just now. Wait a moment and try again."
-      :c==="invalid_json"?"Claude's answer came back malformed. Try again, or paste a shorter chunk — just the schedule table and the grading breakdown."
-      :c==="not_granted"?"This page is not allowed to ask Claude on your account, so automatic reading is off."
-      :"Something went wrong reading that outline.";
-    st.innerHTML='<div class="err"><b>Did not work.</b> '+esc(msg)+'</div>';
-  });
+  var cut=text.slice(0,60000);
+  haveClaude().then(function(ok){
+    if(!ok){finishRead(localRead(text),null);return;}
+    return sampleFn.json(SCHEMA_PROMPT+cut,{
+      onText:function(u){var m=document.getElementById("working-msg");
+        if(m)m.textContent="Reading the outline… "+Math.min(99,Math.round(u.text.length/40))+"%";}
+    }).then(function(d){d._engine="claude";finishRead(d,null);})
+     ["catch"](function(e){
+        var c=e&&e.code;
+        if(c==="declined"){finishRead(localRead(text),"You declined the Claude request, so the built-in reader did it instead.");return;}
+        var why=c==="rate_limited"?"Claude was busy"
+          :c==="invalid_json"?"Claude's answer came back malformed"
+          :c==="not_granted"?"this page cannot ask Claude on your account"
+          :"the Claude request did not work";
+        finishRead(localRead(text),"The built-in reader did this one, because "+why+".");
+      });
+  })["catch"](function(){finishRead(localRead(text),null);});
 }
-function showReview(d){
+function finishRead(d,note){
+  var st=document.getElementById("parse-status");
+  st.innerHTML="";
+  var n=(d&&d.items?d.items.length:0)+((d&&d.classes)?d.classes.length:0);
+  if(!n){
+    st.innerHTML='<div class="err"><b>Nothing dated came out of that.</b> '
+      +'Paste the <b>schedule table</b> and the <b>grading breakdown</b> — those two carry almost every date. '
+      +'If the outline genuinely has no dates in it, add the course from the review screen and fill them in by hand.</div>';
+    return;
+  }
+  showReview(d,note);
+}
+function showReview(d,note){
   var key=(String(d.code||"COURSE").split(/[\s-]/)[0]||"C").toUpperCase().slice(0,6);
   if(S.courses.some(function(c){return c.key===key;}))key=key+"·"+uid().slice(0,2);
   PENDING={
@@ -1377,6 +1973,8 @@ function showReview(d){
         k:["exam","quiz","due","pres","other"].indexOf(i.kind)>-1?i.kind:"due",w:String(i.weight||""),note:String(i.note||"").slice(0,300)};
     })
   };
+  PENDING.engine=d._engine||"built-in";
+  PENDING.note=note||"";
   drawReview();
   document.getElementById("add-input").classList.add("hide");
   document.getElementById("add-review").classList.remove("hide");
@@ -1397,7 +1995,11 @@ function drawReview(){
   document.getElementById("review").innerHTML=
     '<div class="review-head" style="--ck:var('+c.color+')"><div class="ctop"><span class="ccode" style="color:var('+c.color+')">'+esc(c.code)+'</span><span class="ctitle">'+esc(c.title)+'</span></div>'
     +'<p style="margin:10px 0 0;font-size:.86rem;color:var(--ink-2)">Found <b>'+its.length+'</b> graded item'+(its.length===1?"":"s")+' and <b>'+c.classes.length+'</b> class meeting'+(c.classes.length===1?"":"s")+'. '
-    +(missing?'<b style="color:var(--warn)">'+missing+' had no date in the outline</b> — fill them in now, or leave them flagged.':'Every item came back with a date. Still worth a glance.')+'</p></div>'
+    +(missing?'<b style="color:var(--warn)">'+missing+' had no date in the outline</b> — fill them in now, or leave them flagged.':'Every item came back with a date. Still worth a glance.')+'</p>'
+    +'<p class="hint" style="margin:9px 0 0">'+(PENDING.engine==="claude"
+        ? 'Read by Claude. It is good at messy outlines and still gets dates wrong sometimes \u2014 check them against your course page.'
+        : 'Read by the built-in reader, on your own device \u2014 pattern matching, no AI, nothing sent anywhere. It is reliable on ordinary schedule tables and will miss unusual ones, so <b>check every date</b> and add anything it skipped.')
+    +(PENDING.note?' '+esc(PENDING.note):'')+'</p></div>'
     +'<div class="fieldgrid">'+fld("code","Course code",c.code)+fld("title","Title",c.title)+fld("instructor","Instructor",c.instructor)
     +fld("email","Email",c.email)+fld("meets","Meets",c.meets)+fld("time","Time",c.time)+fld("room","Room",c.room)+'</div>'
     +'<div style="overflow-x:auto"><table class="rev"><thead><tr><th>Item</th><th>Date</th><th>Type</th><th>Weight</th><th></th><th></th></tr></thead><tbody>'
@@ -1465,6 +2067,8 @@ function showPanel(id){
   document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-selected",b.dataset.panel===id?"true":"false");});
   var g=document.getElementById("guidebtn");
   if(g){var on=id==="p-home";g.setAttribute("aria-expanded",on?"true":"false");g.textContent=on?"Close guide":"Guide";}
+  /* the owner list is a live read, so fetch it when the panel is actually opened */
+  if(id==="p-owner"&&sbOn()&&isOwner()&&ownerIsSignedIn())setTimeout(loadOwnerStats,60);
 }
 function toggleGuide(){
   if(currentPanel()==="p-home")showPanel(LAST_PANEL);
@@ -1514,6 +2118,68 @@ document.addEventListener("click",function(e){
     return;
   }
   if(t.closest("#rightslink")){e.preventDefault();showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
+  if((x=t.closest("[data-merge]"))){
+    var pick=x.dataset.merge,row=MERGE_ROW;MERGE_ROW=null;closeSheet();
+    if(pick==="cloud"&&row){adoptCloud(row);acctMsg("acct-msg2","ok","Loaded from your account.",
+      " This device now shows the term you had saved.");}
+    else{pushTerm();acctMsg("acct-msg2","ok","Kept this device’s term.",
+      " It has replaced what was in your account.");}
+    return;
+  }
+  if(t.closest("#si-forgot")){
+    var fe=(document.getElementById("si-email").value||"").trim().toLowerCase();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fe)){
+      acctMsg("acct-msg","bad","Put your email in the box above first.",
+        " The reset link has to go somewhere.");return;}
+    acctMsg("acct-msg","work","Sending…","");
+    doRecover(fe).then(function(){
+      acctMsg("acct-msg","ok","If that email has an account, a reset link is on its way.",
+        " Nothing here can tell you whether it does — that would let anyone test which addresses are registered.");
+    })["catch"](function(err){acctMsg("acct-msg","bad","Could not send it."," "+(err.message||""));});
+    return;
+  }
+  if(t.closest("#acct-push")){
+    acctMsg("acct-msg2","work","Saving…","");
+    pushTerm().then(function(){
+      if(!SYNC.err)acctMsg("acct-msg2","ok","Saved to your account.",
+        " "+realCourses(S)+" course"+(realCourses(S)===1?"":"s")+", as of just now.");
+    });return;
+  }
+  if(t.closest("#acct-pull")){
+    acctMsg("acct-msg2","work","Fetching…","");
+    pullTerm().then(function(row){
+      if(!row||!(row.payload&&(row.payload.courses||[]).length)){
+        acctMsg("acct-msg2","bad","There is nothing saved in your account yet.",
+          " Add a course and it will save itself.");return;}
+      adoptCloud(row);acctMsg("acct-msg2","ok","Loaded from your account.","");
+    })["catch"](function(err){acctMsg("acct-msg2","bad","Could not fetch it."," "+(err.message||""));});
+    return;
+  }
+  if(t.closest("#acct-signout")){
+    var alsoClear=confirm("Sign out.\n\nAlso remove the term from THIS browser?\n\nOK  — remove it here (use this on a shared or borrowed computer)\nCancel — leave it here\n\nEither way your saved copy in the account is untouched.");
+    pushTerm().then(function(){
+      if(SESS)return sbFetch("/auth/v1/logout",{method:"POST"},true)["catch"](function(){});
+    }).then(function(){
+      signOutLocal();
+      if(alsoClear){S={courses:[],items:[],done:{},version:1};
+        try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+        loadSample(true);renderAll();}
+      paintAccount();showPanel("p-weeks");window.scrollTo({top:0,behavior:"smooth"});
+    });
+    return;
+  }
+  if(t.closest("#acct-wipe")){
+    if(!confirm("Delete the term saved in your account?\n\nWhat is in this browser stays. Your account itself is not deleted.\n\nThis cannot be undone."))return;
+    withToken().then(function(){
+      return sbFetch("/rest/v1/"+SB_TABLE+"?user_id=eq."+encodeURIComponent(SESS.user.id),
+        {method:"DELETE",headers:{"Prefer":"return=minimal"}},true);
+    }).then(function(){SYNC.last=null;paintSync();
+      acctMsg("acct-msg2","ok","Deleted from the server.",
+        " This browser still has your term — the Export tab can save you a copy.");
+    })["catch"](function(err){acctMsg("acct-msg2","bad","Could not delete it."," "+(err.message||""));});
+    return;
+  }
+  if(t.closest("#stats-refresh")){loadOwnerStats();return;}
   if(t.closest("#buildstamp")){sheetWhatsNew(null);return;}
   if(t.closest('[data-act="update"]')){applyUpdate();return;}
   if(t.closest('[data-act="update-later"]')){
@@ -1580,6 +2246,39 @@ document.addEventListener("click",function(e){
     return;
   }
 });
+
+/* ---------- account forms ---------- */
+document.addEventListener("submit",function(e){
+  var f=e.target;
+  if(f.id!=="signup-form"&&f.id!=="signin-form")return;
+  e.preventDefault();
+  var up=f.id==="signup-form";
+  var em=(document.getElementById(up?"su-email":"si-email").value||"").trim().toLowerCase();
+  var pw=document.getElementById(up?"su-pass":"si-pass").value||"";
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){
+    acctMsg("acct-msg","bad","That does not look like an email address."," Check it and try again.");return;}
+  if(up){
+    var pw2=document.getElementById("su-pass2").value||"";
+    if(pw.length<8){acctMsg("acct-msg","bad","That password is too short."," Use at least 8 characters.");return;}
+    if(pw!==pw2){acctMsg("acct-msg","bad","The two passwords are not the same."," Retype them.");return;}
+  } else if(!pw){acctMsg("acct-msg","bad","Enter your password.","");return;}
+  var btn=document.getElementById(up?"su-go":"si-go");btn.disabled=true;
+  acctMsg("acct-msg","work",up?"Creating your account…":"Signing you in…","");
+  (up?doSignUp(em,pw):doSignIn(em,pw)).then(function(r){
+    if(up&&r&&r.signedIn===false){
+      acctMsg("acct-msg","ok","Account created. Now confirm your email.",
+        " A link has been sent to "+em+". Open it, then come back and sign in.");
+      return;
+    }
+    acctMsg("acct-msg",null);paintAccount();showPanel("p-account");
+    return pullTerm().then(reconcile).then(function(){
+      if(!MERGE_ROW)acctMsg("acct-msg2","ok","Signed in.",
+        " Your term saves to this account from now on.");
+    });
+  })["catch"](function(err){
+    acctMsg("acct-msg","bad",up?"Could not create that account.":"Could not sign you in."," "+(err.message||""));
+  }).then(function(){btn.disabled=false;});
+});
 document.addEventListener("change",function(e){
   var t=e.target,x;
   if(t.id==="m-jump"){goMonth(t.value);return;}
@@ -1618,6 +2317,236 @@ document.addEventListener("input",function(e){if(e.target.id==="paste")updateCou
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"&&!document.getElementById("sheet").hidden)closeSheet();
 });
+
+/* ===================== accounts: auth =====================
+   Plain REST against Supabase — no SDK, because this page is one file and the
+   artifact blocks most external scripts anyway. */
+var SESS=null;                                  /* {access_token,refresh_token,expires_at,user} */
+var SYNC={timer:null,busy:false,applying:false,last:null,err:null};
+
+function sbOn(){return !!(SB.url&&SB.key);}
+function sbURL(p){return SB.url.replace(/\/+$/,"")+p;}
+function sbHeaders(auth){
+  var h={"apikey":SB.key,"Content-Type":"application/json"};
+  if(auth&&SESS&&SESS.access_token)h["Authorization"]="Bearer "+SESS.access_token;
+  return h;
+}
+/* Supabase spreads its error text over four different field names */
+function sbErr(d,res){
+  var m=d&&(d.error_description||d.msg||d.message||d.error||(d.errors&&d.errors[0]&&d.errors[0].message));
+  m=String(m||("Something went wrong"+(res?" ("+res.status+")":"")));
+  if(/invalid login credentials/i.test(m))return "That email and password do not match. Check both, or use “Forgotten your password?”.";
+  if(/already registered|already been registered|user already/i.test(m))return "There is already an account with that email. Sign in instead, or reset the password.";
+  if(/password should be at least|weak.?password/i.test(m))return "That password is too short. Use at least 8 characters.";
+  if(/unable to validate email|invalid.*email|email.*invalid/i.test(m))return "That does not look like a working email address.";
+  if(/email not confirmed/i.test(m))return "That account has not been confirmed yet. Check your inbox for the confirmation link.";
+  if(/rate limit|too many/i.test(m))return "Too many attempts just now. Wait a minute and try again.";
+  if(/signups? not allowed|disabled/i.test(m))return "New accounts are not being accepted at the moment.";
+  return m;
+}
+function sbFetch(path,opts,auth){
+  opts=opts||{};opts.headers=Object.assign(sbHeaders(auth),opts.headers||{});
+  return fetch(sbURL(path),opts).then(function(res){
+    return res.text().then(function(t){
+      var d=null;try{d=t?JSON.parse(t):null;}catch(e){}
+      if(!res.ok){var e2=new Error(sbErr(d,res));e2.status=res.status;throw e2;}
+      return d;
+    });
+  });
+}
+function saveSession(d){
+  if(!d||!d.access_token){SESS=null;try{localStorage.removeItem(SESS_KEY);}catch(e){}return;}
+  SESS={access_token:d.access_token,refresh_token:d.refresh_token,
+        expires_at:Date.now()+((d.expires_in||3600)*1000)-30000,
+        user:{id:d.user&&d.user.id,email:d.user&&d.user.email,created_at:d.user&&d.user.created_at}};
+  try{localStorage.setItem(SESS_KEY,JSON.stringify(SESS));}catch(e){}
+}
+function restoreSession(){
+  try{var raw=localStorage.getItem(SESS_KEY);if(raw){var p=JSON.parse(raw);if(p&&p.access_token)SESS=p;}}catch(e){}
+}
+/* a token lasts an hour; swap it before any call that needs it */
+function withToken(){
+  if(!SESS)return Promise.reject(new Error("Not signed in."));
+  if(SESS.expires_at&&Date.now()<SESS.expires_at)return Promise.resolve();
+  if(!SESS.refresh_token){signOutLocal();return Promise.reject(new Error("Your session has expired. Sign in again."));}
+  return sbFetch("/auth/v1/token?grant_type=refresh_token",
+      {method:"POST",body:JSON.stringify({refresh_token:SESS.refresh_token})},false)
+    .then(function(d){saveSession(d);})
+    ["catch"](function(){signOutLocal();paintAccount();throw new Error("Your session has expired. Sign in again.");});
+}
+function signOutLocal(){SESS=null;try{localStorage.removeItem(SESS_KEY);}catch(e){}SYNC.last=null;SYNC.err=null;}
+
+function doSignUp(email,pass){
+  return sbFetch("/auth/v1/signup",{method:"POST",body:JSON.stringify({email:email,password:pass})},false)
+    .then(function(d){
+      if(d&&d.access_token){saveSession(d);return {signedIn:true};}
+      return {signedIn:false,email:email};   /* confirmation is switched on */
+    });
+}
+function doSignIn(email,pass){
+  return sbFetch("/auth/v1/token?grant_type=password",
+    {method:"POST",body:JSON.stringify({email:email,password:pass})},false)
+    .then(function(d){saveSession(d);return d;});
+}
+function doRecover(email){
+  return sbFetch("/auth/v1/recover",{method:"POST",
+    body:JSON.stringify({email:email,redirect_to:location.origin+location.pathname})},false);
+}
+
+/* ===================== accounts: sync ===================== */
+function termPayload(){
+  return {courses:S.courses||[],items:S.items||[],done:S.done||{},version:S.version||1,
+          theme:(document.documentElement.getAttribute("data-theme")||"light")};
+}
+function realCourses(st){return (st&&st.courses&&!st.demo)?st.courses.length:0;}
+
+function pushTerm(){
+  if(!sbOn()||!SESS||SYNC.applying)return Promise.resolve();
+  if(S.demo)return Promise.resolve();          /* the demo term is nobody's data */
+  SYNC.busy=true;SYNC.err=null;paintSync();
+  return withToken().then(function(){
+    return sbFetch("/rest/v1/"+SB_TABLE,{method:"POST",
+      headers:{"Prefer":"resolution=merge-duplicates,return=minimal"},
+      body:JSON.stringify([{user_id:SESS.user.id,payload:termPayload(),app_version:BUILD.v}])},true);
+  }).then(function(){SYNC.last=Date.now();})
+   ["catch"](function(e){SYNC.err=e.message||"Could not save to your account.";})
+   .then(function(){SYNC.busy=false;paintSync();});
+}
+function syncSoon(){
+  if(!sbOn()||!SESS||SYNC.applying||S.demo)return;
+  clearTimeout(SYNC.timer);
+  SYNC.timer=setTimeout(pushTerm,2500);
+}
+function pullTerm(){
+  return withToken().then(function(){
+    return sbFetch("/rest/v1/"+SB_TABLE+"?select=payload,updated_at&user_id=eq."+
+      encodeURIComponent(SESS.user.id),{method:"GET"},true);
+  }).then(function(rows){return (rows&&rows[0])||null;});
+}
+function adoptCloud(row){
+  SYNC.applying=true;
+  var p=row.payload||{};
+  S={courses:p.courses||[],items:p.items||[],done:p.done||{},version:p.version||1};
+  try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+  if(p.theme==="dark"||p.theme==="light"){
+    document.documentElement.setAttribute("data-theme",p.theme);
+    try{localStorage.setItem("sd.theme",p.theme);}catch(e){}
+  }
+  resetPalette();renderAll();
+  SYNC.applying=false;SYNC.last=Date.now();paintSync();
+}
+/* Sign-in is the one moment two real copies can exist. Never pick for them. */
+function reconcile(row){
+  var mine=realCourses(S), theirs=row?(row.payload&&row.payload.courses||[]).length:0;
+  if(!row||!theirs){ if(mine)return pushTerm(); return Promise.resolve(); }
+  if(!mine){ adoptCloud(row); return Promise.resolve(); }
+  sheetMerge(row,mine,theirs);
+  return Promise.resolve();
+}
+function sheetMerge(row,mine,theirs){
+  var when=row.updated_at?fmtDay(new Date(row.updated_at))+", "+new Date(row.updated_at).getFullYear():"an earlier session";
+  SHEET_BACK=null;
+  document.getElementById("sheet-head").innerHTML=
+    '<div style="min-width:0"><div class="code" style="--c:var(--warn)">Two copies</div>'
+    +'<h3 id="sheet-title">Which term should this be?</h3>'
+    +'<div class="when">Nothing is changed until you choose</div></div>';
+  document.getElementById("sheet-body").innerHTML=
+    '<p style="margin:0 0 14px;font-size:.9rem;color:var(--ink-2)">This device already has a term on it, and '
+    +'your account has one saved. They are not the same, so keeping one means losing the other.</p>'
+    +'<dl><dt>On this device</dt><dd>'+mine+' course'+(mine===1?"":"s")+', as you left it here</dd>'
+    +'<dt>In your account</dt><dd>'+theirs+' course'+(theirs===1?"":"s")+', saved '+esc(when)+'</dd></dl>'
+    +'<p class="note">If you are not sure, take the account copy — the one on this device is still exportable '
+    +'from the Export tab first if you close this and go there.</p>';
+  document.getElementById("sheet-foot").innerHTML=
+    '<button class="btn sm" data-merge="local">Keep this device’s</button>'
+    +'<span class="spacer" style="flex:1"></span>'
+    +'<button class="btn sm primary" data-merge="cloud">Use my account’s</button>';
+  openSheet();
+  MERGE_ROW=row;
+}
+var MERGE_ROW=null;
+
+/* ===================== accounts: painting ===================== */
+function paintSync(){
+  var n=document.getElementById("acct-note");if(!n)return;
+  if(!SESS){n.textContent=sbOn()?"optional":"";return;}
+  var cls=SYNC.err?"err":SYNC.busy?"busy":"on";
+  var txt=SYNC.err?"not saved":SYNC.busy?"saving…":(SYNC.last?"saved":"ready");
+  n.innerHTML='<span class="syncdot '+cls+'"><i></i>'+esc(txt)+'</span>';
+  var m=document.getElementById("acct-msg2");
+  if(m)m.innerHTML=SYNC.err?'<div class="msg bad"><b>Your last change did not reach your account.</b>'
+    +esc(SYNC.err)+' It is still safe in this browser. Press <b>Save my term now</b> to try again.</div>':"";
+}
+function paintAccount(){
+  var tab=document.getElementById("accounttab");if(!tab)return;
+  tab.classList.toggle("hide",!sbOn());
+  var out=document.getElementById("acct-out"),inn=document.getElementById("acct-in");
+  if(!out||!inn)return;
+  var on=!!SESS;
+  out.classList.toggle("hide",on);
+  inn.classList.toggle("hide",!on);
+  tab.textContent=on?"Account ✓":"Account";
+  if(on){
+    document.getElementById("acct-email").textContent=SESS.user.email||"";
+    var made=SESS.user.created_at?new Date(SESS.user.created_at):null;
+    document.getElementById("acct-since").textContent=
+      (made&&!isNaN(made)?"Member since "+fmtDay(made)+", "+made.getFullYear():"")
+      +" · your term saves automatically";
+  }
+  paintSync();paintOwnerUsers();
+}
+function acctMsg(where,kind,head,body){
+  var el=document.getElementById(where);if(!el)return;
+  if(!kind){el.innerHTML="";return;}
+  el.innerHTML='<div class="msg '+kind+'"><b>'+esc(head)+'</b>'+(body?esc(body):"")+'</div>';
+}
+
+/* ===================== accounts: who is using this ===================== */
+function ownerIsSignedIn(){return !!(SESS&&SESS.user&&SESS.user.email);}
+function paintOwnerUsers(){
+  var box=document.getElementById("owner-users");if(!box)return;
+  box.classList.toggle("hide",!(sbOn()&&isOwner()&&ownerIsSignedIn()));
+}
+function loadOwnerStats(){
+  var body=document.getElementById("stats-body");if(!body)return;
+  body.innerHTML='<div class="working"><span class="spin"></span><span>Asking the server…</span></div>';
+  withToken().then(function(){
+    return sbFetch("/rest/v1/rpc/sd_owner_stats",{method:"POST",body:"{}"},true);
+  }).then(function(d){
+    if(!d){body.innerHTML='<p class="hint">No answer.</p>';return;}
+    var rows=(d.people||[]).map(function(p){
+      return '<tr><td class="em">'+esc(p.email||"")+'</td>'
+        +'<td class="n">'+esc(shortDate(p.created_at))+'</td>'
+        +'<td class="n">'+esc(shortDate(p.last_sign_in_at)||"never")+'</td>'
+        +'<td class="n">'+(p.courses||0)+'</td>'
+        +'<td class="n">'+esc(shortDate(p.last_saved)||"—")+'</td></tr>';
+    }).join("")||'<tr><td colspan="5" style="color:var(--ink-3)">Nobody has signed up yet.</td></tr>';
+    body.innerHTML=
+      '<div class="statgrid">'
+      +'<div class="s"><b>'+(d.users||0)+'</b><span>accounts</span></div>'
+      +'<div class="s"><b>'+(d.with_a_term||0)+'</b><span>have added a course</span></div>'
+      +'<div class="s"><b>'+(d.new_7d||0)+'</b><span>new this week</span></div>'
+      +'<div class="s"><b>'+(d.active_7d||0)+'</b><span>signed in this week</span></div>'
+      +'</div>'
+      +'<div class="userwrap"><table class="users"><thead><tr><th>Email</th><th>Joined</th>'
+      +'<th>Last seen</th><th>Courses</th><th>Last saved</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+      +'<p class="hint" style="margin-top:12px">Read straight from the database as you. Passwords are not in '
+      +'this list and cannot be — only a one-way hash of them is stored, which nobody can reverse.</p>';
+  })["catch"](function(e){
+    var m=String(e.message||"");
+    /* the database refusing a non-owner is the expected case, not a fault — say that
+       instead of pasting the raw Postgres message next to a sentence of our own */
+    var human=/restricted to the owner|permission denied|not permitted/i.test(m)
+      ? "This list only opens for the owner account. Go to the Account tab and sign in with the owner email, then come back."
+      : m+" ";
+    body.innerHTML='<div class="msg bad"><b>Could not load it.</b>'+esc(human)+'</div>';
+  });
+}
+function shortDate(iso){
+  if(!iso)return "";var d=new Date(iso);if(isNaN(d))return "";
+  return MON[d.getMonth()].slice(0,3)+" "+d.getDate()+", "+d.getFullYear();
+}
+
 /* ===================== new-version check =====================
    The app is one static file, so "is there an update" is just: has the file on the
    server changed since this tab loaded. Cheap HEAD first, then confirm by reading the
@@ -1737,9 +2666,18 @@ var TOAST_ACT=null,TOAST_TIMER=null;
 /* ---------- what changed ----------
    Rendered into the same pop-out sheet the calendar uses, so there is one dialog in the
    page and one way to close it. `from` narrows the list to the releases you missed. */
+function whatsNewRows(){
+  /* an entry for a feature that is switched off in this build would be a lie */
+  return WHATS_NEW.filter(function(r){
+    if(r.length<3)return true;
+    if(r[1]==="accounts")return sbOn();
+    return true;
+  }).map(function(r){return r.length<3?r:[r[0],r[2]];});
+}
 function sheetWhatsNew(from){
-  var rows=from?WHATS_NEW.filter(function(r){return newerThan(r[0],from);}):WHATS_NEW;
-  if(!rows.length)rows=WHATS_NEW.slice(0,1);
+  var all=whatsNewRows();
+  var rows=from?all.filter(function(r){return newerThan(r[0],from);}):all;
+  if(!rows.length)rows=all.slice(0,1);
   SHEET_BACK=null;
   document.getElementById("sheet-head").innerHTML=
     '<div style="min-width:0"><div class="code" style="--c:var(--accent-deep)">'
@@ -1985,6 +2923,7 @@ function paintOwner(){
   var n=document.getElementById("owner-note"); if(n)n.textContent="JohnsonXCorp · v"+BUILD.v;
   var ob=document.getElementById("owner-build"); if(ob)ob.textContent="v"+BUILD.v+" · "+BUILD.date;
   var ou=document.getElementById("owner-who"); if(ou)ou.textContent=on?"signed in":"signed out";
+  paintOwnerUsers();
 }
 function askOwner(){
   if(isOwner()){showPanel("p-owner");window.scrollTo({top:0,behavior:"smooth"});return;}
@@ -2005,11 +2944,15 @@ _bs.textContent="· v"+BUILD.v+" · "+BUILD.date;
 _bs.title="What changed in this version";
 document.getElementById("r-year").textContent=BUILD.year;
 Array.prototype.forEach.call(document.querySelectorAll(".r-year"),function(el){el.textContent=BUILD.year;});
-load();paintOwner();
+load();restoreSession();paintOwner();
 if(!S.courses.length){ loadSample(true); }   /* first visit: show a worked example, not an empty shell */
 renderAll();sizeTopbar();scheduleUpdateChecks();noteUpdated();
+paintAccount();
+/* signed in from a previous visit: bring the account copy down before they touch anything */
+if(sbOn()&&SESS){pullTerm().then(reconcile)["catch"](function(){});}
 if(window.claude&&window.claude.use){
-  window.claude.use("sample").then(function(x){sampleFn=x;}).catch(function(){});
+  SAMPLE_PROBE=window.claude.use("sample").then(function(x){sampleFn=x;return x;})
+    ["catch"](function(){sampleFn=null;return null;});
   window.claude.use("downloads").then(function(x){
     downloadsFn=x;
     if(!x)["exp-csv","exp-ics","exp-json"].forEach(function(id){var b=document.getElementById(id);if(b)b.disabled=true;});
