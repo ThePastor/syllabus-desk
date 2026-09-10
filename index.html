@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v1.8  (10 September 2026)
+  Syllabus Desk  v1.9  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -132,7 +132,8 @@ a{color:var(--accent-deep)}
   .topbar-in{flex-wrap:wrap;align-items:center;padding-top:9px;padding-bottom:9px;min-height:0}
   .brand{border-right:0;margin-right:0;padding-right:0;flex:1 1 auto;min-width:0}
   .brand .wm{font-size:1rem;overflow:hidden;text-overflow:ellipsis}
-  .topacts{order:2;border-left:0;margin-left:0;padding-left:0;flex:0 0 auto;gap:6px}
+  .topacts{order:2;border-left:0;margin-left:0;padding-left:0;flex:1 1 100%;gap:6px;
+    flex-wrap:wrap;justify-content:flex-start;margin-top:8px}
   .topacts .btn{padding:7px 10px;font-size:.6rem}
   .tabs{order:3;flex:1 0 100%;margin-top:9px;border-top:1px solid var(--line-soft);
     -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
@@ -454,27 +455,67 @@ table.rev tr.missing td{background:var(--warn-soft)}
   background:var(--warn);color:var(--warn-ink);padding:3px 8px}
 .demobar p{margin:0;font-size:.86rem;color:var(--ink-2);flex:1 1 320px}
 .demobar .acts{display:flex;gap:8px;flex-wrap:wrap}
-/* ---- update toast ---- */
-.uptoast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:70;
+/* ---- the update prompt ----
+   A toast that fades is not a way to tell somebody the page has changed, and a bare icon is not
+   either. This is a card that stays until it is answered, and answering it is the only thing that
+   refreshes — nothing rearranges itself under you mid-edit. Above the page, below the sheet. */
+.update-pop{position:fixed;z-index:40;left:50%;bottom:max(16px,env(safe-area-inset-bottom));
+  transform:translate(-50%,16px);opacity:0;transition:transform .22s ease,opacity .22s ease;
+  width:min(520px,calc(100vw - 24px));
+  display:grid;gap:14px;padding:var(--band) var(--gut-in);
+  background:var(--surface);color:var(--ink);border:1px solid var(--line);
+  border-top:var(--accent-bar) solid var(--accent);box-shadow:var(--shadow)}
+.update-pop.show{transform:translate(-50%,0);opacity:1}
+.update-pop .up-body{display:grid;gap:6px}
+.update-pop .label{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent-deep)}
+.update-pop strong{font-family:var(--font-display);font-size:1.08rem;font-weight:600;
+  letter-spacing:-.02em;line-height:1.3}
+.update-pop p{margin:0;color:var(--ink-2);line-height:1.5;font-size:.85rem}
+.update-pop p.risk{color:var(--warn);font-weight:500}
+.update-pop .up-acts{display:flex;gap:8px;flex-wrap:wrap}
+.update-pop .up-acts .btn{flex:1 1 auto;justify-content:center;min-height:44px}
+.update-pop .up-acts .btn.ghost{border-color:var(--line-soft);color:var(--ink-2)}
+@media(max-width:480px){.update-pop .up-acts .btn{flex:1 1 100%}}
+@media (prefers-reduced-motion:reduce){.update-pop{transition:none}}
+@media print{.update-pop{display:none!important}}
+
+/* the refresh toggle that stays in the top bar after "Not now" */
+.btn.upbtn{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);gap:7px}
+.btn.upbtn:hover{background:var(--accent-deep);border-color:var(--accent-deep)}
+.btn.upbtn svg{width:13px;height:13px;flex:0 0 auto}
+@media(max-width:430px){
+  .btn.upbtn{padding:7px 9px}
+  .btn.upbtn .lbl{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+    clip:rect(0 0 0 0);white-space:nowrap;border:0}
+}
+
+/* what changed, since the version you were on */
+.wn-list{display:grid;gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);
+  margin:0;padding:0;list-style:none}
+.wn-list li{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:baseline;
+  padding:12px 14px;background:var(--surface);font-size:.88rem;line-height:1.5;color:var(--ink-2)}
+.wn-list li.now{background:var(--accent-soft)}
+.wn-list li b{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;
+  color:var(--accent-deep);font-weight:500}
+.wn-list li.now b{color:var(--ink)}
+.wn-list li.now span{color:var(--ink)}
+@media(max-width:480px){.wn-list li{grid-template-columns:1fr;gap:3px}}
+
+/* the small note after a refresh lands */
+.sdtoast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,14px);opacity:0;z-index:38;
+  transition:transform .2s ease,opacity .2s ease;
   display:flex;align-items:center;gap:14px;flex-wrap:wrap;
   background:var(--inverse);color:var(--inverse-ink);border:1px solid var(--line);
-  box-shadow:var(--shadow);padding:13px 16px;max-width:min(560px,calc(100vw - 24px));
-  animation:uprise .22s ease-out}
-@keyframes uprise{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
-.uptoast .dot{width:8px;height:8px;background:var(--mint);flex:0 0 auto;border-radius:50%}
-.uptoast .msg{font-size:.86rem;line-height:1.35;flex:1 1 220px;min-width:0}
-.uptoast .msg b{color:var(--inverse-ink)}
-.uptoast .msg .sub{display:block;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.05em;
-  color:var(--inverse-ink-2);margin-top:4px}
-.uptoast .acts{display:flex;gap:7px;flex:0 0 auto}
-.uptoast .btn{border-color:var(--inverse-ink-2);background:transparent;color:var(--inverse-ink)}
-.uptoast .btn:hover{background:rgba(255,255,255,.12)}
-.uptoast .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.uptoast .btn.primary:hover{background:var(--accent-deep);border-color:var(--accent-deep)}
-@media(max-width:560px){.uptoast{left:12px;right:12px;bottom:12px;transform:none;max-width:none}
-  @keyframes uprise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-  .uptoast .acts{flex:1 1 100%}.uptoast .acts .btn{flex:1}}
-@media (prefers-reduced-motion:reduce){.uptoast{animation:none}}
+  box-shadow:var(--shadow);padding:12px 15px;max-width:min(520px,calc(100vw - 24px))}
+.sdtoast.show{transform:translate(-50%,0);opacity:1}
+.sdtoast .msg{font-size:.86rem;line-height:1.35;flex:1 1 auto;min-width:0}
+.sdtoast .btn{border-color:var(--inverse-ink-2);background:transparent;color:var(--inverse-ink);
+  flex:0 0 auto}
+.sdtoast .btn:hover{background:rgba(255,255,255,.12)}
+@media(max-width:560px){.sdtoast{left:12px;right:12px;transform:translateY(14px);max-width:none}
+  .sdtoast.show{transform:none}}
+@media (prefers-reduced-motion:reduce){.sdtoast{transition:none}}
 .hide{display:none!important}
 </style>
 </head>
@@ -845,7 +886,25 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"1.8",date:"10 September 2026",year:2026};
+var BUILD={v:"1.9",date:"10 September 2026",year:2026};
+/* What each version changed, newest first. Kept in the page rather than in a file on a code
+   host, because the person who wants it is the one who just watched the page refresh itself.
+   Trim the tail past a dozen; nobody reads further back than that. */
+var WHATS_NEW=[
+  ["1.9","An update that asks first. When a new version goes up, a card explains what is waiting and refreshes only when you say so \u2014 and this list tells you what moved."],
+  ["1.8","The page notices when a new version has been published, instead of leaving you on an old one until you happen to reload."],
+  ["1.7","Text that was invisible in light mode on a computer set to dark. Every button now takes its colour from the page rather than from the operating system."],
+  ["1.6","Course colours that stay readable. Each course now gets a text shade and a fill shade derived from its colour and checked against the background, rather than one hex doing both jobs badly."],
+  ["1.5","The calendar rebuilt: months stacked one below another with a picker that follows your scrolling, and a pop-out showing the full detail of any day or event."],
+  ["1.4","The Syllabus Desk mark \u2014 on the page, on the browser tab, and on the card that appears when you share the link."],
+  ["1.3","A guide explaining what this is and how to use it, on a button in the top bar. Light is now the default look."],
+  ["1.2","A username and password on the owner page, and an example term that rebuilds itself around the current week so a first visit is never an empty shell."],
+  ["1.1","The example term became wholly invented courses, so no real instructor\u2019s name ships in the public page."],
+  ["1.0","First release: course outlines in, one calendar out, with Google and Apple calendar exports."]
+];
+function verNum(v){return String(v).split(".").map(Number);}
+function newerThan(a,b){var x=verNum(a),y=verNum(b);
+  for(var i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0);}return false;}
 /* ===================== helpers ===================== */
 var TODAY=new Date(); TODAY.setHours(0,0,0,0);
 var DOWN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -1455,9 +1514,16 @@ document.addEventListener("click",function(e){
     return;
   }
   if(t.closest("#rightslink")){e.preventDefault();showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
-  if(t.closest("#buildstamp")){showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
-  if(t.closest("[data-up-reload]")){location.reload();return;}
-  if(t.closest("[data-up-later]")){var u=document.getElementById("uptoast");if(u)u.remove();return;}
+  if(t.closest("#buildstamp")){sheetWhatsNew(null);return;}
+  if(t.closest('[data-act="update"]')){applyUpdate();return;}
+  if(t.closest('[data-act="update-later"]')){
+    dismissUpdatePop();showUpdateBtn();
+    sdToast("Left as it is. The Update button in the top bar takes it whenever you are ready.");
+    return;
+  }
+  if(t.closest("[data-toast-act]")){var f=TOAST_ACT;var e1=document.getElementById("sdtoast");
+    if(e1)e1.remove();if(f)f();return;}
+  if(t.closest("[data-toast-close]")){var e2=document.getElementById("sdtoast");if(e2)e2.remove();return;}
   if(t.closest("#guidebtn")||t.closest("#guidebtn2")||t.closest("#guidebtn3")){toggleGuide();return;}
   if(t.closest("#home-close")){showPanel(LAST_PANEL);window.scrollTo({top:0,behavior:"smooth"});return;}
   if(t.closest("#addbtn")||t.closest("#start1")||t.closest("#demo-add")||t.closest("#home-add")){openAdd();return;}
@@ -1553,14 +1619,17 @@ document.addEventListener("keydown",function(e){
   if(e.key==="Escape"&&!document.getElementById("sheet").hidden)closeSheet();
 });
 /* ===================== new-version check =====================
-   The app is one static file, so "is there an update" is just: has the file
-   on the server changed since this tab loaded. Cheap HEAD first, then confirm
-   by reading the BUILD stamp so a changed ETag alone never nags. */
-var UP={marker:null,busy:false,shown:false};
+   The app is one static file, so "is there an update" is just: has the file on the
+   server changed since this tab loaded. Cheap HEAD first, then confirm by reading the
+   BUILD stamp out of the new copy, so a changed ETag alone never nags.
+   Inert on file://, and effectively inert inside the Claude artifact, where the fetch
+   returns the host shell rather than a versioned file — the stamp check makes that a
+   silent no-op instead of a wrong prompt. */
+var UP={marker:null,busy:false,found:null};
 function upMarker(res){return (res.headers.get("etag")||"")+"|"+(res.headers.get("last-modified")||"");}
 function selfURL(){return location.pathname+"?_v="+Date.now();}
 function checkForUpdate(first){
-  if(location.protocol==="file:"||UP.busy||UP.shown)return;
+  if(location.protocol==="file:"||UP.busy||UP.found)return;
   UP.busy=true;
   fetch(selfURL(),{method:"HEAD",cache:"no-store"}).then(function(res){
     var m=upMarker(res);
@@ -1570,22 +1639,13 @@ function checkForUpdate(first){
   }).then(function(txt){
     if(!txt)return;
     var mm=txt.match(/var BUILD=\{v:"([^"]+)",date:"([^"]+)"/);
-    if(mm&&mm[1]&&mm[1]!==BUILD.v){UP.shown=true;showUpdate(mm[1],mm[2]);}
-    else UP.marker=null;   /* re-baseline: content is the same after all */
-  }).catch(function(){}).then(function(){UP.busy=false;});
-}
-function showUpdate(v,date){
-  if(document.getElementById("uptoast"))return;
-  var risky=!!PENDING;
-  var el=document.createElement("div");
-  el.className="uptoast";el.id="uptoast";
-  el.setAttribute("role","status");el.setAttribute("aria-live","polite");
-  el.innerHTML='<span class="dot"></span><span class="msg"><b>Syllabus Desk v'+esc(v)+' is ready.</b>'
-    +'<span class="sub">'+(risky?"Reloading will discard the course you are reviewing"
-      :"Your saved term is not affected \u00b7 "+esc(date))+'</span></span>'
-    +'<span class="acts"><button class="btn sm" data-up-later>Later</button>'
-    +'<button class="btn sm primary" data-up-reload>Reload</button></span>';
-  document.body.appendChild(el);
+    if(mm&&mm[1]&&mm[1]!==BUILD.v){
+      UP.found={v:mm[1],date:mm[2]};
+      showUpdatePop();     /* the card is the ask */
+      showUpdateBtn();     /* the top bar is what you can still find after "Not now" */
+    } else UP.marker=null; /* re-baseline: the content is the same after all */
+  })["catch"](function(){})
+   .then(function(){UP.busy=false;});
 }
 /* check when the tab comes back, and every few minutes while it is visible */
 function scheduleUpdateChecks(){
@@ -1593,6 +1653,112 @@ function scheduleUpdateChecks(){
   checkForUpdate(true);
   setInterval(function(){if(!document.hidden)checkForUpdate(false);},5*60*1000);
   document.addEventListener("visibilitychange",function(){if(!document.hidden)checkForUpdate(false);});
+  window.addEventListener("pageshow",function(e){if(e.persisted)checkForUpdate(false);});
+  window.addEventListener("focus",function(){checkForUpdate(false);});
+  window.addEventListener("online",function(){checkForUpdate(false);});
+}
+
+/* ---------- the prompt ----------
+   It stays until it is answered, and answering it is the only thing that refreshes. */
+function showUpdatePop(){
+  if(document.getElementById("update-pop")||!UP.found)return;
+  var risky=!!PENDING;
+  var d=document.createElement("div");
+  d.id="update-pop";d.className="update-pop";
+  d.setAttribute("role","region");
+  d.setAttribute("aria-label","A newer version is ready");
+  d.innerHTML='<div class="up-body">'
+    +'<span class="label">Update ready</span>'
+    +'<strong>Syllabus Desk v'+esc(UP.found.v)+' has been published.</strong>'
+    +'<p>Refreshing takes a second. Your courses, dates and ticks are kept in this browser, '
+    +'not in the page — nothing is lost.</p>'
+    +(risky?'<p class="risk">You are part-way through reviewing a course. Refreshing now would '
+      +'discard it — save it first, or choose Not now.</p>':'')
+    +'</div>'
+    +'<div class="up-acts">'
+    +'<button type="button" class="btn sm primary" data-act="update">Refresh now <span class="arw">&rarr;</span></button>'
+    +'<button type="button" class="btn sm ghost" data-act="update-later">Not now</button>'
+    +'</div>';
+  document.body.appendChild(d);
+  requestAnimationFrame(function(){d.classList.add("show");});
+}
+function dismissUpdatePop(){
+  var d=document.getElementById("update-pop");
+  if(d)d.remove();
+}
+/* the refresh toggle: once an update is waiting it lives in the top bar until it is taken */
+function updateBtnHTML(){
+  return '<button type="button" class="btn sm upbtn" data-act="update" '
+    +'title="A newer version of Syllabus Desk is ready" aria-label="Refresh to the newer version">'
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+    +'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
+    +'<path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 3.5V8h-4.5"/></svg>'
+    +'<span class="lbl">Update</span></button>';
+}
+function showUpdateBtn(){
+  var cell=document.querySelector(".topacts");
+  if(cell&&!cell.querySelector('[data-act="update"]')){
+    cell.insertAdjacentHTML("afterbegin",updateBtnHTML());
+    sizeTopbar();
+  }
+}
+/* leave a note for the page that comes back, so it can say what it landed on */
+function applyUpdate(){
+  try{sessionStorage.setItem("sd:from",BUILD.v);}catch(e){}
+  dismissUpdatePop();
+  location.reload();
+}
+/* After the reload: say what it landed on, and offer the list. Without this an update is
+   a flicker and a version number nobody was watching. */
+function noteUpdated(){
+  var from=null;
+  try{from=sessionStorage.getItem("sd:from");sessionStorage.removeItem("sd:from");}catch(e){return;}
+  if(!from||from===BUILD.v)return;
+  setTimeout(function(){
+    sdToast("Updated to v"+BUILD.v+".","What changed",function(){sheetWhatsNew(from);});
+  },700);
+}
+function sdToast(msg,label,fn){
+  var old=document.getElementById("sdtoast");if(old)old.remove();
+  var t=document.createElement("div");
+  t.id="sdtoast";t.className="sdtoast";
+  t.setAttribute("role","status");t.setAttribute("aria-live","polite");
+  t.innerHTML='<span class="msg">'+esc(msg)+'</span>'
+    +(label?'<button type="button" class="btn sm" data-toast-act>'+esc(label)+'</button>':'')
+    +'<button type="button" class="btn sm" data-toast-close aria-label="Dismiss">&times;</button>';
+  document.body.appendChild(t);
+  requestAnimationFrame(function(){t.classList.add("show");});
+  TOAST_ACT=fn||null;
+  clearTimeout(TOAST_TIMER);
+  TOAST_TIMER=setTimeout(function(){var e=document.getElementById("sdtoast");if(e)e.remove();},14000);
+}
+var TOAST_ACT=null,TOAST_TIMER=null;
+
+/* ---------- what changed ----------
+   Rendered into the same pop-out sheet the calendar uses, so there is one dialog in the
+   page and one way to close it. `from` narrows the list to the releases you missed. */
+function sheetWhatsNew(from){
+  var rows=from?WHATS_NEW.filter(function(r){return newerThan(r[0],from);}):WHATS_NEW;
+  if(!rows.length)rows=WHATS_NEW.slice(0,1);
+  SHEET_BACK=null;
+  document.getElementById("sheet-head").innerHTML=
+    '<div style="min-width:0"><div class="code" style="--c:var(--accent-deep)">'
+    +(from?"You were on v"+esc(from):"Version history")+'</div>'
+    +'<h3 id="sheet-title">What changed</h3>'
+    +'<div class="when">'+(from
+      ? (rows.length===1?"One release":rows.length+" releases")+" since the copy you had"
+      : "Newest first")+'</div></div>'
+    +'<button class="x" data-close aria-label="Close">&times;</button>';
+  document.getElementById("sheet-body").innerHTML=
+    '<ol class="wn-list">'+rows.map(function(r){
+      return '<li'+(r[0]===BUILD.v?' class="now"':'')+'><b>v'+esc(r[0])+'</b><span>'+r[1]+'</span></li>';
+    }).join("")+'</ol>'
+    +'<p class="small" style="font-size:.78rem;color:var(--ink-3);margin:14px 0 0">You are on '
+    +'<b>v'+esc(BUILD.v)+'</b>, built '+esc(BUILD.date)+'. The version is always in the footer.</p>';
+  document.getElementById("sheet-foot").innerHTML=
+    '<span class="spacer" style="flex:1"></span>'
+    +'<button class="btn sm primary" data-close>Got it</button>';
+  openSheet();
 }
 /* the month bar sticks under the topbar, whatever height it wraps to */
 function sizeTopbar(){
@@ -1834,12 +2000,14 @@ function askOwner(){
 }
 
 /* ===================== boot ===================== */
-document.getElementById("buildstamp").textContent="· v"+BUILD.v+" · "+BUILD.date;
+var _bs=document.getElementById("buildstamp");
+_bs.textContent="· v"+BUILD.v+" · "+BUILD.date;
+_bs.title="What changed in this version";
 document.getElementById("r-year").textContent=BUILD.year;
 Array.prototype.forEach.call(document.querySelectorAll(".r-year"),function(el){el.textContent=BUILD.year;});
 load();paintOwner();
 if(!S.courses.length){ loadSample(true); }   /* first visit: show a worked example, not an empty shell */
-renderAll();sizeTopbar();scheduleUpdateChecks();
+renderAll();sizeTopbar();scheduleUpdateChecks();noteUpdated();
 if(window.claude&&window.claude.use){
   window.claude.use("sample").then(function(x){sampleFn=x;}).catch(function(){});
   window.claude.use("downloads").then(function(x){
