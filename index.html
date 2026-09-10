@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v1.6  (10 September 2026)
+  Syllabus Desk  v1.7  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -51,6 +51,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{
+  color-scheme:light;
   --bg:#F2F8F9; --surface:#FFFFFF; --surface-2:#E6F1F4; --surface-3:#D6E7EC;
   --ink:#0E2A3A; --ink-2:#3F5B69; --ink-3:#55707D;
   --line:#16405A; --line-soft:#C9DCE3;
@@ -72,6 +73,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
+    color-scheme:dark;
     --bg:#0C0C0D; --surface:#0C0C0D; --surface-2:#161618; --surface-3:#202024;
     --ink:#F4F4F2; --ink-2:#B5B5BB; --ink-3:#8B8B94; --line:#F4F4F2; --line-soft:#2C2C31;
     --accent:#5FD3DC; --accent-deep:#7FE2EA; --accent-soft:#10343A; --accent-ink:#0C0C0D;
@@ -87,6 +89,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
   }
 }
 :root[data-theme="dark"]{
+  color-scheme:dark;
   --bg:#0C0C0D; --surface:#0C0C0D; --surface-2:#161618; --surface-3:#202024;
   --ink:#F4F4F2; --ink-2:#B5B5BB; --ink-3:#8B8B94; --line:#F4F4F2; --line-soft:#2C2C31;
   --accent:#5FD3DC; --accent-deep:#7FE2EA; --accent-soft:#10343A; --accent-ink:#0C0C0D;
@@ -101,6 +104,8 @@ img{max-width:100%}[hidden]{display:none!important}</style>
   --shadow:0 24px 60px -30px rgba(0,0,0,.8);
 }
 *{box-sizing:border-box}
+/* system colours follow the OS, not our theme — never rely on them */
+button,input,select,textarea{color:inherit}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
 h1,h2,h3,h4{margin:0;font-family:var(--font-display);font-weight:600;text-wrap:balance}
 a{color:var(--accent-deep)}
@@ -306,8 +311,8 @@ input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:po
 .dayrow:hover{background:var(--surface-2)}
 .dayrow .rail{flex:0 0 3px;align-self:stretch;min-height:30px}
 .dayrow .body{min-width:0;flex:1}
-.dayrow .nm{font-size:.9rem;font-weight:500}
-.dayrow .sb{font-family:var(--font-mono);font-size:.62rem;color:var(--ink-3);margin-top:3px}
+.dayrow .nm{display:block;font-size:.9rem;font-weight:500;color:var(--ink)}
+.dayrow .sb{display:block;font-family:var(--font-mono);font-size:.62rem;color:var(--ink-2);margin-top:3px}
 .dayrow .go{color:var(--ink-3);font-size:1rem}
 .countdown{font-family:var(--font-mono);font-size:.72rem;font-weight:500;letter-spacing:.04em}
 @media(max-width:620px){
@@ -819,7 +824,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"1.6",date:"10 September 2026",year:2026};
+var BUILD={v:"1.7",date:"10 September 2026",year:2026};
 /* ===================== helpers ===================== */
 var TODAY=new Date(); TODAY.setHours(0,0,0,0);
 var DOWN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
