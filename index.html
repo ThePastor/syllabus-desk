@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v2.6  (10 September 2026)
+  Syllabus Desk  v2.7  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -1094,6 +1094,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
     <button class="tab" data-panel="p-export" aria-selected="false">Export</button>
     <button class="tab" id="accounttab" data-panel="p-account" aria-selected="false">Account</button>
     <button class="tab" data-panel="p-settings" aria-selected="false">Settings</button>
+    <button class="tab hide" id="ownertab" data-panel="p-owner" aria-selected="false">Owner</button>
   </nav>
   <div class="topacts">
     <button class="btn sm" id="themebtn" title="Switch light and dark" aria-label="Switch theme">Theme</button>
@@ -1496,15 +1497,26 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
       <div id="owner-gate">
         <div class="callout">
           <h4>Owner access</h4>
-          <p style="margin:0 0 12px">Tools for whoever runs this site. Nothing here changes what you see
-          as a student.</p>
+          <p style="margin:0 0 12px" id="owner-gate-p">Tools for whoever runs this site. Nothing here
+          changes what you see as a student. Signing in with the owner account opens it on its own.</p>
           <button class="btn sm" id="ownerbtn" title="Owner access">Unlock owner tools</button>
         </div>
       </div>
-      <div id="owner-zone" class="hide">
-      <div class="sec-head" style="margin-top:6px"><h2 style="font-size:1.15rem">Owner tools</h2><span class="note" id="owner-note"></span></div>
+    </section>
+  </div>
+
+
+  <div class="panel" id="p-owner">
+    <section>
+      <div class="sec-head"><h2>Owner</h2><span class="note" id="owner-note"></span></div>
       <p class="hint" style="margin:-8px 0 18px">Status: <b id="owner-who"></b></p>
-      <div class="exportgrid" style="margin-bottom:22px">
+<div id="owner-users" class="hide" style="margin-bottom:22px">
+        <div class="sec-head" style="margin-top:6px"><h2 style="font-size:1.15rem">Who is using this</h2>
+          <span class="note"><button class="btn ghost sm" id="stats-refresh">Refresh</button></span></div>
+        <div id="stats-body"><p class="hint">Loading…</p></div>
+      </div>
+      
+                  <div class="exportgrid" style="margin-bottom:22px">
         <div class="excard">
           <h4>My term</h4>
           <p>Load the real Fall 2026 schedule built from the TRU outlines and Moodle — five courses, every dated item, the study rhythm.</p>
@@ -1521,12 +1533,8 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           <button class="btn ghost" id="owner-signout">Sign out</button>
         </div>
       </div>
-      <div id="owner-users" class="hide" style="margin-bottom:22px">
-        <div class="sec-head" style="margin-top:6px"><h2 style="font-size:1.15rem">Who is using this</h2>
-          <span class="note"><button class="btn ghost sm" id="stats-refresh">Refresh</button></span></div>
-        <div id="stats-body"><p class="hint">Loading…</p></div>
-      </div>
-      <div class="prose">
+      
+<div class="prose">
         <h3>Project record</h3>
         <table class="assess" style="margin-bottom:20px"><tbody>
           <tr><td style="width:36%"><span class="name">Product</span></td><td>Syllabus Desk</td></tr>
@@ -1549,7 +1557,6 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         <p>Which means: treat everything shipped in this file — including the schedule behind <b>Load my schedule</b> — as public, because on a public web address it is.</p>
         <p class="small">To change the credentials: compute <span class="mono">sha256("username:password")</span>, replace <span class="mono">OWNER_HASH</span> in <span class="mono">src/body.html</span>, rebuild and republish.</p>
         <p>If you want a schedule that is genuinely private, keep it out of the build and bring it in through <b>Import</b> on the Export tab from a JSON file you hold yourself.</p>
-      </div>
       </div>
     </section>
   </div>
@@ -1625,11 +1632,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"2.6",date:"10 September 2026",year:2026};
+var BUILD={v:"2.7",date:"10 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["2.7","An Owner tab of its own, and it opens by itself. Sign in with the owner account and the tab appears in the row with the others, leading with who has signed up — no hunting inside Settings, and no second password after the server has already checked who you are."],
   ["2.6","Accounts are switched on. Make one with an email and a password and your courses, dates, ticks, study blocks and personal entries follow you to your phone and any other computer. It stays optional — everything on this page still works without one, exactly as before."],
   ["2.5","One first page that is both the welcome and your fortnight, with how to add a course and how to put it on your home screen right there. Times are now set with an explicit AM or PM instead of whatever your device decided, anything weekly can be every other week instead, and Owner has moved inside a new Settings tab \u2014 with Log in taking its place."],
   ["2.4","The rest of your life, on the same page as the coursework: shifts, training, family, appointments \u2014 weekly or one-off, each with its own icon, in your two weeks, your calendar and your export. Text everywhere is darker and the smallest labels are bigger, so nothing is a squint."],
@@ -2657,7 +2665,7 @@ function showPanel(id){
   document.querySelectorAll(".panel").forEach(function(p){p.classList.toggle("on",p.id===id);});
   document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-selected",b.dataset.panel===id?"true":"false");});
   /* the owner list is a live read, so fetch it when the panel is actually opened */
-  if(id==="p-settings"&&sbOn()&&isOwner()&&ownerIsSignedIn())setTimeout(loadOwnerStats,60);
+  if(id==="p-owner"&&sbOn()&&isOwner()&&ownerIsSignedIn())setTimeout(loadOwnerStats,60);
 }
 /* The guide used to be a panel of its own behind a toggle. It is part of the
    first page now, so "how it works" is a scroll, not a navigation. */
@@ -2832,7 +2840,7 @@ document.addEventListener("click",function(e){
   if(t.closest("#loadsample")||t.closest("#load-demo-term")){loadSample();return;}
   if(t.closest("#load-owner-term")){loadOwnerTerm();return;}
   if(t.closest("#ownerbtn")){askOwner();return;}
-  if(t.closest("#owner-signout")){setOwner(false);showPanel("p-settings");return;}
+  if(t.closest("#owner-signout")){setOwner(false);showPanel("p-settings");window.scrollTo({top:0,behavior:"smooth"});return;}
   if((x=t.closest("[data-f]"))){FILTER[x.dataset.f]=FILTER[x.dataset.f]?0:1;renderFilters();renderMonths();return;}
   if((x=t.closest("[data-day]"))&&!x.classList.contains("pad")){sheetDay(x.dataset.day);return;}
   if((x=t.closest("[data-tbd]"))){
@@ -3054,6 +3062,10 @@ function saveSession(d){
         expires_at:Date.now()+((d.expires_in||3600)*1000)-30000,
         user:{id:d.user&&d.user.id,email:d.user&&d.user.email,created_at:d.user&&d.user.created_at}};
   try{localStorage.setItem(SESS_KEY,JSON.stringify(SESS));}catch(e){}
+  /* signing in as the owner unlocks the Owner tab by itself — asking for a
+     second password after the server has already identified him would be
+     ceremony, not security */
+  if(typeof signedInAsOwner==="function"&&signedInAsOwner()&&!isOwner())setOwner(true,"acct");
 }
 function restoreSession(){
   try{var raw=localStorage.getItem(SESS_KEY);if(raw){var p=JSON.parse(raw);if(p&&p.access_token)SESS=p;}}catch(e){}
@@ -3068,7 +3080,11 @@ function withToken(){
     .then(function(d){saveSession(d);})
     ["catch"](function(){signOutLocal();paintAccount();throw new Error("Your session has expired. Sign in again.");});
 }
-function signOutLocal(){SESS=null;try{localStorage.removeItem(SESS_KEY);}catch(e){}SYNC.last=null;SYNC.err=null;}
+function signOutLocal(){
+  SESS=null;try{localStorage.removeItem(SESS_KEY);}catch(e){}SYNC.last=null;SYNC.err=null;
+  /* only give back what the sign-in granted */
+  if(ownerFlag()==="acct")setOwner(false);
+}
 
 function doSignUp(email,pass){
   return sbFetch("/auth/v1/signup",{method:"POST",body:JSON.stringify({email:email,password:pass})},false)
@@ -3638,38 +3654,60 @@ function loadSample(quiet){
    are not sitting in the source in readable form — but this page is public and the
    check runs in the browser, so treat it as a lock on a glass door, not security. */
 var OWNER_HASH="12fcefe1c16076f536d4cd0fd7a0910e516eae80e947682cdb9f11606701371d";
+/* The account that owns this site. Signing in as this address IS the proof of
+   identity — the database checks it server-side before it will hand over the
+   list — so the local passphrase below is only for unlocking owner tools on a
+   device with no account, not a second lock on the same door. */
+var OWNER_EMAIL="johnsonandy242@gmail.com";
+function signedInAsOwner(){
+  return !!(SESS&&SESS.user&&SESS.user.email&&
+    String(SESS.user.email).trim().toLowerCase()===OWNER_EMAIL);
+}
 function sha256Hex(str){
   if(!(window.crypto&&crypto.subtle))return Promise.resolve(null);
   return crypto.subtle.digest("SHA-256",new TextEncoder().encode(str)).then(function(buf){
     return Array.prototype.map.call(new Uint8Array(buf),function(b){return b.toString(16).padStart(2,"0");}).join("");
   });
 }
-function isOwner(){try{return localStorage.getItem("sd.owner")==="1";}catch(e){return false;}}
-function setOwner(v){
-  try{v?localStorage.setItem("sd.owner","1"):localStorage.removeItem("sd.owner");}catch(e){}
+function ownerFlag(){try{return localStorage.getItem("sd.owner")||"";}catch(e){return "";}}
+function isOwner(){var f=ownerFlag();return f==="1"||f==="acct";}
+/* how=`acct` when the account itself unlocked it, `1` when the passphrase did.
+   The difference matters on the way out: an unlock that came from signing in
+   should end when the sign-in does, so the Owner tab does not linger on a
+   library computer after somebody signs out. A passphrase unlock is a
+   deliberate act on that device and stays until it is undone. */
+function setOwner(v,how){
+  try{v?localStorage.setItem("sd.owner",how==="acct"?"acct":"1")
+       :localStorage.removeItem("sd.owner");}catch(e){}
   paintOwner();
 }
 function paintOwner(){
   var on=isOwner();
-  var gate=document.getElementById("owner-gate"),zone=document.getElementById("owner-zone");
-  if(gate)gate.classList.toggle("hide",on);
-  if(zone)zone.classList.toggle("hide",!on);
+  /* the Owner tab is the whole page now; Settings only holds the way in */
+  var tab=document.getElementById("ownertab");
+  if(tab)tab.classList.toggle("hide",!on);
+  var gp=document.getElementById("owner-gate-p");
+  if(gp)gp.textContent=on
+    ? (signedInAsOwner()
+        ? "You are signed in as the owner account, so the Owner tab is open. Everything about who is using this site is there."
+        : "Unlocked on this browser. The Owner tab is in the row above.")
+    : "Tools for whoever runs this site. Nothing here changes what you see as a student. Signing in with the owner account opens it on its own.";
   var ob=document.getElementById("ownerbtn");
-  if(ob)ob.textContent=on?"Owner tools unlocked ✓":"Unlock owner tools";
+  if(ob)ob.textContent=on?"Open the Owner tab":"Unlock owner tools";
   var n=document.getElementById("owner-note"); if(n)n.textContent="JohnsonXCorp · v"+BUILD.v;
   var ob=document.getElementById("owner-build"); if(ob)ob.textContent="v"+BUILD.v+" · "+BUILD.date;
   var ou=document.getElementById("owner-who"); if(ou)ou.textContent=on?"signed in":"signed out";
   paintOwnerUsers();
 }
 function askOwner(){
-  if(isOwner()){showPanel("p-settings");window.scrollTo({top:0,behavior:"smooth"});return;}
+  if(isOwner()){showPanel("p-owner");window.scrollTo({top:0,behavior:"smooth"});return;}
   var u=window.prompt("Owner username");
   if(u===null)return;
   var pw=window.prompt("Password for “"+u.trim()+"”");
   if(pw===null)return;
   sha256Hex(u.trim().toLowerCase()+":"+pw).then(function(h){
     if(h===null){alert("This browser cannot run the check (no Web Crypto). Try a different browser.");return;}
-    if(h===OWNER_HASH){setOwner(true);showPanel("p-settings");window.scrollTo({top:0,behavior:"smooth"});}
+    if(h===OWNER_HASH){setOwner(true);showPanel("p-owner");window.scrollTo({top:0,behavior:"smooth"});}
     else alert("That username and password did not match. Nothing has changed.");
   });
 }
