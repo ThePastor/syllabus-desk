@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v2.7  (10 September 2026)
+  Syllabus Desk  v2.8  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -579,6 +579,10 @@ table.rev tr.missing td{background:var(--warn-soft)}
   text-transform:none;letter-spacing:.02em;font-family:var(--font-body);font-size:.8rem;
   text-decoration:underline;text-underline-offset:3px}
 .acct-fine{font-size:.75rem;color:var(--ink-3);line-height:1.5;margin:2px 0 0}
+.acct-intro{font-size:.9rem;color:var(--ink-2);margin:0 0 20px;max-width:70ch}
+.linkish{border:0;background:none;padding:0;font:inherit;color:var(--accent-deep);
+  text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.linkish:hover{color:var(--ink)}
 .acctbar{display:flex;gap:18px;flex-wrap:wrap;align-items:center;border:1px solid var(--line);
   border-left:var(--accent-bar) solid var(--accent);background:var(--surface);padding:16px var(--gut-in)}
 .acct-who{font-family:var(--font-display);font-size:1.25rem;font-weight:600;letter-spacing:-.03em;
@@ -1366,17 +1370,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
       </div>
 
       <div id="acct-out">
-        <div class="callout" style="margin-bottom:22px">
-          <h4>You do not need an account to use this</h4>
-          <p style="margin:0 0 8px">Everything works without one, exactly as it does now — your term lives in this
-          browser and never leaves it. An account does one job: it lets the same term open on your phone, your
-          laptop and a library computer, and survives clearing your browser data.</p>
-          <p style="margin:0"><b>What signing up means in plain words.</b> Your email address and your term
-          — courses, dates, ticks and study blocks — are stored on a server run by JohnsonXCorp, and
-          <b>your email is visible to the owner of this site</b>. Your password is not: it is stored as a
-          one-way hash that nobody, the owner included, can read or recover. You can delete everything from
-          this page at any time.</p>
-        </div>
+        <!-- The long explanation of what an account stores used to sit here as a
+             callout. It is the same ground the Rights notice already covers, so it
+             lives there now and this page keeps one line of it: the part someone
+             needs before they type, at the moment they are about to type it. -->
+        <p class="acct-intro">You do not need one. Everything works without an account — this only makes
+        your term open on your other devices.</p>
 
         <div class="acctgrid">
           <form class="acctcard" id="signup-form" novalidate>
@@ -1391,8 +1390,10 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
             <label class="f"><span>Password again</span>
               <input type="password" id="su-pass2" autocomplete="new-password" required minlength="8"></label>
             <button class="btn primary" type="submit" id="su-go">Create account <span class="arw">&rarr;</span></button>
-            <p class="acct-fine">By creating an account you agree that your email and your term are stored as
-            described above. Use a password you do not use anywhere else.</p>
+            <p class="acct-fine">Your email and your term are stored on a server so they can reach your
+            other devices, and <b>your email is visible to the owner of this site</b> — your password never
+            is, only a one-way hash of it. <button type="button" class="linkish" id="acct-rights">Read the
+            full notice</button>. Use a password you do not use anywhere else.</p>
           </form>
 
           <form class="acctcard" id="signin-form" novalidate>
@@ -1632,11 +1633,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"2.7",date:"10 September 2026",year:2026};
+var BUILD={v:"2.8",date:"10 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["2.8","The Log in page stops lecturing. The long explanation of what an account stores has moved to the rights notice where the rest of it already lived, leaving one line above the forms and the part you need before you type — that your email is visible to the site's owner and your password is not — right beside the button."],
   ["2.7","An Owner tab of its own, and it opens by itself. Sign in with the owner account and the tab appears in the row with the others, leading with who has signed up — no hunting inside Settings, and no second password after the server has already checked who you are."],
   ["2.6","Accounts are switched on. Make one with an email and a password and your courses, dates, ticks, study blocks and personal entries follow you to your phone and any other computer. It stays optional — everything on this page still works without one, exactly as before."],
   ["2.5","One first page that is both the welcome and your fortnight, with how to add a course and how to put it on your home screen right there. Times are now set with an explicit AM or PM instead of whatever your device decided, anything weekly can be every other week instead, and Owner has moved inside a new Settings tab \u2014 with Log in taking its place."],
@@ -2807,7 +2809,7 @@ document.addEventListener("click",function(e){
   if(t.closest("#set-install")){sheetInstall();return;}
   if(t.closest("#set-whatsnew")){sheetWhatsNew(null);return;}
   if(t.closest("#set-goexport")){showPanel("p-export");window.scrollTo({top:0,behavior:"smooth"});return;}
-  if(t.closest("#set-rights")){showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
+  if(t.closest("#set-rights")||t.closest("#acct-rights")){showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
   if(t.closest("#set-wipe")){
     if(!confirm("Clear everything on this device?\n\nCourses, dates, ticks, study blocks and personal entries all go. If you have an account, the copy saved there is untouched and signing in brings it back.\n\nThis cannot be undone here."))return;
     S={courses:[],items:[],done:{},life:[],version:1};
