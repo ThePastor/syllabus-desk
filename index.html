@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v2.5  (10 September 2026)
+  Syllabus Desk  v2.6  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -1352,12 +1352,15 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
       <div id="acct-off" class="hide">
         <div class="callout">
-          <h4>Accounts are not switched on yet</h4>
-          <p style="margin:0 0 8px">Everything on this page works without one — your term lives in this
+          <h4 id="acct-off-head">Accounts are not switched on yet</h4>
+          <p style="margin:0 0 8px" id="acct-off-1">Everything on this page works without one — your term lives in this
           browser and never leaves it. Signing in would only add one thing: the same term opening on your
           phone, your laptop and a library computer.</p>
-          <p style="margin:0">The sign-in is built and waiting on its server keys. Until those are in,
+          <p style="margin:0" id="acct-off-2">The sign-in is built and waiting on its server keys. Until those are in,
           showing you a login box that cannot log you in would be worse than saying so.</p>
+          <div class="row" style="margin-top:14px" id="acct-off-go" hidden>
+            <a class="btn primary" href="https://thepastor.github.io/syllabus-desk/" target="_blank" rel="noopener">Open the website</a>
+          </div>
         </div>
       </div>
 
@@ -1622,11 +1625,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"2.5",date:"10 September 2026",year:2026};
+var BUILD={v:"2.6",date:"10 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["2.6","Accounts are switched on. Make one with an email and a password and your courses, dates, ticks, study blocks and personal entries follow you to your phone and any other computer. It stays optional — everything on this page still works without one, exactly as before."],
   ["2.5","One first page that is both the welcome and your fortnight, with how to add a course and how to put it on your home screen right there. Times are now set with an explicit AM or PM instead of whatever your device decided, anything weekly can be every other week instead, and Owner has moved inside a new Settings tab \u2014 with Log in taking its place."],
   ["2.4","The rest of your life, on the same page as the coursework: shifts, training, family, appointments \u2014 weekly or one-off, each with its own icon, in your two weeks, your calendar and your export. Text everywhere is darker and the smallest labels are bigger, so nothing is a squint."],
   ["2.3","A dark mode that is dark rather than switched off. The page now sits below the panels so they lift, the hairlines stopped being paper-white, and the footer is deeper than the page instead of a bright slab \u2014 the same Slate Navy palette as UNI Made EZ, so the two apps read as one."],
@@ -1661,9 +1665,14 @@ var KEY="syllabusdesk.v1";
    privilege of its own; row-level security in the database is what actually
    keeps one person's term away from another's. The service_role / sb_secret_
    key must NEVER appear here. */
+/* The Syllabus Desk Supabase project (its own, not shared with any other app).
+   Only the PUBLISHABLE key belongs here. It is designed to be public and is
+   safe in a page anyone can read, because row-level security is what actually
+   decides who sees what. The secret / service_role key bypasses row-level
+   security entirely and must never appear in this file. */
 var SB={
-  url:"",   /* https://xxxxxxxx.supabase.co */
-  key:""    /* sb_publishable_… or the legacy eyJ… anon key */
+  url:"https://gwwiaijfqovhizrmfxuk.supabase.co",
+  key:"sb_publishable_XGdorbBh5VFVwwBx_UgApQ_EoN0nRqo"
 };
 var SB_TABLE="syllabus_desk_terms";
 var SESS_KEY="sd.session";
@@ -2999,7 +3008,17 @@ document.addEventListener("keydown",function(e){
 var SESS=null;                                  /* {access_token,refresh_token,expires_at,user} */
 var SYNC={timer:null,busy:false,applying:false,last:null,err:null};
 
-function sbOn(){return !!(SB.url&&SB.key);}
+/* Where accounts can actually work.
+
+   The claude.ai artifact viewer serves this page under a content-security
+   policy that blocks fetch to every outside host, so a sign-in form there
+   would collect an email and a password and then fail on the network — the
+   exact dishonesty the off-state exists to avoid. window.claude is the tell:
+   it is a capability only the artifact viewer provides (the same signal the
+   outline reader uses), so accounts are offered on the hosted site and openly
+   declined in the preview. */
+function inArtifact(){try{return !!window.claude;}catch(e){return false;}}
+function sbOn(){return !!(SB.url&&SB.key&&!inArtifact());}
 function sbURL(p){return SB.url.replace(/\/+$/,"")+p;}
 function sbHeaders(auth){
   var h={"apikey":SB.key,"Content-Type":"application/json"};
@@ -3173,10 +3192,27 @@ function paintAccount(){
   var on=!!SESS;
   /* three states, not two: signed in, signed out, and "there is no server yet" */
   if(!sbOn()){
-    if(off)off.classList.remove("hide");
+    if(off){
+      off.classList.remove("hide");
+      /* two different reasons, two different sentences */
+      var h=document.getElementById("acct-off-head"),
+          p1=document.getElementById("acct-off-1"),
+          p2=document.getElementById("acct-off-2"),
+          go=document.getElementById("acct-off-go");
+      if(inArtifact()&&SB.url){
+        if(h)h.textContent="Accounts live on the website";
+        if(p1)p1.innerHTML="This preview cannot reach the outside network, so signing in has to happen on "
+          +"the hosted copy. Everything else here works exactly the same — your term is saved in this "
+          +"browser either way.";
+        if(p2)p2.textContent="Offering you a login box that could only fail on the network would be worse "
+          +"than sending you one click away.";
+        if(go)go.hidden=false;
+      }else if(go)go.hidden=true;
+    }
     out.classList.add("hide");inn.classList.add("hide");
     tab.textContent="Log in";
-    var n0=document.getElementById("acct-note");if(n0)n0.textContent="not yet available";
+    var n0=document.getElementById("acct-note");
+    if(n0)n0.textContent=(inArtifact()&&SB.url)?"on the website":"not yet available";
     return;
   }
   if(off)off.classList.add("hide");
