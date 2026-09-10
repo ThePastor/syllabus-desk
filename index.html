@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v2.1  (10 September 2026)
+  Syllabus Desk  v2.2  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -364,6 +364,28 @@ details.sched[open] summary::before{content:"–"}
 .srow.mark .st{font-weight:600}
 .srow.off .st{color:var(--ink-3);font-style:italic}
 .studyrow{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:.8rem}
+.blocklist{display:grid;gap:0;border:1px solid var(--line-soft);margin-bottom:10px}
+.blockrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:9px 11px;
+  border-bottom:1px solid var(--line-soft);background:var(--surface)}
+.blockrow:last-child{border-bottom:0}
+.blockrow select{flex:1 1 108px;min-width:0}
+.blockrow input[type=time]{flex:0 0 auto;font-family:var(--font-mono);font-size:.76rem}
+.blockrow .to{font-family:var(--font-mono);font-size:.66rem;color:var(--ink-3)}
+.blockrow .x{width:28px;height:28px;font-size:.95rem;margin-left:auto;flex:0 0 auto}
+.blockempty{padding:12px 11px;font-size:.82rem;color:var(--ink-3);background:var(--surface)}
+.sugwrap{margin-top:12px}
+.sugwrap>.lab{margin-bottom:7px}
+.sug{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;font:inherit;
+  border:1px solid var(--line-soft);border-left:var(--accent-bar) solid var(--accent-soft);
+  background:var(--surface);color:var(--ink);padding:10px 12px;cursor:pointer}
+.sug+.sug{margin-top:-1px}
+.sug:hover{background:var(--surface-2);border-left-color:var(--accent)}
+.sug .when{font-family:var(--font-mono);font-size:.72rem;font-weight:600;letter-spacing:.03em;
+  color:var(--accent-deep);white-space:nowrap;flex:0 0 auto}
+.sug .why{font-size:.8rem;color:var(--ink-2);line-height:1.4}
+.sug .plus{margin-left:auto;font-family:var(--font-mono);font-size:.9rem;color:var(--ink-3);flex:0 0 auto}
+.sug:hover .plus{color:var(--accent-deep)}
+@media(max-width:520px){.sug{flex-wrap:wrap}.sug .plus{display:none}}
 .studyrow select,.studyrow input,label.f input,label.f select,table.rev input,table.rev select,textarea.paste{border:1px solid var(--line-soft);border-radius:2px;padding:6px 9px;font-size:.82rem;background:var(--surface);color:var(--ink);font-family:var(--font-body)}
 .studyrow input[type=time]{font-family:var(--font-mono);font-size:.76rem}
 
@@ -1129,7 +1151,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         </div></div>
         <div class="row"><div class="num">Step 03</div><div>
           <h4>Do the rest, then set your study blocks</h4>
-          <p>Repeat for each course. On the <b>Courses</b> tab, each one gets a weekly study block you can move to whatever evening suits you — and extra prep is added automatically five, three and one days before every exam.</p>
+          <p>Repeat for each course. On the <b>Courses</b> tab you can add as many weekly study blocks per course as you want, move them to whatever evenings suit you, and remove the ones you do not keep. Each course also suggests times worked out from when it actually meets, avoiding your other classes and blocks — and extra prep is added automatically five, three and one days before every exam.</p>
         </div></div>
         <div class="row"><div class="num">Step 04</div><div>
           <h4>Send it to your phone</h4>
@@ -1419,11 +1441,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"2.1",date:"10 September 2026",year:2026};
+var BUILD={v:"2.2",date:"10 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["2.2","Study blocks you can actually manage: add as many per course as you want, move them, remove them. Each course also suggests times worked out from when it really meets \u2014 the evening after a class while it is fresh, or the evening before one so you arrive ready \u2014 never on top of another class or a block you already have."],
   ["2.1","Outlines are now read on your own device, so adding a course works on the website and not only inside Claude. It finds the schedule table, the grading breakdown, the exam and quiz dates and the days with no class \u2014 and everything still lands in the review table for you to check before it saves."],
   ["2.0","accounts","Accounts, if you want one. Sign up with an email and your courses, dates, ticks and study blocks follow you to your phone and any other computer. Everything still works without an account, exactly as before."],
   ["1.9","An update that asks first. When a new version goes up, a card explains what is waiting and refreshes only when you say so \u2014 and this list tells you what moved."],
@@ -1533,18 +1556,34 @@ function termRange(){
   if(!ds.length)return null;
   ds.sort();return [P(ds[0]),ds[ds.length-1]];
 }
+/* Courses used to have exactly one study block, stored as c.study. They now have
+   a list, c.blocks. Migrate on the way past rather than in a one-off upgrade step,
+   so a term restored from an old export or another device lands right too. */
+function normalizeBlocks(){
+  S.courses.forEach(function(c){
+    if(Array.isArray(c.blocks))return;
+    c.blocks=(c.study&&c.study.on)
+      ? [{id:uid(),dow:c.study.dow,from:c.study.from||"19:00",to:c.study.to||"20:30"}]
+      : [];
+  });
+}
+function blockLabel(c){return "Study — "+(c.code||c.key);}
 function studyEvents(){
   var out=[],range=termRange();
   if(range) S.courses.forEach(function(c){
-    if(!c.study||!c.study.on)return;
+    if(!(c.blocks||[]).length)return;
     var d=new Date(range[0]),end=P(range[1]);
     while(d<=end){
-      if(d.getDay()===c.study.dow)out.push({id:"st-"+c.key+"-"+ISO(d),c:c.key,d:ISO(d),t:c.study.label||"Study block",k:"study",from:c.study.from,to:c.study.to});
+      var iso=ISO(d),day=d.getDay();
+      c.blocks.forEach(function(b){
+        if(b.dow===day)out.push({id:"st-"+c.key+"-"+b.id+"-"+iso,c:c.key,d:iso,
+          t:blockLabel(c),k:"study",from:b.from,to:b.to});
+      });
       d=new Date(d.getTime()+864e5);
     }
   });
   S.items.filter(function(i){return i.k==="exam"&&i.d;}).forEach(function(ex){
-    var c=courseOf(ex.c);if(!c.study||!c.study.on)return;
+    var c=courseOf(ex.c);if(!(c.blocks||[]).length)return;
     [5,3,1].forEach(function(off){
       var dd=new Date(P(ex.d).getTime()-off*864e5);
       out.push({id:"ramp-"+ex.id+"-"+off,c:ex.c,d:ISO(dd),t:"Exam prep — "+ex.t,k:"study",from:"20:30",to:"22:00"});
@@ -1553,6 +1592,98 @@ function studyEvents(){
   return out;
 }
 var STUDY=[];
+
+/* ---------- suggesting a time ----------
+   The outline already told us which days this course meets and when. That is
+   enough to propose something better than a default: study the evening AFTER a
+   class while it is still fresh, or the evening BEFORE one so you arrive ready —
+   and never on top of another class or a block already in the calendar. */
+function tMin(hhmm){var a=String(hhmm||"").split(":");return (+a[0]||0)*60+(+a[1]||0);}
+function tStr(m){m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");}
+function addMin(hhmm,n){return tStr(tMin(hhmm)+n);}
+function overlap(aF,aT,bF,bT){return tMin(aF)<tMin(bT)&&tMin(bF)<tMin(aT);}
+/* "1:00 pm – 2:15 pm", "11:30 – 2:20 pm", "9:30-10:20am" */
+function parseTimeRange(str){
+  if(!str)return null;
+  var m=String(str).replace(/[–—]/g,"-").match(
+    /(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*-\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+  if(!m)return null;
+  var h1=+m[1],n1=+(m[2]||0),p1=(m[3]||"").toLowerCase();
+  var h2=+m[4],n2=+(m[5]||0),p2=(m[6]||"").toLowerCase();
+  if(h1>23||h2>23)return null;
+  function to24(h,p){if(p==="pm"&&h<12)return h+12;if(p==="am"&&h===12)return 0;return h;}
+  h2=to24(h2,p2);
+  if(p1)h1=to24(h1,p1);
+  else{
+    /* no marker on the start: take the reading that makes a sane forward span */
+    var a=h1*60+n1, b=(h1<12?h1+12:h1)*60+n1, end=h2*60+n2;
+    h1=(a<end&&a>=7*60)?h1:(h1<12?h1+12:h1);
+  }
+  var from=tStr(h1*60+n1), to=tStr(h2*60+n2);
+  return tMin(to)>tMin(from)?{from:from,to:to}:null;
+}
+function dowsFromText(str){
+  var t=String(str||"").toLowerCase(),out=[];
+  [["sun",0],["mon",1],["tue",2],["wed",3],["thu",4],["fri",5],["sat",6]].forEach(function(p){
+    if(t.indexOf(p[0])>-1)out.push(p[1]);
+  });
+  if(out.length)return out;
+  var codes=String(str||"").match(/\b[MTWRF]{1,5}\b/g);
+  if(codes){var map={M:1,T:2,W:3,R:4,F:5};
+    codes.join("").split("").forEach(function(ch){if(map[ch]!=null&&out.indexOf(map[ch])<0)out.push(map[ch]);});}
+  return out;
+}
+/* which weekdays this course actually meets — the dated schedule first, because
+   it is evidence, and the "Meets" line only if there is no schedule */
+function courseDows(c){
+  var h={};
+  (c.classes||[]).forEach(function(r){
+    if(r.off||!r.date)return;
+    var d=P(r.date);if(isNaN(d))return;
+    h[d.getDay()]=(h[d.getDay()]||0)+1;
+  });
+  var recurring=Object.keys(h).map(Number).filter(function(d){return h[d]>=2;});
+  if(recurring.length)return recurring.sort();
+  var once=Object.keys(h).map(Number);
+  return once.length?once.sort():dowsFromText(c.meets);
+}
+function busyOn(dow){
+  var out=[];
+  S.courses.forEach(function(c){
+    (c.blocks||[]).forEach(function(b){if(b.dow===dow)out.push([b.from,b.to]);});
+    var ct=parseTimeRange(c.time);
+    if(ct&&courseDows(c).indexOf(dow)>-1)out.push([ct.from,ct.to]);
+  });
+  return out;
+}
+var SLOT_TIMES=["19:00","17:30","20:45","16:00","13:00"];
+function suggestBlocks(key){
+  var c=courseOf(key),dows=courseDows(c),out=[],taken={};
+  (c.blocks||[]).forEach(function(b){taken[b.dow]=1;});
+  function tryDay(dow,why){
+    if(out.length>=3||taken[dow])return;
+    if(out.some(function(o){return o.dow===dow;}))return;
+    var busy=busyOn(dow);
+    for(var i=0;i<SLOT_TIMES.length;i++){
+      var f=SLOT_TIMES[i],t=addMin(f,90);
+      var clash=busy.some(function(b){return overlap(f,t,b[0],b[1]);});
+      if(!clash){out.push({dow:dow,from:f,to:t,why:why});return;}
+    }
+  }
+  dows.forEach(function(d){
+    tryDay(d,"the evening after your "+DOWN[d]+" class, while it is still fresh");
+  });
+  dows.forEach(function(d){
+    tryDay((d+6)%7,"the evening before your "+DOWN[d]+" class, so you arrive ready");
+  });
+  if(!dows.length){
+    tryDay(2,"no class days on record for this course, so this is simply a quiet evening");
+    tryDay(4,"a second evening, spaced away from the first");
+  }
+  tryDay(0,"Sunday, for catching up on whatever the week left behind");
+  return out.slice(0,3);
+}
+function t12r(f,t){return t12(f)+"–"+t12(t);}
 function eventsOn(iso){
   var out=[];
   S.items.forEach(function(i){if(i.d===iso)out.push({kind:i.k,c:i.c,t:i.t,w:i.w,id:i.id,ord:1});});
@@ -1780,7 +1911,7 @@ function sheetEvent(id,iso){
   }
   rows+='</dl>';
   if(item&&item.note)rows+='<p class="note">'+esc(item.note)+'</p>';
-  if(!item&&ev&&ev.kind==="study")rows+='<p class="note">A study block you set on the Courses tab. Move it to a different evening there, or switch it off.</p>';
+  if(!item&&ev&&ev.kind==="study")rows+='<p class="note">A study block you set on the Courses tab. Move it, add another, or remove it there.</p>';
   if(c.rules&&item)rows+='<p class="note"><b>Worth remembering:</b> '+esc(c.rules)+'</p>';
   document.getElementById("sheet-body").innerHTML=rows;
   var foot='';
@@ -1811,7 +1942,23 @@ function renderCourses(){
     var sch=(c.classes||[]).map(function(r){
       return '<div class="srow'+(P(r.date)<TODAY?" past":"")+(r.mark?" mark":"")+(r.off?" off":"")+'"><span class="sd">'+fmtDay(P(r.date))+'</span><span class="st">'+esc(r.topic)+'</span></div>';
     }).join("")||'<div class="srow"><span class="sd">—</span><span class="st" style="color:var(--ink-3)">No class-by-class schedule in this outline.</span></div>';
-    var st=c.study||{on:false,dow:1,from:"19:00",to:"20:30"};
+    var blocks=c.blocks||[];
+    var blist=blocks.map(function(b){
+      return '<div class="blockrow">'
+        +'<select data-blkdow="'+esc(c.key)+'|'+esc(b.id)+'" aria-label="Day of the week">'
+        +DOWN.map(function(n,ix){return '<option value="'+ix+'"'+(ix===b.dow?" selected":"")+'>'+n+'</option>';}).join("")
+        +'</select>'
+        +'<input type="time" data-blkfrom="'+esc(c.key)+'|'+esc(b.id)+'" value="'+esc(b.from)+'" aria-label="Start time">'
+        +'<span class="to">to</span>'
+        +'<input type="time" data-blkto="'+esc(c.key)+'|'+esc(b.id)+'" value="'+esc(b.to)+'" aria-label="End time">'
+        +'<button class="x" data-blkdel="'+esc(c.key)+'|'+esc(b.id)+'" aria-label="Remove this study block" title="Remove">&times;</button>'
+        +'</div>';
+    }).join("");
+    var sug=suggestBlocks(c.key).map(function(g){
+      return '<button type="button" class="sug" data-blksug="'+esc(c.key)+'|'+g.dow+'|'+g.from+'|'+g.to+'">'
+        +'<span class="when">'+DOWN[g.dow].slice(0,3)+' '+esc(t12r(g.from,g.to))+'</span>'
+        +'<span class="why">'+esc(g.why)+'</span><span class="plus">+</span></button>';
+    }).join("");
     return '<article class="course" style="--ck:'+col+'">'
       +'<div class="chead"><div class="ctop"><span class="ccode" style="color:'+textColorOf(c.key)+'">'+esc(c.code)+'</span><span class="ctitle">'+esc(c.title)+'</span>'
       +'<span class="cacts"><button class="btn sm danger" data-del="'+esc(c.key)+'">Remove</button></span></div><div class="cmeta">'
@@ -1824,17 +1971,20 @@ function renderCourses(){
       +'</div><div>'
       +((c.weights||[]).length?'<div class="blk"><h4>Grade weighting'+(tot&&tot!==100?' — adds to '+tot+'%':'')+'</h4><div class="wbar">'+bar+'</div><div class="wkey">'+key+'</div></div>':'')
       +(c.rules?'<div class="blk"><h4>The rule that bites</h4><p style="font-size:.86rem;margin:0;color:var(--ink-2)">'+esc(c.rules)+'</p></div>':'')
-      +'<div class="blk"><h4>Weekly study block</h4><div class="studyrow">'
-        +'<label><input type="checkbox" data-styon="'+esc(c.key)+'"'+(st.on?" checked":"")+'> on</label>'
-        +'<select data-stydow="'+esc(c.key)+'">'+DOWN.map(function(n,ix){return '<option value="'+ix+'"'+(ix===st.dow?" selected":"")+'>'+n+'</option>';}).join("")+'</select>'
-        +'<input type="time" data-styfrom="'+esc(c.key)+'" value="'+esc(st.from)+'"><span class="hint">to</span>'
-        +'<input type="time" data-styto="'+esc(c.key)+'" value="'+esc(st.to)+'"></div>'
-        +'<p class="hint" style="margin:9px 0 0">Extra prep is added 5, 3 and 1 days before every exam here.</p></div>'
+      +'<div class="blk"><h4>Study blocks'+(blocks.length?' \u00b7 '+blocks.length:'')+'</h4>'
+        +'<div class="blocklist">'+(blist||'<div class="blockempty">No study time set aside for this course yet.</div>')+'</div>'
+        +'<button class="btn sm" data-blkadd="'+esc(c.key)+'">Add a block</button>'
+        +(sug?'<div class="sugwrap"><div class="lab">Suggested for this course</div>'+sug+'</div>':'')
+        +'<p class="hint" style="margin:11px 0 0">'+(blocks.length
+            ? 'Extra prep is added automatically 5, 3 and 1 days before every exam in this course.'
+            : 'Add one and extra prep is added automatically 5, 3 and 1 days before every exam in this course.')
+        +'</p></div>'
       +'</div></div></article>';
   }).join("");
 }
 function renderAll(){
   resetPalette();
+  normalizeBlocks();
   STUDY=studyEvents();
   var has=S.courses.length>0;
   document.getElementById("empty-state").classList.toggle("hide",has);
@@ -1967,7 +2117,7 @@ function showReview(d,note){
       meets:d.meets||"",time:d.time||"",weights:Array.isArray(d.weights)?d.weights:[],rules:d.rules||"",
       color:PALETTE[S.courses.length%PALETTE.length],
       classes:(Array.isArray(d.classes)?d.classes:[]).filter(function(r){return r&&isISO(r.date);}).map(function(r){return {date:r.date,topic:String(r.topic||"").slice(0,160),off:!!r.off,mark:!!r.mark};}),
-      study:{on:true,dow:[1,2,3,4,0][S.courses.length%5],from:"19:00",to:"20:30",label:"Study — "+(d.code||"course")}},
+      blocks:[]},   /* filled in from the course's own schedule once it is saved */
     items:(Array.isArray(d.items)?d.items:[]).map(function(i){
       return {id:uid(),c:key,t:String(i.title||"Untitled").slice(0,140),d:isISO(i.date)?i.date:null,
         k:["exam","quiz","due","pres","other"].indexOf(i.kind)>-1?i.kind:"due",w:String(i.weight||""),note:String(i.note||"").slice(0,300)};
@@ -2216,6 +2366,26 @@ document.addEventListener("click",function(e){
     if(!v)it.d=null;else if(isISO(v))it.d=v;else{alert("That did not look like YYYY-MM-DD, so nothing changed.");return;}
     save();renderAll();return;
   }
+  if((x=t.closest("[data-blkadd]"))){
+    var ca=courseOf(x.dataset.blkadd);
+    ca.blocks=ca.blocks||[];
+    /* start from the best suggestion, so "Add a block" lands somewhere sensible
+       rather than on top of a class */
+    var g=suggestBlocks(ca.key)[0]||{dow:1,from:"19:00",to:"20:30"};
+    ca.blocks.push({id:uid(),dow:g.dow,from:g.from,to:g.to});
+    save();renderAll();return;
+  }
+  if((x=t.closest("[data-blksug]"))){
+    var ps=String(x.dataset.blksug).split("|"),cs=courseOf(ps[0]);
+    cs.blocks=cs.blocks||[];
+    cs.blocks.push({id:uid(),dow:+ps[1],from:ps[2],to:ps[3]});
+    save();renderAll();return;
+  }
+  if((x=t.closest("[data-blkdel]"))){
+    var pd=String(x.dataset.blkdel).split("|"),cd=courseOf(pd[0]);
+    cd.blocks=(cd.blocks||[]).filter(function(b){return b.id!==pd[1];});
+    save();renderAll();return;
+  }
   if((x=t.closest("[data-del]"))){
     var k=x.dataset.del;
     if(!confirm("Remove "+courseOf(k).code+" and everything in it? This cannot be undone."))return;
@@ -2229,6 +2399,14 @@ document.addEventListener("click",function(e){
     if(PENDING.items.some(function(i){return !i.t.trim();})){alert("Give every row a name, or remove the blank ones.");return;}
     if(S.demo){ S={courses:[],items:[],done:{},version:1}; }
     S.courses.push(PENDING.course);PENDING.items.forEach(function(i){S.items.push(i);});
+    /* Give it one study block straight away, chosen from when this course actually
+       meets rather than from a rota — the suggestion needs the course to be in S
+       and its items dated, so it happens here and not in the review screen. */
+    var nc=PENDING.course;
+    if(!(nc.blocks||[]).length){
+      var g=suggestBlocks(nc.key)[0];
+      if(g)nc.blocks=[{id:uid(),dow:g.dow,from:g.from,to:g.to}];
+    }
     PENDING=null;save();renderAll();showPanel("p-weeks");window.scrollTo({top:0,behavior:"smooth"});return;
   }
   if(t.closest("#exp-csv")){offer("my-term-google.csv",buildCSV(),"Saved. In Google Calendar on a computer: Settings → Import & export → Import, pick this file, and choose the calendar it lands in.");return;}
@@ -2302,14 +2480,14 @@ document.addEventListener("change",function(e){
     if(f2==="d"){i.d=isISO(x.value)?x.value:null;drawReview();}else i[f2]=x.value;
     return;
   }
-  ["styon","stydow","styfrom","styto"].forEach(function(a){
+  ["blkdow","blkfrom","blkto"].forEach(function(a){
     var el=t.closest("[data-"+a+"]");if(!el)return;
-    var c=courseOf(el.dataset[a]);c.study=c.study||{on:false,dow:1,from:"19:00",to:"20:30"};
-    if(a==="styon")c.study.on=el.checked;
-    if(a==="stydow")c.study.dow=+el.value;
-    if(a==="styfrom")c.study.from=el.value;
-    if(a==="styto")c.study.to=el.value;
-    c.study.label=c.study.label||("Study — "+c.code);
+    var parts=String(el.dataset[a]).split("|"),c=courseOf(parts[0]);
+    var b=(c.blocks||[]).filter(function(x){return x.id===parts[1];})[0];
+    if(!b)return;
+    if(a==="blkdow")b.dow=+el.value;
+    if(a==="blkfrom"){b.from=el.value||"19:00";if(tMin(b.to)<=tMin(b.from))b.to=addMin(b.from,90);}
+    if(a==="blkto"){b.to=el.value||addMin(b.from,90);if(tMin(b.to)<=tMin(b.from))b.to=addMin(b.from,90);}
     save();renderAll();
   });
 });
