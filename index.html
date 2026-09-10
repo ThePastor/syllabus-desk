@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v1.5  (10 September 2026)
+  Syllabus Desk  v1.6  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -59,6 +59,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
   --coral:#FF7A59; --coral-soft:#FFE0D6;
   --ok:#17835B; --ok-soft:#D3F3E3; --bad:#C0341A; --bad-soft:#FFE0D6;
   --warn:#8C6100; --warn-soft:#FFF0B8;
+  --warn-ink:#FFFFFF; --bad-ink:#FFFFFF; --ok-ink:#FFFFFF;
   --sky:#CFEAF3; --dot:#16405A; --shape:#C3DAE3;
   --tint-1:#DDF0F6; --tint-2:#ECFAB9; --tint-3:#D3F3E3; --tint-4:#FFE1D6;
   --inverse:#0E2A3A; --inverse-ink:#FFFFFF; --inverse-ink-2:#9DB6C2;
@@ -78,6 +79,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
     --coral:#FF8A6E; --coral-soft:#3A2119;
     --ok:#6FE0A4; --ok-soft:#123324; --bad:#FF8A78; --bad-soft:#3A1D18;
     --warn:#F2C94C; --warn-soft:#3A2F0E;
+    --warn-ink:#0C0C0D; --bad-ink:#0C0C0D; --ok-ink:#0C0C0D;
     --sky:#14303A; --dot:#F4F4F2; --shape:#2A2A2E;
     --tint-1:#101C22; --tint-2:#171E10; --tint-3:#0F1F17; --tint-4:#201512;
     --inverse:#F4F4F2; --inverse-ink:#0C0C0D; --inverse-ink-2:#4B4B51; --jxc-gold:#B8800E;
@@ -92,6 +94,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
   --coral:#FF8A6E; --coral-soft:#3A2119;
   --ok:#6FE0A4; --ok-soft:#123324; --bad:#FF8A78; --bad-soft:#3A1D18;
   --warn:#F2C94C; --warn-soft:#3A2F0E;
+  --warn-ink:#0C0C0D; --bad-ink:#0C0C0D; --ok-ink:#0C0C0D;
   --sky:#14303A; --dot:#F4F4F2; --shape:#2A2A2E;
   --tint-1:#101C22; --tint-2:#171E10; --tint-3:#0F1F17; --tint-4:#201512;
   --inverse:#F4F4F2; --inverse-ink:#0C0C0D; --inverse-ink-2:#4B4B51; --jxc-gold:#B8800E;
@@ -182,28 +185,28 @@ section{margin-bottom:var(--band-lg)}
 .wcol{background:var(--surface)}
 .wcol-head{padding:13px var(--gut-in);border-bottom:1px solid var(--line-soft);display:flex;align-items:baseline;gap:10px}
 .wcol-head h3{font-size:.95rem;letter-spacing:-.02em}
-.wcol-head .rng{margin-left:auto;font-family:var(--font-mono);font-size:.66rem;color:var(--ink-3)}
+.wcol-head .rng{margin-left:auto;font-family:var(--font-mono);font-size:.66rem;color:var(--ink-2)}
 .wcol.now .wcol-head{background:var(--accent-soft)}
 .day{border-bottom:1px solid var(--line-soft);padding:11px var(--gut-in);display:grid;grid-template-columns:52px 1fr;gap:12px}
 .day:last-child{border-bottom:0}
 .day.today{background:var(--tint-1)}
-.day.empty .items{color:var(--ink-3);font-size:.8rem;opacity:.7;padding-top:3px}
-.dstamp{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.1em;color:var(--ink-3);line-height:1.4;padding-top:2px}
+.day.empty .items{color:var(--ink-2);font-size:.8rem;padding-top:3px}
+.dstamp{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.1em;color:var(--ink-2);line-height:1.4;padding-top:2px}
 .dstamp b{display:block;font-size:1.15rem;color:var(--ink);font-weight:500;letter-spacing:-.02em}
 .day.today .dstamp b{color:var(--accent-deep)}
 .items{display:flex;flex-direction:column;gap:7px;min-width:0}
 .it{display:flex;gap:9px;align-items:flex-start;font-size:.86rem;line-height:1.4}
 .it .tick{margin-top:2px;flex:0 0 auto}
 .it .body{min-width:0}
-.it .when{font-family:var(--font-mono);font-size:.62rem;color:var(--ink-3);letter-spacing:.04em}
+.it .when{font-family:var(--font-mono);font-size:.62rem;color:var(--ink-2);letter-spacing:.04em}
 .it.done .name{text-decoration:line-through;color:var(--ink-3)}
 .rail{flex:0 0 var(--accent-bar);align-self:stretch}
 .name{font-weight:500}
 .ck{font-family:var(--font-mono);font-size:.62rem;font-weight:600;letter-spacing:.06em}
 .badge{display:inline-block;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;vertical-align:1.5px;margin-left:6px;font-weight:500;border-radius:2px}
-.b-exam{background:var(--bad);color:#fff}
+.b-exam{background:var(--bad);color:var(--bad-ink)}
 .b-due{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
-.b-quiz{background:var(--tint-2);color:var(--mint-ink);border:1px solid var(--mint-deep)}
+.b-quiz{background:var(--tint-2);color:var(--ink);border:1px solid var(--mint-deep)}
 .b-study{background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line-soft)}
 .b-off{background:transparent;color:var(--ink-3);border:1px dashed var(--line-soft)}
 input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
@@ -254,9 +257,9 @@ input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:po
 .cell.off .n{opacity:.55;text-decoration:line-through}
 .evs{display:flex;flex-direction:column;gap:2px;min-width:0;overflow:hidden}
 .ev{display:flex;align-items:center;gap:4px;font-size:.66rem;line-height:1.25;padding:2px 4px;border-radius:2px;
-  background:var(--surface-2);border-left:2px solid var(--c,var(--ink-3));cursor:pointer;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  color:var(--ink);background:var(--surface-2);border-left:2px solid var(--c,var(--ink-3));cursor:pointer;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .ev:hover{background:var(--tint-1)}
-.ev.big{background:var(--c);color:#fff;border-left-color:var(--c);font-weight:500}
+.ev.big{background:var(--c);color:var(--ci,#fff);border-left-color:var(--c);font-weight:500}
 .ev .k{font-family:var(--font-mono);font-weight:600;font-size:.6rem;flex:0 0 auto}
 .ev .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ev.done{opacity:.45;text-decoration:line-through}
@@ -381,7 +384,7 @@ table.rev td{padding:8px;border-bottom:1px solid var(--line-soft);vertical-align
 table.rev input,table.rev select{width:100%}
 table.rev input.dt{font-family:var(--font-mono);font-size:.74rem}
 table.rev tr.missing td{background:var(--warn-soft)}
-.flag{font-family:var(--font-mono);font-size:.53rem;letter-spacing:.09em;text-transform:uppercase;padding:3px 7px;background:var(--warn);color:#fff;white-space:nowrap}
+.flag{font-family:var(--font-mono);font-size:.53rem;letter-spacing:.09em;text-transform:uppercase;padding:3px 7px;background:var(--warn);color:var(--warn-ink);white-space:nowrap}
 .rev-foot{padding:15px var(--gut-in);display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--surface-2);border-top:1px solid var(--line-soft)}
 
 /* ---- export / rights ---- */
@@ -443,7 +446,7 @@ table.rev tr.missing td{background:var(--warn-soft)}
 .demobar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);
   border-left:var(--accent-bar) solid var(--warn);background:var(--warn-soft);padding:13px 17px;margin-bottom:20px}
 .demobar .tag{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
-  background:var(--warn);color:#fff;padding:3px 8px}
+  background:var(--warn);color:var(--warn-ink);padding:3px 8px}
 .demobar p{margin:0;font-size:.86rem;color:var(--ink-2);flex:1 1 320px}
 .demobar .acts{display:flex;gap:8px;flex-wrap:wrap}
 .hide{display:none!important}
@@ -816,7 +819,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"1.5",date:"10 September 2026",year:2026};
+var BUILD={v:"1.6",date:"10 September 2026",year:2026};
 /* ===================== helpers ===================== */
 var TODAY=new Date(); TODAY.setHours(0,0,0,0);
 var DOWN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -839,6 +842,50 @@ var S={courses:[],items:[],done:{},version:1};
 function load(){try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.courses)S=p;}}catch(e){}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));document.getElementById("storage-note").textContent="";}
   catch(e){document.getElementById("storage-note").innerHTML=' <b style="color:var(--jxc-gold)">This browser is refusing to save</b>, so your courses will go when the tab closes. Export your data to keep it.';}}
+/* ---------- contrast engine ----------
+   A course colour has two jobs: a fill behind text, and text on a page ground.
+   One value cannot do both, so derive the other two from it and check the ratio. */
+var VAR_CACHE={}, PAL_CACHE={};
+function resolveVar(name){
+  name=String(name).replace(/^var\(/,"").replace(/\)$/,"").trim();
+  if(VAR_CACHE[name])return VAR_CACHE[name];
+  var v=getComputedStyle(document.documentElement).getPropertyValue(name).trim()||"#666666";
+  VAR_CACHE[name]=v;return v;
+}
+function toRGB(h){
+  h=String(h).trim();
+  var m=h.match(/rgba?\(([^)]+)\)/);
+  if(m){var q=m[1].split(",").map(parseFloat);return [q[0],q[1],q[2]];}
+  h=h.replace("#","");
+  if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+}
+function hexOf(rgb){return "#"+rgb.map(function(v){return Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,"0");}).join("");}
+function relLum(rgb){
+  var a=rgb.map(function(v){v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);});
+  return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];
+}
+function ratio(a,b){var l1=relLum(a),l2=relLum(b);return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);}
+function inkOn(rgb){return ratio(rgb,[255,255,255])>=ratio(rgb,[12,12,13])?"#FFFFFF":"#0C0C0D";}
+function readableOn(rgb,bg,target){
+  target=target||4.6;
+  if(ratio(rgb,bg)>=target)return hexOf(rgb);
+  var darken=relLum(bg)>0.4, r=rgb.slice();
+  for(var i=0;i<48&&ratio(r,bg)<target;i++){
+    r=r.map(function(v){return Math.max(0,Math.min(255,darken?v-6:v+6));});
+  }
+  return hexOf(r);
+}
+function palOf(key){
+  if(PAL_CACHE[key])return PAL_CACHE[key];
+  var c=courseOf(key), raw=resolveVar(c.color||"--accent"), rgb=toRGB(raw);
+  var ground=toRGB(resolveVar("--surface-2"));
+  var p={raw:raw, ct:readableOn(rgb,ground,4.6), ci:inkOn(rgb)};
+  PAL_CACHE[key]=p;return p;
+}
+function resetPalette(){VAR_CACHE={};PAL_CACHE={};}
+function textColorOf(k){return palOf(k).ct;}
+function inkColorOf(k){return palOf(k).ci;}
 function colorOf(k){var c=S.courses.filter(function(x){return x.key===k;})[0];return c?"var("+c.color+")":"var(--ink-3)";}
 function courseOf(k){return S.courses.filter(function(x){return x.key===k;})[0]||{key:k,code:k,title:"",color:"--ink-3"};}
 
@@ -895,7 +942,7 @@ function itemHTML(ev,tick){
    +'<span class="rail" style="background:'+col+'"></span>'
    +(tick&&ev.kind!=="off"?'<span class="tick"><input type="checkbox" data-tick="'+esc(ev.id)+'"'+(done?" checked":"")+' aria-label="mark done"></span>':'')
    +'<span class="body"><span class="name"'+(ev.kind==="off"?' style="color:var(--ink-3)"':'')+'>'
-   +'<span class="ck" style="color:'+col+'">'+esc(courseOf(ev.c).key)+'</span> '+esc(ev.t)+'</span>'+badge
+   +'<span class="ck" style="color:'+textColorOf(ev.c)+'">'+esc(courseOf(ev.c).key)+'</span> '+esc(ev.t)+'</span>'+badge
    +(when?'<div class="when">'+esc(when)+'</div>':'')+'</span></div>';
 }
 
@@ -924,13 +971,13 @@ function renderHorizon(){
   var html=up.map(function(i){
     var col=colorOf(i.c),n=daysTo(i.d);
     var cd=n<=3?"var(--bad)":n<=10?"var(--warn)":"var(--ink-3)";
-    return '<div class="hcard" style="--hc:'+col+'"><div class="d" style="color:'+col+'">'+esc(courseOf(i.c).code)+'</div>'
+    return '<div class="hcard" style="--hc:'+col+'"><div class="d" style="color:'+textColorOf(i.c)+'">'+esc(courseOf(i.c).code)+'</div>'
       +'<div class="t">'+esc(i.t)+'</div><div class="m">'+fmtDay(P(i.d))+(i.w?" · "+esc(i.w):"")+'</div>'
       +'<div class="cd" style="color:'+cd+'">'+countdown(i.d)+'</div></div>';
   }).join("");
   html+=tbd.map(function(i){
     var col=colorOf(i.c);
-    return '<div class="hcard unset" style="--hc:'+col+'"><div class="d" style="color:'+col+'">'+esc(courseOf(i.c).code)+'</div>'
+    return '<div class="hcard unset" style="--hc:'+col+'"><div class="d" style="color:'+textColorOf(i.c)+'">'+esc(courseOf(i.c).code)+'</div>'
       +'<div class="t">'+esc(i.t)+'</div><div class="m">'+esc(i.note||"No date given in the outline.")+'</div>'
       +'<div style="margin-top:10px"><button class="tbd" data-tbd="'+i.id+'">Set date</button></div></div>';
   }).join("");
@@ -941,7 +988,7 @@ var FILTER={};
 function renderFilters(){
   var h=S.courses.map(function(c){
     if(!(c.key in FILTER))FILTER[c.key]=1;
-    return '<button class="chip" data-f="'+esc(c.key)+'" aria-pressed="'+(FILTER[c.key]?"true":"false")+'" style="color:'+(FILTER[c.key]?"var("+c.color+")":"var(--ink-3)")+'"><span class="dot"></span>'+esc(c.code)+'</button>';
+    return '<button class="chip" data-f="'+esc(c.key)+'" aria-pressed="'+(FILTER[c.key]?"true":"false")+'" style="color:'+(FILTER[c.key]?textColorOf(c.key):"var(--ink-3)")+'"><span class="dot" style="background:'+colorOf(c.key)+'"></span>'+esc(c.code)+'</button>';
   }).join("");
   if(!("study" in FILTER))FILTER.study=1;
   h+='<button class="chip" data-f="study" aria-pressed="'+(FILTER.study?"true":"false")+'"><span class="dot"></span>Study</button>';
@@ -975,7 +1022,7 @@ function renderMonths(){
       var shown=evs.filter(function(x){return x.kind!=="off";});
       var chips=shown.slice(0,3).map(function(x){
         var big=isGraded(x);
-        return '<span class="ev'+(big?" big":"")+(S.done[x.id]?" done":"")+'" style="--c:'+colorOf(x.c)+'" data-ev="'+esc(x.id)+'" data-evday="'+iso+'">'
+        return '<span class="ev'+(big?" big":"")+(S.done[x.id]?" done":"")+'" style="--c:'+colorOf(x.c)+';--ci:'+inkColorOf(x.c)+'" data-ev="'+esc(x.id)+'" data-evday="'+iso+'">'
           +'<span class="k">'+esc(courseOf(x.c).key)+'</span><span class="tt">'+esc(x.t)+'</span></span>';
       }).join("");
       if(shown.length>3)chips+='<span class="more">+'+(shown.length-3)+' more</span>';
@@ -1079,7 +1126,7 @@ function sheetEvent(id,iso){
   var col="var("+(c.color||"--accent")+")";
   SHEET_BACK=iso;
   document.getElementById("sheet-head").innerHTML=
-    '<div style="min-width:0"><div class="code" style="--c:'+col+'">'+esc(c.code||c.key)+'</div>'
+    '<div style="min-width:0"><div class="code" style="--c:'+textColorOf(c.key)+'">'+esc(c.code||c.key)+'</div>'
     +'<h3 id="sheet-title">'+esc(title)+'</h3>'
     +'<div class="when">'+(date?fmtDay(P(date))+", "+P(date).getFullYear():"no date set")
     +(ev&&ev.from?" · "+t12(ev.from)+"–"+t12(ev.to):"")+'</div></div>'
@@ -1130,7 +1177,7 @@ function renderCourses(){
     }).join("")||'<div class="srow"><span class="sd">—</span><span class="st" style="color:var(--ink-3)">No class-by-class schedule in this outline.</span></div>';
     var st=c.study||{on:false,dow:1,from:"19:00",to:"20:30"};
     return '<article class="course" style="--ck:'+col+'">'
-      +'<div class="chead"><div class="ctop"><span class="ccode">'+esc(c.code)+'</span><span class="ctitle">'+esc(c.title)+'</span>'
+      +'<div class="chead"><div class="ctop"><span class="ccode" style="color:'+textColorOf(c.key)+'">'+esc(c.code)+'</span><span class="ctitle">'+esc(c.title)+'</span>'
       +'<span class="cacts"><button class="btn sm danger" data-del="'+esc(c.key)+'">Remove</button></span></div><div class="cmeta">'
       +(c.instructor?'<span>Instructor <b>'+esc(c.instructor)+'</b>'+(c.email?' · <a href="mailto:'+esc(c.email)+'">'+esc(c.email)+'</a>':'')+'</span>':'')
       +(c.meets?'<span>Meets <b>'+esc(c.meets)+'</b>'+(c.time?', '+esc(c.time):'')+'</span>':'')
@@ -1151,6 +1198,7 @@ function renderCourses(){
   }).join("");
 }
 function renderAll(){
+  resetPalette();
   STUDY=studyEvents();
   var has=S.courses.length>0;
   document.getElementById("empty-state").classList.toggle("hide",has);
@@ -1377,6 +1425,7 @@ document.addEventListener("click",function(e){
     var next=dark?"light":"dark";
     document.documentElement.setAttribute("data-theme",next);
     try{localStorage.setItem("sd.theme",next);}catch(err){}
+    resetPalette();renderAll();
     return;
   }
   if(t.closest("#rightslink")){e.preventDefault();showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
@@ -1482,6 +1531,14 @@ function sizeTopbar(){
 }
 window.addEventListener("resize",sizeTopbar);
 window.addEventListener("orientationchange",sizeTopbar);
+/* if the theme changes by ANY route, the derived course colours are stale */
+if(window.MutationObserver){
+  new MutationObserver(function(muts){
+    for(var i=0;i<muts.length;i++){
+      if(muts[i].attributeName==="data-theme"){resetPalette();renderAll();return;}
+    }
+  }).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+}
 function updateCount(){
   var n=document.getElementById("paste").value.trim().length;
   document.getElementById("charcount").textContent=n?n.toLocaleString()+" characters":"";
