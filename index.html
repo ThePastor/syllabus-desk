@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v2.4  (10 September 2026)
+  Syllabus Desk  v2.5  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -152,7 +152,17 @@ a{color:var(--accent-deep)}
   .tab{padding:11px 13px;border-bottom-width:2px}
   .tab:first-child{padding-left:0}
 }
+@media(max-width:560px){
+  /* Seven tabs no longer fit on one line of a phone. A strip that scrolls
+     sideways hides the last two behind an edge with nothing to say they are
+     there, so on a narrow screen the tabs wrap instead: every destination is
+     visible without anyone having to guess that the row can be swiped. */
+  .tabs{flex-wrap:wrap;overflow-x:visible;row-gap:0}
+  .tab{padding:10px 11px;flex:0 0 auto}
+  .tab:first-child{padding-left:0}
+}
 @media(max-width:420px){
+  .tab{padding:10px 9px;letter-spacing:.06em}
   .topacts .btn{padding:7px 8px;font-size:.62rem;letter-spacing:.06em}
   .brand .sd-mark{width:22px;height:22px}
   .brand .wm{font-size:.92rem}
@@ -379,6 +389,32 @@ details.sched[open] summary::before{content:"–"}
 .blockrow:last-child{border-bottom:0}
 .blockrow select{flex:1 1 108px;min-width:0}
 .blockrow input[type=time]{flex:0 0 auto;font-family:var(--font-mono);font-size:.76rem}
+/* ---- time, said out loud ----
+   <input type=time> shows 24-hour or 12-hour depending on the reader's device and
+   language, which is no use when the answer has to be unambiguous. Hour, minute and
+   AM/PM as three explicit controls read the same on every machine. */
+.seg{display:flex;border:1px solid var(--line-soft);border-radius:2px;overflow:hidden}
+.seg button{flex:1 1 auto;border:0;border-right:1px solid var(--line-soft);background:var(--surface);
+  color:var(--ink-2);font-family:var(--font-mono);font-size:.66rem;letter-spacing:.08em;
+  text-transform:uppercase;min-height:42px;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.seg button:hover:not([aria-pressed="true"]){background:var(--surface-2);color:var(--ink)}
+.tctl{display:inline-flex;align-items:stretch;border:1px solid var(--line-soft);border-radius:2px;
+  background:var(--surface);flex:0 0 auto}
+.tctl select{border:0;background:transparent;color:var(--ink);font-family:var(--font-mono);
+  font-size:.78rem;padding:7px 4px 7px 8px;min-height:40px;cursor:pointer}
+.tctl select:last-of-type{padding-right:8px}
+.tctl .colon{display:grid;place-items:center;font-family:var(--font-mono);color:var(--ink-3);
+  font-size:.78rem;padding:0 1px}
+.tctl .ampm{display:flex;border-left:1px solid var(--line-soft)}
+.tctl .ampm button{border:0;background:transparent;color:var(--ink-3);font-family:var(--font-mono);
+  font-size:.66rem;letter-spacing:.05em;padding:0 9px;min-width:38px;min-height:40px;cursor:pointer}
+.tctl .ampm button+button{border-left:1px solid var(--line-soft)}
+.tctl .ampm button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.tctl .ampm button:hover:not([aria-pressed="true"]){background:var(--surface-2);color:var(--ink)}
+.blockrow select[data-blkevery]{flex:1 1 130px;min-width:0}
+@media(max-width:560px){.tctl{flex:1 1 100%}.tctl select{flex:1 1 auto}}
 .blockrow .to{font-family:var(--font-mono);font-size:.66rem;color:var(--ink-3)}
 .blockrow .x{width:28px;height:28px;font-size:.95rem;margin-left:auto;flex:0 0 auto}
 .blockempty{padding:12px 11px;font-size:.82rem;color:var(--ink-3);background:var(--surface)}
@@ -1056,12 +1092,10 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
     <button class="tab" data-panel="p-courses" aria-selected="false">Courses</button>
     <button class="tab" data-panel="p-life" aria-selected="false">Life</button>
     <button class="tab" data-panel="p-export" aria-selected="false">Export</button>
-    <button class="tab hide" id="accounttab" data-panel="p-account" aria-selected="false">Account</button>
-    <button class="tab hide" id="ownertab" data-panel="p-owner" aria-selected="false">Owner</button>
+    <button class="tab" id="accounttab" data-panel="p-account" aria-selected="false">Account</button>
+    <button class="tab" data-panel="p-settings" aria-selected="false">Settings</button>
   </nav>
   <div class="topacts">
-    <button class="btn sm" id="guidebtn" aria-expanded="false" title="What this is and how to use it">Guide</button>
-    <button class="btn sm" id="ownerbtn" title="Owner access">Owner</button>
     <button class="btn sm" id="themebtn" title="Switch light and dark" aria-label="Switch theme">Theme</button>
     <button class="btn primary sm" id="addbtn">Add course</button>
   </div>
@@ -1113,6 +1147,67 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         <div class="horizon" id="horizon"></div>
       </section>
     </div>
+
+      <section id="about-anchor" style="margin-top:var(--band-lg)">
+        <div class="sec-head"><h2>About this project</h2><span class="note">what it is · how to use it</span></div>
+<div class="probgrid">
+        <div>
+          <div class="lab">The problem</div>
+          <h3>The dates exist. Nobody can see them.</h3>
+          <p>Every course hands you a PDF with the schedule buried in a table on page four, in a different layout from the last one. Five courses means five documents, five formats, and no single place that says what is due this week.</p>
+          <p>So most people read the outline once in September and never again — and find out about the midterm when someone mentions it in the hallway.</p>
+          <p class="bad"><b>Worse: the outline is not the whole story.</b> Instructors post quizzes, lessons and gated activities on the course site that the outline never mentions.</p>
+        </div>
+        <div>
+          <div class="lab">What this does</div>
+          <h3>One pass, then it is just there.</h3>
+          <p>You add each course once. Claude reads the outline and proposes the dated items — and then <b>you confirm every one</b> before anything is saved. Nothing is guessed: if the outline never gave a date, it comes back flagged, not invented.</p>
+          <p>After that you get your term three ways: <b>this week and next</b> for what is actually coming, a <b>full-term calendar</b> for the shape of it, and <b>course by course</b> for the weightings and the rules that quietly cost marks.</p>
+          <p>Then export it, so the reminders reach you when you are not looking at this page.</p>
+        </div>
+      </div>
+<div class="howto">
+        <div class="row"><div class="num">Step 01</div><div>
+          <h4>Add a course</h4>
+          <p>Press <b>Add course</b>. Drop in the PDF or Word file your instructor posted, or paste the text straight from it. The file is read on your own device — it is not uploaded anywhere.</p>
+          <p class="tip">If you only paste part of it, paste the <b>schedule table and the grading breakdown</b>. Those two carry almost every date.</p>
+        </div></div>
+        <div class="row"><div class="num">Step 02</div><div>
+          <h4>Check what it found</h4>
+          <p>Everything lands in an editable table before it is saved. Fix a title, correct a date, change a weight, delete a row that is not really graded.</p>
+          <p class="tip">Rows marked <b>no date</b> are the ones the outline left blank — usually final exams. Fill them in when your school publishes them, or leave them flagged so you remember they are open.</p>
+        </div></div>
+        <div class="row"><div class="num">Step 03</div><div>
+          <h4>Do the rest, then set your study blocks</h4>
+          <p>Repeat for each course. On the <b>Courses</b> tab you can add as many weekly study blocks per course as you want, move them to whatever evenings suit you, and remove the ones you do not keep. Each course also suggests times worked out from when it actually meets, avoiding your other classes and blocks — and extra prep is added automatically five, three and one days before every exam.</p>
+        </div></div>
+        <div class="row"><div class="num">Step 04</div><div>
+          <h4>Send it to your phone</h4>
+          <p>On <b>Export</b>, take the <b>.csv</b> for Google Calendar or the <b>.ics</b> for Apple Calendar and everything else. Import it into a <b>separate calendar</b>, not your main one — if it comes out wrong you delete one calendar instead of forty events.</p>
+          <p class="tip">The export is a snapshot. Change a date here afterwards and your calendar will not know, so re-export or fix that one event by hand.</p>
+        </div></div>
+      </div>
+      <div class="howto" id="install-block">
+        <div class="row"><div class="num">On your phone</div><div>
+          <h4>Keep it on your home screen</h4>
+          <p>Added to your home screen it opens straight into your term with no address bar, and looks
+          like any other app. It takes about ten seconds and installs nothing.</p>
+          <div class="row" style="margin-top:12px"><button class="btn" id="home-install">Show me how</button></div>
+          <p class="tip">It still needs a connection to open — there is no offline copy. On iPhone the
+          home-screen version keeps its own storage separately from Safari, so use <b>Export data</b>
+          and import it once inside.</p>
+        </div></div>
+      </div>
+<div class="limits">
+        <h3>What it will not do</h3>
+        <ul>
+          <li><b>It will sometimes get a date wrong.</b> It reads outlines with an AI model, and outlines are messy. This is a planning aid, not a source of truth — your course page and your instructor are. Check anything that matters.</li>
+          <li><b>It only knows what you give it.</b> If your instructor posts a quiz on the course site that never appears in the outline, it will not be here. Worth a look at your course page every couple of weeks.</li>
+          <li><b>Without an account, your term is saved in this browser only.</b> Not on a server, not visible to anyone else — but also not on your phone, and gone if you clear site data. <b>Export data</b> on the Export tab is your backup. <b>With</b> an account, your email and your term are stored on a server run by JohnsonXCorp so they can follow you between devices, and your email is visible to the site owner. Your password is not — only a one-way hash of it is kept, which nobody can read back. Accounts are optional and the Account tab can delete what is stored.</li>
+          <li><b>Reading an outline sends its text to Claude.</b> That one step, and only that step, leaves your device. Everything else — the file itself, your schedule, your edits — stays local.</li>
+        </ul>
+      </div>
+      </section>
   </div>
 
   <div class="panel" id="p-cal">
@@ -1140,87 +1235,6 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
   </div>
 
 
-  <div class="panel" id="p-home">
-    <section style="margin-bottom:0">
-      <div class="home-hero">
-        <div class="dots" aria-hidden="true"></div>
-        <div class="inner">
-          <svg class="sd-mark" viewBox="0 0 64 64" role="img" aria-label="Syllabus Desk" focusable="false"><rect width="64" height="64" fill="#DEF47F"/>
-<rect x="10.29" y="12.57" width="43.43" height="4.57" fill="#0C0C0D"/>
-<rect x="10.29" y="19.43" width="9.14" height="9.14" fill="#0C0C0D"/>
-<rect x="21.72" y="19.43" width="9.14" height="9.14" fill="#387A84"/>
-<rect x="33.15" y="19.43" width="9.14" height="9.14" fill="#0C0C0D"/>
-<rect x="44.58" y="19.43" width="9.14" height="9.14" fill="#0C0C0D"/>
-<rect x="10.29" y="30.86" width="9.14" height="9.14" fill="#0C0C0D"/>
-<rect x="21.72" y="30.86" width="9.14" height="9.14" fill="#0C0C0D"/>
-<rect x="33.15" y="30.86" width="9.14" height="9.14" fill="#387A84"/>
-<rect x="44.58" y="30.86" width="9.14" height="9.14" fill="#0C0C0D"/>
-<rect x="10.29" y="42.29" width="9.14" height="9.14" fill="#0C0C0D"/>
-<rect x="21.72" y="42.29" width="9.14" height="9.14" fill="#0C0C0D"/>
-<rect x="33.15" y="42.29" width="9.14" height="9.14" fill="#387A84"/>
-<rect x="44.58" y="42.29" width="9.14" height="9.14" fill="#0C0C0D"/>
-</svg>
-          <div class="lab">Syllabus Desk · a JohnsonXCorp project</div>
-          <h1>Your whole term, <em>on one page</em>.</h1>
-          <p class="lede">Feed it your course outlines. It pulls out every exam, quiz, report and deadline, lays them out week by week, and hands you a file your phone's calendar understands.</p>
-          <div class="row">
-            <button class="btn primary" id="home-add">Add my first course <span class="arw">&rarr;</span></button>
-            <button class="btn" id="home-close">Back to my term</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="probgrid">
-        <div>
-          <div class="lab">The problem</div>
-          <h3>The dates exist. Nobody can see them.</h3>
-          <p>Every course hands you a PDF with the schedule buried in a table on page four, in a different layout from the last one. Five courses means five documents, five formats, and no single place that says what is due this week.</p>
-          <p>So most people read the outline once in September and never again — and find out about the midterm when someone mentions it in the hallway.</p>
-          <p class="bad"><b>Worse: the outline is not the whole story.</b> Instructors post quizzes, lessons and gated activities on the course site that the outline never mentions.</p>
-        </div>
-        <div>
-          <div class="lab">What this does</div>
-          <h3>One pass, then it is just there.</h3>
-          <p>You add each course once. Claude reads the outline and proposes the dated items — and then <b>you confirm every one</b> before anything is saved. Nothing is guessed: if the outline never gave a date, it comes back flagged, not invented.</p>
-          <p>After that you get your term three ways: <b>this week and next</b> for what is actually coming, a <b>full-term calendar</b> for the shape of it, and <b>course by course</b> for the weightings and the rules that quietly cost marks.</p>
-          <p>Then export it, so the reminders reach you when you are not looking at this page.</p>
-        </div>
-      </div>
-
-      <div class="howto">
-        <div class="row"><div class="num">Step 01</div><div>
-          <h4>Add a course</h4>
-          <p>Press <b>Add course</b>. Drop in the PDF or Word file your instructor posted, or paste the text straight from it. The file is read on your own device — it is not uploaded anywhere.</p>
-          <p class="tip">If you only paste part of it, paste the <b>schedule table and the grading breakdown</b>. Those two carry almost every date.</p>
-        </div></div>
-        <div class="row"><div class="num">Step 02</div><div>
-          <h4>Check what it found</h4>
-          <p>Everything lands in an editable table before it is saved. Fix a title, correct a date, change a weight, delete a row that is not really graded.</p>
-          <p class="tip">Rows marked <b>no date</b> are the ones the outline left blank — usually final exams. Fill them in when your school publishes them, or leave them flagged so you remember they are open.</p>
-        </div></div>
-        <div class="row"><div class="num">Step 03</div><div>
-          <h4>Do the rest, then set your study blocks</h4>
-          <p>Repeat for each course. On the <b>Courses</b> tab you can add as many weekly study blocks per course as you want, move them to whatever evenings suit you, and remove the ones you do not keep. Each course also suggests times worked out from when it actually meets, avoiding your other classes and blocks — and extra prep is added automatically five, three and one days before every exam.</p>
-        </div></div>
-        <div class="row"><div class="num">Step 04</div><div>
-          <h4>Send it to your phone</h4>
-          <p>On <b>Export</b>, take the <b>.csv</b> for Google Calendar or the <b>.ics</b> for Apple Calendar and everything else. Import it into a <b>separate calendar</b>, not your main one — if it comes out wrong you delete one calendar instead of forty events.</p>
-          <p class="tip">The export is a snapshot. Change a date here afterwards and your calendar will not know, so re-export or fix that one event by hand.</p>
-        </div></div>
-      </div>
-
-      <div class="limits">
-        <h3>What it will not do</h3>
-        <ul>
-          <li><b>It will sometimes get a date wrong.</b> It reads outlines with an AI model, and outlines are messy. This is a planning aid, not a source of truth — your course page and your instructor are. Check anything that matters.</li>
-          <li><b>It only knows what you give it.</b> If your instructor posts a quiz on the course site that never appears in the outline, it will not be here. Worth a look at your course page every couple of weeks.</li>
-          <li><b>Without an account, your term is saved in this browser only.</b> Not on a server, not visible to anyone else — but also not on your phone, and gone if you clear site data. <b>Export data</b> on the Export tab is your backup. <b>With</b> an account, your email and your term are stored on a server run by JohnsonXCorp so they can follow you between devices, and your email is visible to the site owner. Your password is not — only a one-way hash of it is kept, which nobody can read back. Accounts are optional and the Account tab can delete what is stored.</li>
-          <li><b>Reading an outline sends its text to Claude.</b> That one step, and only that step, leaves your device. Everything else — the file itself, your schedule, your edits — stays local.</li>
-        </ul>
-      </div>
-    </section>
-  </div>
-
 
   <div class="panel" id="p-life">
     <section>
@@ -1240,6 +1254,8 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           <label class="f"><span>How often</span>
             <select id="lf-rep">
               <option value="weekly">Every week</option>
+              <option value="2a">Every other week, from this week</option>
+              <option value="2b">Every other week, from next week</option>
               <option value="once">Just once</option>
             </select></label>
         </div>
@@ -1255,8 +1271,8 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
             <input type="date" id="lf-date" class="dt"></label></div>
 
         <div class="lifetimes">
-          <label class="f"><span>From</span><input type="time" id="lf-from" value="17:00"></label>
-          <label class="f"><span>To</span><input type="time" id="lf-to" value="21:00"></label>
+          <label class="f"><span>From</span><span id="lf-fromwrap"></span></label>
+          <label class="f"><span>To</span><span id="lf-towrap"></span></label>
           <label class="f" style="flex:1 1 220px"><span>Note (optional)</span>
             <input id="lf-note" maxlength="140" placeholder="Ask for the early finish" autocomplete="off"></label>
         </div>
@@ -1333,6 +1349,17 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
   <div class="panel" id="p-account">
     <section>
       <div class="sec-head"><h2>Your account</h2><span class="note" id="acct-note"></span></div>
+
+      <div id="acct-off" class="hide">
+        <div class="callout">
+          <h4>Accounts are not switched on yet</h4>
+          <p style="margin:0 0 8px">Everything on this page works without one — your term lives in this
+          browser and never leaves it. Signing in would only add one thing: the same term opening on your
+          phone, your laptop and a library computer.</p>
+          <p style="margin:0">The sign-in is built and waiting on its server keys. Until those are in,
+          showing you a login box that cannot log you in would be worse than saying so.</p>
+        </div>
+      </div>
 
       <div id="acct-out">
         <div class="callout" style="margin-bottom:22px">
@@ -1416,9 +1443,63 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
     </section>
   </div>
 
-  <div class="panel" id="p-owner">
+
+
+  <div class="panel" id="p-settings">
     <section>
-      <div class="sec-head"><h2>Owner</h2><span class="note" id="owner-note"></span></div>
+      <div class="sec-head"><h2>Settings</h2><span class="note" id="set-note"></span></div>
+
+      <div class="exportgrid" style="margin-bottom:26px">
+        <div class="excard">
+          <h4>Appearance</h4>
+          <p>Light is the default. Whichever you pick is remembered on this device.</p>
+          <div class="seg" role="group" aria-label="Theme">
+            <button type="button" data-theme-set="light">Light</button>
+            <button type="button" data-theme-set="dark">Dark</button>
+          </div>
+        </div>
+        <div class="excard">
+          <h4>On your phone</h4>
+          <p>Add it to your home screen and it opens like an app, with no address bar.</p>
+          <button class="btn" id="set-install">How to install it</button>
+        </div>
+        <div class="excard">
+          <h4>This build</h4>
+          <p id="set-build" class="hint" style="margin:0 0 12px"></p>
+          <button class="btn" id="set-whatsnew">What changed</button>
+        </div>
+      </div>
+
+      <div class="exportgrid" style="margin-bottom:26px">
+        <div class="excard">
+          <h4>Your data</h4>
+          <p>Everything is on the <b>Export</b> tab: a Google CSV, an Apple .ics, and a JSON backup you
+          can import on another browser.</p>
+          <button class="btn" id="set-goexport">Open Export</button>
+        </div>
+        <div class="excard">
+          <h4>Start over</h4>
+          <p>Removes every course, date, tick, study block and personal entry <b>from this browser</b>.
+          A saved account copy is not touched.</p>
+          <button class="btn danger" id="set-wipe">Clear this device</button>
+        </div>
+        <div class="excard">
+          <h4>Rights and licence</h4>
+          <p>Who owns this, what you may do with it, and exactly what happens to your course material.</p>
+          <button class="btn" id="set-rights">Read the notice</button>
+        </div>
+      </div>
+
+      <div id="owner-gate">
+        <div class="callout">
+          <h4>Owner access</h4>
+          <p style="margin:0 0 12px">Tools for whoever runs this site. Nothing here changes what you see
+          as a student.</p>
+          <button class="btn sm" id="ownerbtn" title="Owner access">Unlock owner tools</button>
+        </div>
+      </div>
+      <div id="owner-zone" class="hide">
+      <div class="sec-head" style="margin-top:6px"><h2 style="font-size:1.15rem">Owner tools</h2><span class="note" id="owner-note"></span></div>
       <p class="hint" style="margin:-8px 0 18px">Status: <b id="owner-who"></b></p>
       <div class="exportgrid" style="margin-bottom:22px">
         <div class="excard">
@@ -1465,6 +1546,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         <p>Which means: treat everything shipped in this file — including the schedule behind <b>Load my schedule</b> — as public, because on a public web address it is.</p>
         <p class="small">To change the credentials: compute <span class="mono">sha256("username:password")</span>, replace <span class="mono">OWNER_HASH</span> in <span class="mono">src/body.html</span>, rebuild and republish.</p>
         <p>If you want a schedule that is genuinely private, keep it out of the build and bring it in through <b>Import</b> on the Export tab from a JSON file you hold yourself.</p>
+      </div>
       </div>
     </section>
   </div>
@@ -1540,11 +1622,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"2.4",date:"10 September 2026",year:2026};
+var BUILD={v:"2.5",date:"10 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["2.5","One first page that is both the welcome and your fortnight, with how to add a course and how to put it on your home screen right there. Times are now set with an explicit AM or PM instead of whatever your device decided, anything weekly can be every other week instead, and Owner has moved inside a new Settings tab \u2014 with Log in taking its place."],
   ["2.4","The rest of your life, on the same page as the coursework: shifts, training, family, appointments \u2014 weekly or one-off, each with its own icon, in your two weeks, your calendar and your export. Text everywhere is darker and the smallest labels are bigger, so nothing is a squint."],
   ["2.3","A dark mode that is dark rather than switched off. The page now sits below the panels so they lift, the hairlines stopped being paper-white, and the footer is deeper than the page instead of a bright slab \u2014 the same Slate Navy palette as UNI Made EZ, so the two apps read as one."],
   ["2.2","Study blocks you can actually manage: add as many per course as you want, move them, remove them. Each course also suggests times worked out from when it really meets \u2014 the evening after a class while it is fresh, or the evening before one so you arrive ready \u2014 never on top of another class or a block you already have."],
@@ -1684,8 +1767,9 @@ function studyEvents(){
     while(d<=end){
       var iso=ISO(d),day=d.getDay();
       c.blocks.forEach(function(b){
-        if(b.dow===day)out.push({id:"st-"+c.key+"-"+b.id+"-"+iso,c:c.key,d:iso,
-          t:blockLabel(c),k:"study",from:b.from,to:b.to});
+        if(b.dow===day&&weekOn(iso,b.every,b.anchor))
+          out.push({id:"st-"+c.key+"-"+b.id+"-"+iso,c:c.key,d:iso,
+            t:blockLabel(c),k:"study",from:b.from,to:b.to});
       });
       d=new Date(d.getTime()+864e5);
     }
@@ -1870,7 +1954,7 @@ function lifeEvents(){
     if(!dows.length)return;
     var d=new Date(start);
     while(d<=end){
-      if(dows.indexOf(d.getDay())>-1)
+      if(dows.indexOf(d.getDay())>-1&&weekOn(ISO(d),e.every,e.anchor))
         out.push({id:"lf-"+e.id+"-"+ISO(d),c:"__life",d:ISO(d),t:e.t,cat:e.cat,from:e.from,to:e.to,note:e.note});
       d=new Date(d.getTime()+864e5);
     }
@@ -1881,11 +1965,12 @@ var LIFE=[];
 function dowShort(n){return DOWN[n].slice(0,3);}
 function lifeWhen(e){
   if(e.d)return fmtDay(P(e.d))+", "+P(e.d).getFullYear();
-  var ds=(e.dows||[]).slice().sort();
-  if(ds.length===7)return "Every day";
-  if(ds.length===5&&ds.join()==="1,2,3,4,5")return "Weekdays";
-  if(ds.length===2&&ds.join()==="0,6")return "Weekends";
-  return ds.map(dowShort).join(" · ");
+  var ds=(e.dows||[]).slice().sort(),when;
+  if(ds.length===7)when="Every day";
+  else if(ds.length===5&&ds.join()==="1,2,3,4,5")when="Weekdays";
+  else if(ds.length===2&&ds.join()==="0,6")when="Weekends";
+  else when=ds.map(dowShort).join(" · ");
+  return when+((e.every&&e.every>1)?" · every other week":"");
 }
 
 /* ===================== render ===================== */
@@ -2134,14 +2219,16 @@ function renderCourses(){
     }).join("")||'<div class="srow"><span class="sd">—</span><span class="st" style="color:var(--ink-3)">No class-by-class schedule in this outline.</span></div>';
     var blocks=c.blocks||[];
     var blist=blocks.map(function(b){
+      var bk=c.key+"|"+b.id;
       return '<div class="blockrow">'
-        +'<select data-blkdow="'+esc(c.key)+'|'+esc(b.id)+'" aria-label="Day of the week">'
+        +'<select data-blkdow="'+esc(bk)+'" aria-label="Day of the week">'
         +DOWN.map(function(n,ix){return '<option value="'+ix+'"'+(ix===b.dow?" selected":"")+'>'+n+'</option>';}).join("")
         +'</select>'
-        +'<input type="time" data-blkfrom="'+esc(c.key)+'|'+esc(b.id)+'" value="'+esc(b.from)+'" aria-label="Start time">'
+        +everySelect("blkevery",bk,b.every,b.anchor)
+        +timeCtl("blkfrom",bk,b.from,"Start")
         +'<span class="to">to</span>'
-        +'<input type="time" data-blkto="'+esc(c.key)+'|'+esc(b.id)+'" value="'+esc(b.to)+'" aria-label="End time">'
-        +'<button class="x" data-blkdel="'+esc(c.key)+'|'+esc(b.id)+'" aria-label="Remove this study block" title="Remove">&times;</button>'
+        +timeCtl("blkto",bk,b.to,"End")
+        +'<button class="x" data-blkdel="'+esc(bk)+'" aria-label="Remove this study block" title="Remove">&times;</button>'
         +'</div>';
     }).join("");
     var sug=suggestBlocks(c.key).map(function(g){
@@ -2182,12 +2269,125 @@ function renderAll(){
   document.getElementById("loaded-state").classList.toggle("hide",!has);
   if(has){renderWeeks();renderHorizon();}
   var db=document.getElementById("demobar"); if(db)db.classList.toggle("hide",!(has&&S.demo));
-  renderFilters();renderMonths();renderCourses();renderLife();
+  renderFilters();renderMonths();renderCourses();renderLife();paintSettings();
 }
 
 
+
+
+/* ---------- adding it to a home screen ----------
+   There is no service worker here, so this is the browser's own "add to home
+   screen", which makes a real icon that opens the site full-screen. Saying that
+   plainly beats implying an app-store install that is not happening. */
+function isIOS(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent)||
+    (navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+}
+function standalone(){
+  return (window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||
+    window.navigator.standalone===true;
+}
+function sheetInstall(){
+  var steps=isIOS()
+    ? [["01","Tap the <b>Share</b> button — the square with an arrow coming out of it, at the bottom of Safari."],
+       ["02","Scroll down the list and tap <b>Add to Home Screen</b>."],
+       ["03","Tap <b>Add</b>. Syllabus Desk appears on your home screen with its own icon."]]
+    : [["01","Open your browser’s menu — usually three dots, top right."],
+       ["02","Choose <b>Install app</b>, or <b>Add to Home screen</b>."],
+       ["03","Confirm. It opens in its own window, without the address bar."]];
+  SHEET_BACK=null;
+  document.getElementById("sheet-head").innerHTML=
+    '<div style="min-width:0"><div class="code" style="--c:var(--accent-deep)">Takes about ten seconds</div>'
+    +'<h3 id="sheet-title">Put it on your home screen</h3>'
+    +'<div class="when">'+(standalone()?"You are already in the installed one":
+       (isIOS()?"Steps for iPhone and iPad":"Steps for Android and desktop"))+'</div></div>'
+    +'<button class="x" data-close aria-label="Close">&times;</button>';
+  document.getElementById("sheet-body").innerHTML=
+    '<p style="margin:0 0 14px;font-size:.9rem;color:var(--ink-2)">It opens straight into your term with '
+    +'no address bar taking up the top of the screen.</p>'
+    +'<ol class="wn-list">'+steps.map(function(st){
+        return '<li><b>'+st[0]+'</b><span>'+st[1]+'</span></li>';}).join("")+'</ol>'
+    +'<p class="note" style="margin-top:14px">Two honest notes. It still needs a connection to open, '
+    +'because there is no offline copy — once it is open, everything except reading a new outline '
+    +'works without one. And on iPhone the home-screen version keeps <b>separate storage</b> from Safari, '
+    +'so use <b>Export data</b> on the Export tab and import it once inside, or add your courses again there.</p>';
+  document.getElementById("sheet-foot").innerHTML=
+    '<span class="spacer" style="flex:1"></span><button class="btn sm primary" data-close>Got it</button>';
+  openSheet();
+}
+
+/* ---------- the time control ----------
+   One renderer for every place a time is set, so AM/PM is never left to the
+   browser's locale. The container carries what it is editing; reading it back
+   means reading its three parts, not parsing a string. */
+function timeCtl(what,key,val,label){
+  var m=tMin(val),h=Math.floor(m/60),mi=m%60,ap=h>=12?"PM":"AM",h12=h%12||12;
+  var hours="",mins="";
+  for(var i=1;i<=12;i++)hours+='<option value="'+i+'"'+(i===h12?" selected":"")+'>'+i+'</option>';
+  for(var j=0;j<60;j+=5){
+    var v=String(j).padStart(2,"0");
+    mins+='<option value="'+j+'"'+(j===Math.round(mi/5)*5%60?" selected":"")+'>'+v+'</option>';
+  }
+  return '<span class="tctl" data-t="'+esc(what)+'" data-k="'+esc(key)+'">'
+    +'<select data-p="h" aria-label="'+esc(label)+' hour">'+hours+'</select>'
+    +'<span class="colon">:</span>'
+    +'<select data-p="m" aria-label="'+esc(label)+' minutes">'+mins+'</select>'
+    +'<span class="ampm" role="group" aria-label="'+esc(label)+' morning or afternoon">'
+    +'<button type="button" data-p="ap" data-v="AM" aria-pressed="'+(ap==="AM"?"true":"false")+'">AM</button>'
+    +'<button type="button" data-p="ap" data-v="PM" aria-pressed="'+(ap==="PM"?"true":"false")+'">PM</button>'
+    +'</span></span>';
+}
+function tctlRead(box){
+  var h=+box.querySelector('[data-p="h"]').value;
+  var mi=+box.querySelector('[data-p="m"]').value;
+  var on=box.querySelector('[data-p="ap"][aria-pressed="true"]');
+  var ap=on?on.dataset.v:"AM";
+  if(ap==="PM"&&h<12)h+=12;
+  if(ap==="AM"&&h===12)h=0;
+  return tStr(h*60+mi);
+}
+function tctlApply(box){
+  var v=tctlRead(box),what=box.dataset.t,key=box.dataset.k;
+  if(what==="blkfrom"||what==="blkto"){
+    var parts=key.split("|"),c=courseOf(parts[0]);
+    var b=(c.blocks||[]).filter(function(x){return x.id===parts[1];})[0];
+    if(!b)return;
+    if(what==="blkfrom"){b.from=v;if(tMin(b.to)<=tMin(b.from))b.to=addMin(b.from,90);}
+    else{b.to=v;if(tMin(b.to)<=tMin(b.from))b.to=addMin(b.from,90);}
+    save();renderAll();return;
+  }
+  if(what==="lffrom"){LF.from=v;if(tMin(LF.to)<=tMin(LF.from))LF.to=addMin(LF.from,90);renderLife();return;}
+  if(what==="lfto"){LF.to=v;if(tMin(LF.to)<=tMin(LF.from))LF.to=addMin(LF.from,90);renderLife();return;}
+}
+
+/* ---------- every other week ----------
+   A fortnightly shift needs to know WHICH fortnight, so an entry carries the
+   Monday it counts from. Weeks are counted from that Monday, not from the term
+   start, so "starting next week" means what it says whenever it is set. */
+function weekOn(iso,every,anchor){
+  if(!every||every<2)return true;
+  if(!anchor)return true;
+  var a=monOf(P(anchor)),d=monOf(P(iso));
+  var weeks=Math.round((d-a)/(7*864e5));
+  return ((weeks%2)+2)%2===0;
+}
+function everySelect(attr,key,every,anchor){
+  var thisMon=ISO(monOf(TODAY)),nextMon=ISO(new Date(monOf(TODAY).getTime()+7*864e5));
+  var cur=(!every||every<2)?"1":(anchor===nextMon?"2b":"2a");
+  var opts=[["1","Every week"],["2a","Every other, from this week"],["2b","Every other, from next week"]];
+  return '<select data-'+attr+'="'+esc(key)+'" aria-label="How often">'
+    +opts.map(function(o){return '<option value="'+o[0]+'"'+(cur===o[0]?" selected":"")+'>'+o[1]+'</option>';}).join("")
+    +'</select>';
+}
+function everyFrom(v){
+  var thisMon=ISO(monOf(TODAY)),nextMon=ISO(new Date(monOf(TODAY).getTime()+7*864e5));
+  if(v==="2a")return {every:2,anchor:thisMon};
+  if(v==="2b")return {every:2,anchor:nextMon};
+  return {every:1,anchor:""};
+}
+
 /* ---------- the Life panel ---------- */
-var LF={cat:"work",dows:[1,3,5],rep:"weekly"};
+var LF={cat:"work",dows:[1,3,5],rep:"weekly",from:"17:00",to:"21:00"};
 function renderLife(){
   var host=document.getElementById("life-list");if(!host)return;
   var cats=document.getElementById("lf-cats");
@@ -2217,6 +2417,9 @@ function renderLife(){
   if(n)n.textContent=L.length?(L.length+(L.length===1?" thing":" things")+" in your week"):"optional";
   var ow=document.getElementById("lf-oncewrap"),wk=document.getElementById("lf-weekly");
   if(ow&&wk){ow.classList.toggle("hide",LF.rep!=="once");wk.classList.toggle("hide",LF.rep==="once");}
+  var fw=document.getElementById("lf-fromwrap"),tw=document.getElementById("lf-towrap");
+  if(fw)fw.innerHTML=timeCtl("lffrom","",LF.from,"Start");
+  if(tw)tw.innerHTML=timeCtl("lfto","",LF.to,"End");
 }
 function lfMsg(t,bad){
   var m=document.getElementById("lf-msg");if(!m)return;
@@ -2440,22 +2643,19 @@ function offer(fn,data,ok){
 }
 
 /* ===================== ui ===================== */
-var LAST_PANEL="p-weeks";
 function currentPanel(){var e=document.querySelector(".panel.on");return e?e.id:"p-weeks";}
 function showPanel(id){
-  var cur=currentPanel();
-  if(cur!=="p-home"&&id==="p-home")LAST_PANEL=cur;
   document.querySelectorAll(".panel").forEach(function(p){p.classList.toggle("on",p.id===id);});
   document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-selected",b.dataset.panel===id?"true":"false");});
-  var g=document.getElementById("guidebtn");
-  if(g){var on=id==="p-home";g.setAttribute("aria-expanded",on?"true":"false");g.textContent=on?"Close guide":"Guide";}
   /* the owner list is a live read, so fetch it when the panel is actually opened */
-  if(id==="p-owner"&&sbOn()&&isOwner()&&ownerIsSignedIn())setTimeout(loadOwnerStats,60);
+  if(id==="p-settings"&&sbOn()&&isOwner()&&ownerIsSignedIn())setTimeout(loadOwnerStats,60);
 }
-function toggleGuide(){
-  if(currentPanel()==="p-home")showPanel(LAST_PANEL);
-  else showPanel("p-home");
-  window.scrollTo({top:0,behavior:"smooth"});
+/* The guide used to be a panel of its own behind a toggle. It is part of the
+   first page now, so "how it works" is a scroll, not a navigation. */
+function goAbout(){
+  showPanel("p-weeks");
+  var g=document.getElementById("about-anchor");
+  if(g)setTimeout(function(){g.scrollIntoView({behavior:"smooth",block:"start"});},40);
 }
 function openAdd(){
   document.getElementById("add-input").classList.remove("hide");
@@ -2562,6 +2762,12 @@ document.addEventListener("click",function(e){
     return;
   }
   if(t.closest("#stats-refresh")){loadOwnerStats();return;}
+  if((x=t.closest('[data-p="ap"]'))){
+    var box=x.closest(".tctl");if(!box)return;
+    Array.prototype.forEach.call(box.querySelectorAll('[data-p="ap"]'),function(b){
+      b.setAttribute("aria-pressed",b===x?"true":"false");});
+    tctlApply(box);return;
+  }
   if((x=t.closest("[data-lfcat]"))){LF.cat=x.dataset.lfcat;renderLife();return;}
   if((x=t.closest("[data-lfday]"))){
     var d=+x.dataset.lfday,i=LF.dows.indexOf(d);
@@ -2575,6 +2781,22 @@ document.addEventListener("click",function(e){
     S.life=lifeList().filter(function(v){return v.id!==id;});
     save();renderAll();return;
   }
+  if((x=t.closest("[data-theme-set]"))){
+    var nx=x.dataset.themeSet;
+    document.documentElement.setAttribute("data-theme",nx);
+    try{localStorage.setItem("sd.theme",nx);}catch(err){}
+    resetPalette();renderAll();return;
+  }
+  if(t.closest("#set-install")){sheetInstall();return;}
+  if(t.closest("#set-whatsnew")){sheetWhatsNew(null);return;}
+  if(t.closest("#set-goexport")){showPanel("p-export");window.scrollTo({top:0,behavior:"smooth"});return;}
+  if(t.closest("#set-rights")){showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
+  if(t.closest("#set-wipe")){
+    if(!confirm("Clear everything on this device?\n\nCourses, dates, ticks, study blocks and personal entries all go. If you have an account, the copy saved there is untouched and signing in brings it back.\n\nThis cannot be undone here."))return;
+    S={courses:[],items:[],done:{},life:[],version:1};
+    save();loadSample(true);renderAll();showPanel("p-weeks");
+    window.scrollTo({top:0,behavior:"smooth"});return;
+  }
   if(t.closest("#buildstamp")){sheetWhatsNew(null);return;}
   if(t.closest('[data-act="update"]')){applyUpdate();return;}
   if(t.closest('[data-act="update-later"]')){
@@ -2585,9 +2807,9 @@ document.addEventListener("click",function(e){
   if(t.closest("[data-toast-act]")){var f=TOAST_ACT;var e1=document.getElementById("sdtoast");
     if(e1)e1.remove();if(f)f();return;}
   if(t.closest("[data-toast-close]")){var e2=document.getElementById("sdtoast");if(e2)e2.remove();return;}
-  if(t.closest("#guidebtn")||t.closest("#guidebtn2")||t.closest("#guidebtn3")){toggleGuide();return;}
-  if(t.closest("#home-close")){showPanel(LAST_PANEL);window.scrollTo({top:0,behavior:"smooth"});return;}
-  if(t.closest("#addbtn")||t.closest("#start1")||t.closest("#demo-add")||t.closest("#home-add")){openAdd();return;}
+  if(t.closest("#guidebtn2")||t.closest("#guidebtn3")){goAbout();return;}
+  if(t.closest("#home-install")){sheetInstall();return;}
+  if(t.closest("#addbtn")||t.closest("#start1")||t.closest("#demo-add")){openAdd();return;}
   if(t.closest("#demo-shuffle")){loadSample(true);return;}
   if(t.closest("#demo-clear")){S={courses:[],items:[],done:{},life:lifeList(),version:1};save();renderAll();showPanel("p-weeks");return;}
   if(t.closest("#backtoinput")){PENDING=null;openAdd();return;}
@@ -2601,7 +2823,7 @@ document.addEventListener("click",function(e){
   if(t.closest("#loadsample")||t.closest("#load-demo-term")){loadSample();return;}
   if(t.closest("#load-owner-term")){loadOwnerTerm();return;}
   if(t.closest("#ownerbtn")){askOwner();return;}
-  if(t.closest("#owner-signout")){setOwner(false);showPanel("p-weeks");return;}
+  if(t.closest("#owner-signout")){setOwner(false);showPanel("p-settings");return;}
   if((x=t.closest("[data-f]"))){FILTER[x.dataset.f]=FILTER[x.dataset.f]?0:1;renderFilters();renderMonths();return;}
   if((x=t.closest("[data-day]"))&&!x.classList.contains("pad")){sheetDay(x.dataset.day);return;}
   if((x=t.closest("[data-tbd]"))){
@@ -2675,14 +2897,15 @@ document.addEventListener("submit",function(e){
   if(e.target.id!=="life-form")return;
   e.preventDefault();
   var title=(document.getElementById("lf-title").value||"").trim();
-  var from=document.getElementById("lf-from").value||"";
-  var to=document.getElementById("lf-to").value||"";
+  var from=LF.from,to=LF.to;
   var note=(document.getElementById("lf-note").value||"").trim();
   var date=document.getElementById("lf-date").value||"";
   if(!title){lfMsg("Give it a name first — “Shift”, “Training”, “Drive Mum to the clinic”.",1);return;}
   if(!from||!to){lfMsg("It needs a start and an end.",1);return;}
   if(tMin(to)<=tMin(from)){lfMsg("The end time is not after the start time.",1);return;}
   var entry={id:uid(),t:title.slice(0,80),cat:LF.cat,from:from,to:to,note:note.slice(0,140)};
+  var ev=everyFrom(LF.rep==="2a"?"2a":LF.rep==="2b"?"2b":"1");
+  entry.every=ev.every;entry.anchor=ev.anchor;
   if(LF.rep==="once"){
     if(!isISO(date)){lfMsg("Pick the date it happens on.",1);return;}
     entry.d=date;
@@ -2753,14 +2976,15 @@ document.addEventListener("change",function(e){
     if(f2==="d"){i.d=isISO(x.value)?x.value:null;drawReview();}else i[f2]=x.value;
     return;
   }
-  ["blkdow","blkfrom","blkto"].forEach(function(a){
+  if((x=t.closest(".tctl")))
+    { if(t.tagName==="SELECT"){tctlApply(x);return;} }
+  ["blkdow","blkevery"].forEach(function(a){
     var el=t.closest("[data-"+a+"]");if(!el)return;
     var parts=String(el.dataset[a]).split("|"),c=courseOf(parts[0]);
-    var b=(c.blocks||[]).filter(function(x){return x.id===parts[1];})[0];
+    var b=(c.blocks||[]).filter(function(y){return y.id===parts[1];})[0];
     if(!b)return;
     if(a==="blkdow")b.dow=+el.value;
-    if(a==="blkfrom"){b.from=el.value||"19:00";if(tMin(b.to)<=tMin(b.from))b.to=addMin(b.from,90);}
-    if(a==="blkto"){b.to=el.value||addMin(b.from,90);if(tMin(b.to)<=tMin(b.from))b.to=addMin(b.from,90);}
+    if(a==="blkevery"){var e2=everyFrom(el.value);b.every=e2.every;b.anchor=e2.anchor;}
     save();renderAll();
   });
 });
@@ -2921,6 +3145,16 @@ function sheetMerge(row,mine,theirs){
 var MERGE_ROW=null;
 
 /* ===================== accounts: painting ===================== */
+function paintSettings(){
+  var th=document.documentElement.getAttribute("data-theme")==="dark"?"dark":"light";
+  Array.prototype.forEach.call(document.querySelectorAll("[data-theme-set]"),function(b){
+    b.setAttribute("aria-pressed",b.dataset.themeSet===th?"true":"false");
+  });
+  var sb=document.getElementById("set-build");
+  if(sb)sb.textContent="Syllabus Desk v"+BUILD.v+", built "+BUILD.date+".";
+  var sn=document.getElementById("set-note");
+  if(sn)sn.textContent=isOwner()?"owner tools unlocked":"this device";
+}
 function paintSync(){
   var n=document.getElementById("acct-note");if(!n)return;
   if(!SESS){n.textContent=sbOn()?"optional":"";return;}
@@ -2933,13 +3167,22 @@ function paintSync(){
 }
 function paintAccount(){
   var tab=document.getElementById("accounttab");if(!tab)return;
-  tab.classList.toggle("hide",!sbOn());
   var out=document.getElementById("acct-out"),inn=document.getElementById("acct-in");
   if(!out||!inn)return;
+  var off=document.getElementById("acct-off");
   var on=!!SESS;
+  /* three states, not two: signed in, signed out, and "there is no server yet" */
+  if(!sbOn()){
+    if(off)off.classList.remove("hide");
+    out.classList.add("hide");inn.classList.add("hide");
+    tab.textContent="Log in";
+    var n0=document.getElementById("acct-note");if(n0)n0.textContent="not yet available";
+    return;
+  }
+  if(off)off.classList.add("hide");
   out.classList.toggle("hide",on);
   inn.classList.toggle("hide",!on);
-  tab.textContent=on?"Account ✓":"Account";
+  tab.textContent=on?"Account ✓":"Log in";
   if(on){
     document.getElementById("acct-email").textContent=SESS.user.email||"";
     var made=SESS.user.created_at?new Date(SESS.user.created_at):null;
@@ -2947,7 +3190,7 @@ function paintAccount(){
       (made&&!isNaN(made)?"Member since "+fmtDay(made)+", "+made.getFullYear():"")
       +" · your term saves automatically";
   }
-  paintSync();paintOwnerUsers();
+  paintSync();paintOwnerUsers();paintSettings();
 }
 function acctMsg(where,kind,head,body){
   var el=document.getElementById(where);if(!el)return;
@@ -3372,22 +3615,25 @@ function setOwner(v){
 }
 function paintOwner(){
   var on=isOwner();
-  document.getElementById("ownertab").classList.toggle("hide",!on);
-  document.getElementById("ownerbtn").textContent=on?"Owner ✓":"Owner";
+  var gate=document.getElementById("owner-gate"),zone=document.getElementById("owner-zone");
+  if(gate)gate.classList.toggle("hide",on);
+  if(zone)zone.classList.toggle("hide",!on);
+  var ob=document.getElementById("ownerbtn");
+  if(ob)ob.textContent=on?"Owner tools unlocked ✓":"Unlock owner tools";
   var n=document.getElementById("owner-note"); if(n)n.textContent="JohnsonXCorp · v"+BUILD.v;
   var ob=document.getElementById("owner-build"); if(ob)ob.textContent="v"+BUILD.v+" · "+BUILD.date;
   var ou=document.getElementById("owner-who"); if(ou)ou.textContent=on?"signed in":"signed out";
   paintOwnerUsers();
 }
 function askOwner(){
-  if(isOwner()){showPanel("p-owner");window.scrollTo({top:0,behavior:"smooth"});return;}
+  if(isOwner()){showPanel("p-settings");window.scrollTo({top:0,behavior:"smooth"});return;}
   var u=window.prompt("Owner username");
   if(u===null)return;
   var pw=window.prompt("Password for “"+u.trim()+"”");
   if(pw===null)return;
   sha256Hex(u.trim().toLowerCase()+":"+pw).then(function(h){
     if(h===null){alert("This browser cannot run the check (no Web Crypto). Try a different browser.");return;}
-    if(h===OWNER_HASH){setOwner(true);showPanel("p-owner");window.scrollTo({top:0,behavior:"smooth"});}
+    if(h===OWNER_HASH){setOwner(true);showPanel("p-settings");window.scrollTo({top:0,behavior:"smooth"});}
     else alert("That username and password did not match. Nothing has changed.");
   });
 }
