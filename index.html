@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v2.2  (10 September 2026)
+  Syllabus Desk  v2.3  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -21,7 +21,7 @@
 <meta name="description" content="Course outlines in, one calendar out. Paste or upload your outlines and get every exam, quiz and deadline laid out week by week - exportable to Google or Apple Calendar.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F2F8F9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0C0C0D" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0F131B" media="(prefers-color-scheme: dark)">
 <meta name="author" content="JohnsonXCorp">
 <meta name="copyright" content="Copyright (c) 2026 JohnsonXCorp. All rights reserved.">
 <link rel="canonical" href="https://thepastor.github.io/syllabus-desk/">
@@ -41,7 +41,7 @@
 <meta name="twitter:title" content="Syllabus Desk - your whole term, on one page">
 <meta name="twitter:description" content="Course outlines in, one calendar out. Every exam, quiz and deadline laid out week by week.">
 <meta name="twitter:image" content="https://thepastor.github.io/syllabus-desk/og-image.png">
-<style>html{background:#F2F8F9}@media(prefers-color-scheme:dark){html{background:#0C0C0D}}
+<style>html{background:#F2F8F9}html[data-theme="dark"]{background:#0F131B}
 img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Syllabus Desk — turn your course outlines into one calendar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,39 +72,45 @@ img{max-width:100%}[hidden]{display:none!important}</style>
   --font-body:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
   --font-mono:"JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
 }
+/* ---- dark: Slate Navy, shared with UNI Made EZ ----
+   Three rules hold it together and are easy to undo by accident:
+   --bg sits one step BELOW --surface so panels lift; --line is a mid-tone,
+   never paper-white, because this layout is built from hairlines; --inverse
+   is DEEPER than the page rather than flipped, so the footer is not a white
+   slab in a dark room. Check --ink-3 against surface-2 AND surface-3. */
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --bg:#0C0C0D; --surface:#0C0C0D; --surface-2:#161618; --surface-3:#202024;
-    --ink:#F4F4F2; --ink-2:#B5B5BB; --ink-3:#8B8B94; --line:#F4F4F2; --line-soft:#2C2C31;
-    --accent:#5FD3DC; --accent-deep:#7FE2EA; --accent-soft:#10343A; --accent-ink:#0C0C0D;
-    --mint:#A6F0C5; --mint-deep:#6FE0A4; --mint-ink:#0C0C0D;
-    --coral:#FF8A6E; --coral-soft:#3A2119;
-    --ok:#6FE0A4; --ok-soft:#123324; --bad:#FF8A78; --bad-soft:#3A1D18;
+    --bg:#0F131B; --surface:#161C26; --surface-2:#1E2532; --surface-3:#28303F;
+    --ink:#E3E8F0; --ink-2:#B4BDCA; --ink-3:#959FB0; --line:#2F3949; --line-soft:#1F2632;
+    --accent:#5FD3DC; --accent-deep:#7FE2EA; --accent-soft:#13303A; --accent-ink:#0A1015;
+    --mint:#D9F56B; --mint-deep:#C6E85C; --mint-ink:#0F131B;
+    --coral:#FF8A6E; --coral-soft:#33201B;
+    --ok:#6FE0A4; --ok-soft:#102A20; --bad:#FF8A78; --bad-soft:#331C1B;
     --ok-deep:#6FE0A4; --bad-deep:#FF8A78;
-    --warn:#F2C94C; --warn-soft:#3A2F0E;
-    --warn-ink:#0C0C0D; --bad-ink:#0C0C0D; --ok-ink:#0C0C0D;
-    --sky:#14303A; --dot:#F4F4F2; --shape:#2A2A2E;
-    --tint-1:#101C22; --tint-2:#171E10; --tint-3:#0F1F17; --tint-4:#201512;
-    --inverse:#F4F4F2; --inverse-ink:#0C0C0D; --inverse-ink-2:#4B4B51; --jxc-gold:#B8800E;
-    --shadow:0 24px 60px -30px rgba(0,0,0,.8);
+    --warn:#F2C94C; --warn-soft:#2A2412;
+    --warn-ink:#0F131B; --bad-ink:#0F131B; --ok-ink:#0F131B;
+    --sky:#17303C; --dot:#33404F; --shape:#222B38;
+    --tint-1:#14202A; --tint-2:#1D2416; --tint-3:#13291F; --tint-4:#2A1D18;
+    --inverse:#080B11; --inverse-ink:#E3E8F0; --inverse-ink-2:#8E97A6; --jxc-gold:#F0C36B;
+    --shadow:0 24px 60px -30px rgba(0,0,0,.85);
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#0C0C0D; --surface:#0C0C0D; --surface-2:#161618; --surface-3:#202024;
-  --ink:#F4F4F2; --ink-2:#B5B5BB; --ink-3:#8B8B94; --line:#F4F4F2; --line-soft:#2C2C31;
-  --accent:#5FD3DC; --accent-deep:#7FE2EA; --accent-soft:#10343A; --accent-ink:#0C0C0D;
-  --mint:#A6F0C5; --mint-deep:#6FE0A4; --mint-ink:#0C0C0D;
-  --coral:#FF8A6E; --coral-soft:#3A2119;
-  --ok:#6FE0A4; --ok-soft:#123324; --bad:#FF8A78; --bad-soft:#3A1D18;
+  --bg:#0F131B; --surface:#161C26; --surface-2:#1E2532; --surface-3:#28303F;
+  --ink:#E3E8F0; --ink-2:#B4BDCA; --ink-3:#959FB0; --line:#2F3949; --line-soft:#1F2632;
+  --accent:#5FD3DC; --accent-deep:#7FE2EA; --accent-soft:#13303A; --accent-ink:#0A1015;
+  --mint:#D9F56B; --mint-deep:#C6E85C; --mint-ink:#0F131B;
+  --coral:#FF8A6E; --coral-soft:#33201B;
+  --ok:#6FE0A4; --ok-soft:#102A20; --bad:#FF8A78; --bad-soft:#331C1B;
   --ok-deep:#6FE0A4; --bad-deep:#FF8A78;
-  --warn:#F2C94C; --warn-soft:#3A2F0E;
-  --warn-ink:#0C0C0D; --bad-ink:#0C0C0D; --ok-ink:#0C0C0D;
-  --sky:#14303A; --dot:#F4F4F2; --shape:#2A2A2E;
-  --tint-1:#101C22; --tint-2:#171E10; --tint-3:#0F1F17; --tint-4:#201512;
-  --inverse:#F4F4F2; --inverse-ink:#0C0C0D; --inverse-ink-2:#4B4B51; --jxc-gold:#B8800E;
-  --shadow:0 24px 60px -30px rgba(0,0,0,.8);
+  --warn:#F2C94C; --warn-soft:#2A2412;
+  --warn-ink:#0F131B; --bad-ink:#0F131B; --ok-ink:#0F131B;
+  --sky:#17303C; --dot:#33404F; --shape:#222B38;
+  --tint-1:#14202A; --tint-2:#1D2416; --tint-3:#13291F; --tint-4:#2A1D18;
+  --inverse:#080B11; --inverse-ink:#E3E8F0; --inverse-ink-2:#8E97A6; --jxc-gold:#F0C36B;
+  --shadow:0 24px 60px -30px rgba(0,0,0,.85);
 }
 *{box-sizing:border-box}
 /* system colours follow the OS, not our theme — never rely on them */
@@ -1441,11 +1447,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"2.2",date:"10 September 2026",year:2026};
+var BUILD={v:"2.3",date:"10 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["2.3","A dark mode that is dark rather than switched off. The page now sits below the panels so they lift, the hairlines stopped being paper-white, and the footer is deeper than the page instead of a bright slab \u2014 the same Slate Navy palette as UNI Made EZ, so the two apps read as one."],
   ["2.2","Study blocks you can actually manage: add as many per course as you want, move them, remove them. Each course also suggests times worked out from when it really meets \u2014 the evening after a class while it is fresh, or the evening before one so you arrive ready \u2014 never on top of another class or a block you already have."],
   ["2.1","Outlines are now read on your own device, so adding a course works on the website and not only inside Claude. It finds the schedule table, the grading breakdown, the exam and quiz dates and the days with no class \u2014 and everything still lands in the review table for you to check before it saves."],
   ["2.0","accounts","Accounts, if you want one. Sign up with an email and your courses, dates, ticks and study blocks follow you to your phone and any other computer. Everything still works without an account, exactly as before."],
