@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v1.7  (10 September 2026)
+  Syllabus Desk  v1.8  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -454,6 +454,27 @@ table.rev tr.missing td{background:var(--warn-soft)}
   background:var(--warn);color:var(--warn-ink);padding:3px 8px}
 .demobar p{margin:0;font-size:.86rem;color:var(--ink-2);flex:1 1 320px}
 .demobar .acts{display:flex;gap:8px;flex-wrap:wrap}
+/* ---- update toast ---- */
+.uptoast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:70;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  background:var(--inverse);color:var(--inverse-ink);border:1px solid var(--line);
+  box-shadow:var(--shadow);padding:13px 16px;max-width:min(560px,calc(100vw - 24px));
+  animation:uprise .22s ease-out}
+@keyframes uprise{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
+.uptoast .dot{width:8px;height:8px;background:var(--mint);flex:0 0 auto;border-radius:50%}
+.uptoast .msg{font-size:.86rem;line-height:1.35;flex:1 1 220px;min-width:0}
+.uptoast .msg b{color:var(--inverse-ink)}
+.uptoast .msg .sub{display:block;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.05em;
+  color:var(--inverse-ink-2);margin-top:4px}
+.uptoast .acts{display:flex;gap:7px;flex:0 0 auto}
+.uptoast .btn{border-color:var(--inverse-ink-2);background:transparent;color:var(--inverse-ink)}
+.uptoast .btn:hover{background:rgba(255,255,255,.12)}
+.uptoast .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.uptoast .btn.primary:hover{background:var(--accent-deep);border-color:var(--accent-deep)}
+@media(max-width:560px){.uptoast{left:12px;right:12px;bottom:12px;transform:none;max-width:none}
+  @keyframes uprise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .uptoast .acts{flex:1 1 100%}.uptoast .acts .btn{flex:1}}
+@media (prefers-reduced-motion:reduce){.uptoast{animation:none}}
 .hide{display:none!important}
 </style>
 </head>
@@ -824,7 +845,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"1.7",date:"10 September 2026",year:2026};
+var BUILD={v:"1.8",date:"10 September 2026",year:2026};
 /* ===================== helpers ===================== */
 var TODAY=new Date(); TODAY.setHours(0,0,0,0);
 var DOWN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -1435,6 +1456,8 @@ document.addEventListener("click",function(e){
   }
   if(t.closest("#rightslink")){e.preventDefault();showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
   if(t.closest("#buildstamp")){showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
+  if(t.closest("[data-up-reload]")){location.reload();return;}
+  if(t.closest("[data-up-later]")){var u=document.getElementById("uptoast");if(u)u.remove();return;}
   if(t.closest("#guidebtn")||t.closest("#guidebtn2")||t.closest("#guidebtn3")){toggleGuide();return;}
   if(t.closest("#home-close")){showPanel(LAST_PANEL);window.scrollTo({top:0,behavior:"smooth"});return;}
   if(t.closest("#addbtn")||t.closest("#start1")||t.closest("#demo-add")||t.closest("#home-add")){openAdd();return;}
@@ -1529,6 +1552,48 @@ document.addEventListener("input",function(e){if(e.target.id==="paste")updateCou
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"&&!document.getElementById("sheet").hidden)closeSheet();
 });
+/* ===================== new-version check =====================
+   The app is one static file, so "is there an update" is just: has the file
+   on the server changed since this tab loaded. Cheap HEAD first, then confirm
+   by reading the BUILD stamp so a changed ETag alone never nags. */
+var UP={marker:null,busy:false,shown:false};
+function upMarker(res){return (res.headers.get("etag")||"")+"|"+(res.headers.get("last-modified")||"");}
+function selfURL(){return location.pathname+"?_v="+Date.now();}
+function checkForUpdate(first){
+  if(location.protocol==="file:"||UP.busy||UP.shown)return;
+  UP.busy=true;
+  fetch(selfURL(),{method:"HEAD",cache:"no-store"}).then(function(res){
+    var m=upMarker(res);
+    if(first||!UP.marker){UP.marker=m;return null;}
+    if(!m||m===UP.marker)return null;
+    return fetch(selfURL(),{cache:"no-store"}).then(function(r){return r.text();});
+  }).then(function(txt){
+    if(!txt)return;
+    var mm=txt.match(/var BUILD=\{v:"([^"]+)",date:"([^"]+)"/);
+    if(mm&&mm[1]&&mm[1]!==BUILD.v){UP.shown=true;showUpdate(mm[1],mm[2]);}
+    else UP.marker=null;   /* re-baseline: content is the same after all */
+  }).catch(function(){}).then(function(){UP.busy=false;});
+}
+function showUpdate(v,date){
+  if(document.getElementById("uptoast"))return;
+  var risky=!!PENDING;
+  var el=document.createElement("div");
+  el.className="uptoast";el.id="uptoast";
+  el.setAttribute("role","status");el.setAttribute("aria-live","polite");
+  el.innerHTML='<span class="dot"></span><span class="msg"><b>Syllabus Desk v'+esc(v)+' is ready.</b>'
+    +'<span class="sub">'+(risky?"Reloading will discard the course you are reviewing"
+      :"Your saved term is not affected \u00b7 "+esc(date))+'</span></span>'
+    +'<span class="acts"><button class="btn sm" data-up-later>Later</button>'
+    +'<button class="btn sm primary" data-up-reload>Reload</button></span>';
+  document.body.appendChild(el);
+}
+/* check when the tab comes back, and every few minutes while it is visible */
+function scheduleUpdateChecks(){
+  if(location.protocol==="file:")return;
+  checkForUpdate(true);
+  setInterval(function(){if(!document.hidden)checkForUpdate(false);},5*60*1000);
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)checkForUpdate(false);});
+}
 /* the month bar sticks under the topbar, whatever height it wraps to */
 function sizeTopbar(){
   var tb=document.querySelector(".topbar");
@@ -1774,7 +1839,7 @@ document.getElementById("r-year").textContent=BUILD.year;
 Array.prototype.forEach.call(document.querySelectorAll(".r-year"),function(el){el.textContent=BUILD.year;});
 load();paintOwner();
 if(!S.courses.length){ loadSample(true); }   /* first visit: show a worked example, not an empty shell */
-renderAll();sizeTopbar();
+renderAll();sizeTopbar();scheduleUpdateChecks();
 if(window.claude&&window.claude.use){
   window.claude.use("sample").then(function(x){sampleFn=x;}).catch(function(){});
   window.claude.use("downloads").then(function(x){
