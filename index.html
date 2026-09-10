@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v2.3  (10 September 2026)
+  Syllabus Desk  v2.4  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -53,7 +53,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
 :root{
   color-scheme:light;
   --bg:#F2F8F9; --surface:#FFFFFF; --surface-2:#E6F1F4; --surface-3:#D6E7EC;
-  --ink:#0E2A3A; --ink-2:#3F5B69; --ink-3:#55707D;
+  --ink:#0E2A3A; --ink-2:#2F4B59; --ink-3:#3F5A67;
   --line:#16405A; --line-soft:#C9DCE3;
   --accent:#0E7C86; --accent-deep:#0A5A62; --accent-soft:#D2EEF0; --accent-ink:#FFFFFF;
   --mint:#D9F56B; --mint-deep:#0E7C86; --mint-ink:#0E2A3A;
@@ -66,6 +66,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
   --tint-1:#DDF0F6; --tint-2:#ECFAB9; --tint-3:#D3F3E3; --tint-4:#FFE1D6;
   --inverse:#0E2A3A; --inverse-ink:#FFFFFF; --inverse-ink-2:#9DB6C2;
   --jxc-gold:#EBB64E;
+  --life:#6040BA; --life-soft:#E9E2FB; --life-ink:#FFFFFF;
   --shadow:0 24px 60px -30px rgba(14,42,58,.4);
   --gut:32px; --gut-in:16px; --band:22px; --band-lg:40px; --pad-in:14px; --accent-bar:3px;
   --font-display:"Inter Tight","Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -82,7 +83,7 @@ img{max-width:100%}[hidden]{display:none!important}</style>
   :root:not([data-theme="light"]){
     color-scheme:dark;
     --bg:#0F131B; --surface:#161C26; --surface-2:#1E2532; --surface-3:#28303F;
-    --ink:#E3E8F0; --ink-2:#B4BDCA; --ink-3:#959FB0; --line:#2F3949; --line-soft:#1F2632;
+    --ink:#E3E8F0; --ink-2:#BAC3D0; --ink-3:#A3ADBE; --line:#2F3949; --line-soft:#1F2632;
     --accent:#5FD3DC; --accent-deep:#7FE2EA; --accent-soft:#13303A; --accent-ink:#0A1015;
     --mint:#D9F56B; --mint-deep:#C6E85C; --mint-ink:#0F131B;
     --coral:#FF8A6E; --coral-soft:#33201B;
@@ -92,14 +93,15 @@ img{max-width:100%}[hidden]{display:none!important}</style>
     --warn-ink:#0F131B; --bad-ink:#0F131B; --ok-ink:#0F131B;
     --sky:#17303C; --dot:#33404F; --shape:#222B38;
     --tint-1:#14202A; --tint-2:#1D2416; --tint-3:#13291F; --tint-4:#2A1D18;
-    --inverse:#080B11; --inverse-ink:#E3E8F0; --inverse-ink-2:#8E97A6; --jxc-gold:#F0C36B;
+    --inverse:#080B11; --inverse-ink:#E3E8F0; --inverse-ink-2:#929BAA; --jxc-gold:#F0C36B;
+    --life:#B9A0F0; --life-soft:#1E1A2E; --life-ink:#0F131B;
     --shadow:0 24px 60px -30px rgba(0,0,0,.85);
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
   --bg:#0F131B; --surface:#161C26; --surface-2:#1E2532; --surface-3:#28303F;
-  --ink:#E3E8F0; --ink-2:#B4BDCA; --ink-3:#959FB0; --line:#2F3949; --line-soft:#1F2632;
+  --ink:#E3E8F0; --ink-2:#BAC3D0; --ink-3:#A3ADBE; --line:#2F3949; --line-soft:#1F2632;
   --accent:#5FD3DC; --accent-deep:#7FE2EA; --accent-soft:#13303A; --accent-ink:#0A1015;
   --mint:#D9F56B; --mint-deep:#C6E85C; --mint-ink:#0F131B;
   --coral:#FF8A6E; --coral-soft:#33201B;
@@ -109,7 +111,8 @@ img{max-width:100%}[hidden]{display:none!important}</style>
   --warn-ink:#0F131B; --bad-ink:#0F131B; --ok-ink:#0F131B;
   --sky:#17303C; --dot:#33404F; --shape:#222B38;
   --tint-1:#14202A; --tint-2:#1D2416; --tint-3:#13291F; --tint-4:#2A1D18;
-  --inverse:#080B11; --inverse-ink:#E3E8F0; --inverse-ink-2:#8E97A6; --jxc-gold:#F0C36B;
+  --inverse:#080B11; --inverse-ink:#E3E8F0; --inverse-ink-2:#929BAA; --jxc-gold:#F0C36B;
+  --life:#B9A0F0; --life-soft:#1E1A2E; --life-ink:#0F131B;
   --shadow:0 24px 60px -30px rgba(0,0,0,.85);
 }
 *{box-sizing:border-box}
@@ -150,7 +153,7 @@ a{color:var(--accent-deep)}
   .tab:first-child{padding-left:0}
 }
 @media(max-width:420px){
-  .topacts .btn{padding:7px 8px;font-size:.56rem;letter-spacing:.06em}
+  .topacts .btn{padding:7px 8px;font-size:.62rem;letter-spacing:.06em}
   .brand .sd-mark{width:22px;height:22px}
   .brand .wm{font-size:.92rem}
 }
@@ -218,7 +221,7 @@ section{margin-bottom:var(--band-lg)}
 .rail{flex:0 0 var(--accent-bar);align-self:stretch}
 .name{font-weight:500}
 .ck{font-family:var(--font-mono);font-size:.62rem;font-weight:600;letter-spacing:.06em}
-.badge{display:inline-block;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;vertical-align:1.5px;margin-left:6px;font-weight:500;border-radius:2px}
+.badge{display:inline-block;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;vertical-align:1.5px;margin-left:6px;font-weight:500;border-radius:2px}
 .b-exam{background:var(--bad);color:var(--bad-ink)}
 .b-due{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
 .b-quiz{background:var(--tint-2);color:var(--ink);border:1px solid var(--mint-deep)}
@@ -258,7 +261,7 @@ input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:po
 .mhead h3{font-size:1.15rem;letter-spacing:-.03em}
 .mhead .cnt{margin-left:auto;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
 .dow{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--line-soft)}
-.dow span{text-align:center;font-family:var(--font-mono);font-size:.55rem;letter-spacing:.1em;color:var(--ink-3);padding:7px 0}
+.dow span{text-align:center;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;color:var(--ink-3);padding:7px 0}
 .grid{display:grid;grid-template-columns:repeat(7,1fr)}
 .cell{border:0;border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);min-height:112px;
   padding:6px;display:flex;flex-direction:column;gap:3px;background:transparent;text-align:left;cursor:pointer;min-width:0;font:inherit;
@@ -278,7 +281,7 @@ input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:po
 .ev .k{font-family:var(--font-mono);font-weight:600;font-size:.6rem;flex:0 0 auto}
 .ev .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ev.done{opacity:.45;text-decoration:line-through}
-.more{font-family:var(--font-mono);font-size:.58rem;color:var(--ink-3);padding-left:4px}
+.more{font-family:var(--font-mono);font-size:.63rem;color:var(--ink-3);padding-left:4px}
 .dotsonly{display:none;flex-wrap:wrap;gap:2px;margin-top:auto}
 .dotsonly span{width:5px;height:5px;background:var(--c,var(--ink-3))}
 @media(max-width:1040px){.cell{min-height:96px}.ev{font-size:.62rem}}
@@ -310,7 +313,7 @@ input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:po
 .x:hover{background:var(--surface-2);color:var(--ink)}
 .sheet-body{padding:16px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .sheet-body dl{display:grid;grid-template-columns:auto 1fr;gap:9px 18px;margin:0 0 14px;font-size:.88rem}
-.sheet-body dt{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);padding-top:3px}
+.sheet-body dt{font-family:var(--font-mono);font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);padding-top:3px}
 .sheet-body dd{margin:0;color:var(--ink-2)}
 .sheet-body .note{font-size:.88rem;color:var(--ink-2);border-left:2px solid var(--line-soft);padding-left:12px;margin:0 0 14px}
 .sheet-foot{padding:13px 18px;border-top:1px solid var(--line-soft);background:var(--surface-2);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -347,7 +350,7 @@ input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:po
 .blk h4{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;font-weight:500}
 .blk+.blk{margin-top:24px}
 table.assess{width:100%;border-collapse:collapse;font-size:.86rem}
-table.assess th{text-align:left;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:0 8px 7px 0;border-bottom:1px solid var(--line-soft)}
+table.assess th{text-align:left;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:0 8px 7px 0;border-bottom:1px solid var(--line-soft)}
 table.assess td{padding:9px 8px 9px 0;border-bottom:1px solid var(--line-soft);vertical-align:top}
 table.assess tr:last-child td{border-bottom:0}
 table.assess td.wt{font-family:var(--font-mono);font-size:.76rem;text-align:right;white-space:nowrap;padding-right:0;font-variant-numeric:tabular-nums;color:var(--ink-2)}
@@ -413,15 +416,15 @@ textarea.paste{width:100%;min-height:160px;font-family:var(--font-mono);font-siz
 .review-head{padding:17px var(--gut-in);border-bottom:1px solid var(--line-soft);border-top:var(--accent-bar) solid var(--ck)}
 .fieldgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;padding:17px var(--gut-in);border-bottom:1px solid var(--line-soft)}
 label.f{display:block}
-label.f span{display:block;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
+label.f span{display:block;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
 label.f input{width:100%}
 table.rev{width:100%;border-collapse:collapse;font-size:.82rem}
-table.rev th{text-align:left;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:11px 8px;border-bottom:1px solid var(--line-soft);background:var(--surface-2)}
+table.rev th{text-align:left;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:11px 8px;border-bottom:1px solid var(--line-soft);background:var(--surface-2)}
 table.rev td{padding:8px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
 table.rev input,table.rev select{width:100%}
 table.rev input.dt{font-family:var(--font-mono);font-size:.74rem}
 table.rev tr.missing td{background:var(--warn-soft)}
-.flag{font-family:var(--font-mono);font-size:.53rem;letter-spacing:.09em;text-transform:uppercase;padding:3px 7px;background:var(--warn);color:var(--warn-ink);white-space:nowrap}
+.flag{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;padding:3px 7px;background:var(--warn);color:var(--warn-ink);white-space:nowrap}
 .rev-foot{padding:15px var(--gut-in);display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--surface-2);border-top:1px solid var(--line-soft)}
 
 /* ---- export / rights ---- */
@@ -487,6 +490,45 @@ table.rev tr.missing td{background:var(--warn-soft)}
 .demobar p{margin:0;font-size:.86rem;color:var(--ink-2);flex:1 1 320px}
 .demobar .acts{display:flex;gap:8px;flex-wrap:wrap}
 
+/* ---- the rest of your life ---- */
+.ico{width:14px;height:14px;flex:0 0 auto;vertical-align:-2px}
+.ev .ico{width:11px;height:11px}
+.b-life{background:var(--life-soft);color:var(--life);border:1px solid var(--life)}
+.lifeform{border:1px solid var(--line);background:var(--surface);padding:var(--band) var(--gut-in);
+  display:grid;gap:14px;margin-bottom:22px}
+.lifegrid{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+@media(max-width:700px){.lifegrid{grid-template-columns:1fr}}
+.lifetimes{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.lifetimes label.f{flex:0 0 auto}
+.lifetimes label.f input{width:auto}
+.days{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--line-soft)}
+.days button{flex:1 1 auto;min-width:44px;min-height:42px;border:0;border-right:1px solid var(--line-soft);
+  background:var(--surface);color:var(--ink-3);font-family:var(--font-mono);font-size:.68rem;
+  letter-spacing:.06em;cursor:pointer}
+.days button:last-child{border-right:0}
+.days button[aria-pressed="true"]{background:var(--life);color:var(--life-ink);font-weight:600}
+.days button:hover:not([aria-pressed="true"]){background:var(--surface-2);color:var(--ink)}
+.catpick{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:0;
+  border:1px solid var(--line-soft)}
+.catpick button{display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 10px;border:0;
+  border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
+  background:var(--surface);color:var(--ink-2);font:inherit;font-size:.8rem;cursor:pointer;text-align:left}
+.catpick button:hover{background:var(--surface-2);color:var(--ink)}
+.catpick button[aria-pressed="true"]{background:var(--life-soft);color:var(--life);font-weight:500}
+.lifelist{border:1px solid var(--line)}
+.liferow{display:flex;align-items:center;gap:12px;padding:13px var(--gut-in);
+  border-bottom:1px solid var(--line-soft);background:var(--surface)}
+.liferow:last-child{border-bottom:0}
+.liferow .badgeico{width:32px;height:32px;flex:0 0 auto;display:grid;place-items:center;
+  background:var(--life-soft);color:var(--life);border-radius:2px}
+.liferow .badgeico .ico{width:17px;height:17px}
+.liferow .body{min-width:0;flex:1}
+.liferow .nm{display:block;font-weight:500;font-size:.92rem;color:var(--ink)}
+.liferow .sb{display:block;font-family:var(--font-mono);font-size:.66rem;color:var(--ink-2);margin-top:4px}
+.liferow .x{width:30px;height:30px;flex:0 0 auto}
+.lifeempty{padding:24px var(--gut-in);color:var(--ink-2);font-size:.88rem;background:var(--surface)}
+@media(max-width:520px){.liferow{flex-wrap:wrap}.liferow .body{flex:1 1 100%;order:3}}
+
 /* ---- accounts ---- */
 .acctgrid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line)}
 @media(max-width:820px){.acctgrid{grid-template-columns:1fr}}
@@ -534,7 +576,7 @@ table.rev tr.missing td{background:var(--warn-soft)}
   text-transform:uppercase;color:var(--ink-3);margin-top:7px}
 .userwrap{overflow-x:auto;border:1px solid var(--line-soft)}
 table.users{width:100%;border-collapse:collapse;font-size:.82rem;min-width:560px}
-table.users th{text-align:left;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.1em;
+table.users th{text-align:left;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;
   text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:10px 12px;
   border-bottom:1px solid var(--line-soft);background:var(--surface-2);white-space:nowrap}
 table.users td{padding:9px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top}
@@ -1012,6 +1054,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
     <button class="tab" data-panel="p-weeks" aria-selected="true">Two weeks</button>
     <button class="tab" data-panel="p-cal" aria-selected="false">Calendar</button>
     <button class="tab" data-panel="p-courses" aria-selected="false">Courses</button>
+    <button class="tab" data-panel="p-life" aria-selected="false">Life</button>
     <button class="tab" data-panel="p-export" aria-selected="false">Export</button>
     <button class="tab hide" id="accounttab" data-panel="p-account" aria-selected="false">Account</button>
     <button class="tab hide" id="ownertab" data-panel="p-owner" aria-selected="false">Owner</button>
@@ -1175,6 +1218,56 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           <li><b>Reading an outline sends its text to Claude.</b> That one step, and only that step, leaves your device. Everything else — the file itself, your schedule, your edits — stays local.</li>
         </ul>
       </div>
+    </section>
+  </div>
+
+
+  <div class="panel" id="p-life">
+    <section>
+      <div class="sec-head"><h2>The rest of your life</h2><span class="note" id="life-note"></span></div>
+      <div class="callout" style="margin-bottom:22px">
+        <h4>A term is not only coursework</h4>
+        <p style="margin:0">Shifts at work, the gym, band practice, driving someone somewhere, a standing
+        appointment — they take the same hours your assignments need, so a schedule that pretends they do not
+        exist is not much use. Put them here and they sit in the same two weeks and the same calendar as
+        everything else, and travel in the same export.</p>
+      </div>
+
+      <form class="lifeform" id="life-form" novalidate>
+        <div class="lifegrid">
+          <label class="f"><span>What is it?</span>
+            <input id="lf-title" maxlength="80" placeholder="Shift at the library" autocomplete="off"></label>
+          <label class="f"><span>How often</span>
+            <select id="lf-rep">
+              <option value="weekly">Every week</option>
+              <option value="once">Just once</option>
+            </select></label>
+        </div>
+
+        <div><div class="lab" style="margin-bottom:7px">Kind</div>
+          <div class="catpick" id="lf-cats" role="group" aria-label="Kind of activity"></div></div>
+
+        <div id="lf-weekly"><div class="lab" style="margin-bottom:7px">Which days</div>
+          <div class="days" id="lf-days" role="group" aria-label="Days of the week"></div></div>
+
+        <div id="lf-oncewrap" class="hide">
+          <label class="f" style="max-width:220px"><span>Date</span>
+            <input type="date" id="lf-date" class="dt"></label></div>
+
+        <div class="lifetimes">
+          <label class="f"><span>From</span><input type="time" id="lf-from" value="17:00"></label>
+          <label class="f"><span>To</span><input type="time" id="lf-to" value="21:00"></label>
+          <label class="f" style="flex:1 1 220px"><span>Note (optional)</span>
+            <input id="lf-note" maxlength="140" placeholder="Ask for the early finish" autocomplete="off"></label>
+        </div>
+
+        <div class="row">
+          <button class="btn primary" type="submit" id="lf-add">Add to my schedule <span class="arw">&rarr;</span></button>
+          <span class="hint" id="lf-msg"></span>
+        </div>
+      </form>
+
+      <div class="lifelist" id="life-list"></div>
     </section>
   </div>
 
@@ -1447,11 +1540,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"2.3",date:"10 September 2026",year:2026};
+var BUILD={v:"2.4",date:"10 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["2.4","The rest of your life, on the same page as the coursework: shifts, training, family, appointments \u2014 weekly or one-off, each with its own icon, in your two weeks, your calendar and your export. Text everywhere is darker and the smallest labels are bigger, so nothing is a squint."],
   ["2.3","A dark mode that is dark rather than switched off. The page now sits below the panels so they lift, the hairlines stopped being paper-white, and the footer is deeper than the page instead of a bright slab \u2014 the same Slate Navy palette as UNI Made EZ, so the two apps read as one."],
   ["2.2","Study blocks you can actually manage: add as many per course as you want, move them, remove them. Each course also suggests times worked out from when it really meets \u2014 the evening after a class while it is fresh, or the evening before one so you arrive ready \u2014 never on top of another class or a block you already have."],
   ["2.1","Outlines are now read on your own device, so adding a course works on the website and not only inside Claude. It finds the schedule table, the grading breakdown, the exam and quiz dates and the days with no class \u2014 and everything still lands in the review table for you to check before it saves."],
@@ -1534,7 +1628,7 @@ function relLum(rgb){
 function ratio(a,b){var l1=relLum(a),l2=relLum(b);return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);}
 function inkOn(rgb){return ratio(rgb,[255,255,255])>=ratio(rgb,[12,12,13])?"#FFFFFF":"#0C0C0D";}
 function readableOn(rgb,bg,target){
-  target=target||4.6;
+  target=target||5.2;
   if(ratio(rgb,bg)>=target)return hexOf(rgb);
   var darken=relLum(bg)>0.4, r=rgb.slice();
   for(var i=0;i<48&&ratio(r,bg)<target;i++){
@@ -1546,20 +1640,27 @@ function palOf(key){
   if(PAL_CACHE[key])return PAL_CACHE[key];
   var c=courseOf(key), raw=resolveVar(c.color||"--accent"), rgb=toRGB(raw);
   var ground=toRGB(resolveVar("--surface-2"));
-  var p={raw:raw, ct:readableOn(rgb,ground,4.6), ci:inkOn(rgb)};
+  var p={raw:raw, ct:readableOn(rgb,ground,5.2), ci:inkOn(rgb)};
   PAL_CACHE[key]=p;return p;
 }
 function resetPalette(){VAR_CACHE={};PAL_CACHE={};}
 function textColorOf(k){return palOf(k).ct;}
 function inkColorOf(k){return palOf(k).ci;}
 function colorOf(k){var c=S.courses.filter(function(x){return x.key===k;})[0];return c?"var("+c.color+")":"var(--ink-3)";}
-function courseOf(k){return S.courses.filter(function(x){return x.key===k;})[0]||{key:k,code:k,title:"",color:"--ink-3"};}
+function courseOf(k){
+  /* life entries carry no course, but everything downstream — the rail colour,
+     the contrast engine, the calendar chip — asks for one, so give them a real
+     answer instead of special-casing five call sites */
+  if(k==="__life")return {key:"LIFE",code:"Life",title:"",color:"--life"};
+  return S.courses.filter(function(x){return x.key===k;})[0]||{key:k,code:k,title:"",color:"--ink-3"};
+}
 
 /* ===================== derived ===================== */
 function termRange(){
   var ds=[];
   S.items.forEach(function(i){if(i.d)ds.push(i.d);});
   S.courses.forEach(function(c){(c.classes||[]).forEach(function(r){ds.push(r.date);});});
+  lifeList().forEach(function(e){if(e.d)ds.push(e.d);});
   if(!ds.length)return null;
   ds.sort();return [P(ds[0]),ds[ds.length-1]];
 }
@@ -1698,6 +1799,8 @@ function eventsOn(iso){
     if(r.date===iso)out.push({kind:r.off?"off":"class",c:c.key,t:r.topic,id:"cl-"+c.key+"-"+iso,ord:r.off?4:2,time:c.time&&c.time.indexOf(":")>-1?c.time:""});
   });});
   STUDY.forEach(function(s){if(s.d===iso)out.push({kind:"study",c:s.c,t:s.t,id:s.id,from:s.from,to:s.to,ord:3});});
+  LIFE.forEach(function(e){if(e.d===iso)out.push({kind:"life",c:"__life",t:e.t,id:e.id,cat:e.cat,
+    from:e.from,to:e.to,note:e.note,ord:2.5});});
   out.sort(function(a,b){return a.ord-b.ord||(a.from||"").localeCompare(b.from||"");});
   return out;
 }
@@ -1708,6 +1811,7 @@ function itemHTML(ev,tick){
   else if(ev.kind==="pres")badge='<span class="badge b-due">present'+(ev.w?" "+esc(ev.w):"")+'</span>';
   else if(ev.kind==="quiz")badge='<span class="badge b-quiz">quiz</span>';
   else if(ev.kind==="study")badge='<span class="badge b-study">study</span>';
+  else if(ev.kind==="life")badge='<span class="badge b-life">'+esc(catOf(ev.cat)[1].toLowerCase())+'</span>';
   else if(ev.kind==="off")badge='<span class="badge b-off">no class</span>';
   if(ev.from)when=t12(ev.from)+"–"+t12(ev.to);
   else if(ev.kind==="class"&&ev.time)when=ev.time;
@@ -1716,8 +1820,72 @@ function itemHTML(ev,tick){
    +'<span class="rail" style="background:'+col+'"></span>'
    +(tick&&ev.kind!=="off"?'<span class="tick"><input type="checkbox" data-tick="'+esc(ev.id)+'"'+(done?" checked":"")+' aria-label="mark done"></span>':'')
    +'<span class="body"><span class="name"'+(ev.kind==="off"?' style="color:var(--ink-3)"':'')+'>'
-   +'<span class="ck" style="color:'+textColorOf(ev.c)+'">'+esc(courseOf(ev.c).key)+'</span> '+esc(ev.t)+'</span>'+badge
+   +(ev.kind==="life"
+      ? '<span class="ck" style="color:'+textColorOf(ev.c)+'">'+icon(ev.cat)+'</span> '
+      : '<span class="ck" style="color:'+textColorOf(ev.c)+'">'+esc(courseOf(ev.c).key)+'</span> ')
+   +esc(ev.t)+'</span>'+badge
    +(when?'<div class="when">'+esc(when)+'</div>':'')+'</span></div>';
+}
+
+
+/* ===================== the rest of your life =====================
+   Work, the gym, family, a standing appointment. Same shape as everything else
+   on the page so it lands in the two weeks, the calendar and the export without
+   any of those having to know it is different — it just carries a category, and
+   the category carries an icon. */
+var LIFE_CATS=[
+  ["work","Work",'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/>'],
+  ["exercise","Exercise",'<path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/>'],
+  ["hobby","Hobby",'<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M18 17l.8 2.2L21 20l-2.2.8L18 23l-.8-2.2L15 20l2.2-.8z"/>'],
+  ["family","Family",'<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 6.5a3 3 0 0 1 0 5.8"/><path d="M17.6 20a5.6 5.6 0 0 0-2-4.3"/>'],
+  ["appointment","Appointment",'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/><path d="M9 15l2 2 4-4"/>'],
+  ["commute","Travel",'<rect x="4" y="4" width="16" height="12" rx="2"/><path d="M4 11h16"/><circle cx="8" cy="19" r="1.4"/><circle cx="16" cy="19" r="1.4"/>'],
+  ["chores","Home",'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>'],
+  ["social","Social",'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"/>'],
+  ["rest","Rest",'<path d="M20 14A8.5 8.5 0 0 1 10 4a8.5 8.5 0 1 0 10 10z"/>'],
+  ["other","Other",'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/>']
+];
+function catOf(k){
+  for(var i=0;i<LIFE_CATS.length;i++)if(LIFE_CATS[i][0]===k)return LIFE_CATS[i];
+  return LIFE_CATS[LIFE_CATS.length-1];
+}
+function icon(cat,cls){
+  var c=catOf(cat);
+  return '<svg class="ico'+(cls?" "+cls:"")+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    +'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" '
+    +'focusable="false">'+c[2]+'</svg>';
+}
+function lifeList(){return Array.isArray(S.life)?S.life:(S.life=[]);}
+/* a life entry repeats weekly on any set of days, or happens once on a date */
+function lifeEvents(){
+  var out=[],L=lifeList();
+  if(!L.length)return out;
+  var range=termRange(),start,end;
+  if(range){start=new Date(range[0]);end=P(range[1]);}
+  else{ /* nothing else in the term yet, so give the week a horizon of its own */
+    start=new Date(TODAY.getTime()-14*864e5);end=new Date(TODAY.getTime()+112*864e5);}
+  L.forEach(function(e){
+    if(e.d){out.push({id:"lf-"+e.id,c:"__life",d:e.d,t:e.t,cat:e.cat,from:e.from,to:e.to,note:e.note});return;}
+    var dows=e.dows||[];
+    if(!dows.length)return;
+    var d=new Date(start);
+    while(d<=end){
+      if(dows.indexOf(d.getDay())>-1)
+        out.push({id:"lf-"+e.id+"-"+ISO(d),c:"__life",d:ISO(d),t:e.t,cat:e.cat,from:e.from,to:e.to,note:e.note});
+      d=new Date(d.getTime()+864e5);
+    }
+  });
+  return out;
+}
+var LIFE=[];
+function dowShort(n){return DOWN[n].slice(0,3);}
+function lifeWhen(e){
+  if(e.d)return fmtDay(P(e.d))+", "+P(e.d).getFullYear();
+  var ds=(e.dows||[]).slice().sort();
+  if(ds.length===7)return "Every day";
+  if(ds.length===5&&ds.join()==="1,2,3,4,5")return "Weekdays";
+  if(ds.length===2&&ds.join()==="0,6")return "Weekends";
+  return ds.map(dowShort).join(" · ");
 }
 
 /* ===================== render ===================== */
@@ -1766,9 +1934,17 @@ function renderFilters(){
   }).join("");
   if(!("study" in FILTER))FILTER.study=1;
   h+='<button class="chip" data-f="study" aria-pressed="'+(FILTER.study?"true":"false")+'"><span class="dot"></span>Study</button>';
+  if(!("life" in FILTER))FILTER.life=1;
+  if(lifeList().length)h+='<button class="chip" data-f="life" aria-pressed="'+(FILTER.life?"true":"false")+'" '
+    +'style="color:'+(FILTER.life?textColorOf("__life"):"var(--ink-3)")+'"><span class="dot" style="background:var(--life)"></span>Life</button>';
   document.getElementById("filters").innerHTML=h;
 }
-function visible(e){if(FILTER[e.c]===0)return false;if(e.kind==="study"&&!FILTER.study)return false;return true;}
+function visible(e){
+  if(e.kind==="life")return FILTER.life!==0;
+  if(FILTER[e.c]===0)return false;
+  if(e.kind==="study"&&!FILTER.study)return false;
+  return true;
+}
 var MONTH_KEYS=[];
 function mKey(y,m){return y+"-"+String(m+1).padStart(2,"0");}
 function renderMonths(){
@@ -1797,7 +1973,8 @@ function renderMonths(){
       var chips=shown.slice(0,3).map(function(x){
         var big=isGraded(x);
         return '<span class="ev'+(big?" big":"")+(S.done[x.id]?" done":"")+'" style="--c:'+colorOf(x.c)+';--ci:'+inkColorOf(x.c)+'" data-ev="'+esc(x.id)+'" data-evday="'+iso+'">'
-          +'<span class="k">'+esc(courseOf(x.c).key)+'</span><span class="tt">'+esc(x.t)+'</span></span>';
+          +'<span class="k">'+(x.kind==="life"?icon(x.cat):esc(courseOf(x.c).key))+'</span>'
+          +'<span class="tt">'+esc(x.t)+'</span></span>';
       }).join("");
       if(shown.length>3)chips+='<span class="more">+'+(shown.length-3)+' more</span>';
       var dots=shown.slice(0,8).map(function(x){
@@ -1887,6 +2064,7 @@ function sheetDay(iso){
   openSheet();
 }
 function kindLabel(e){
+  if(e.kind==="life")return catOf(e.cat)[1];
   return {exam:"Exam",quiz:"Quiz",due:"Due",pres:"Presentation",study:"Study block",off:"No class",className:"Class"}[e.kind]||"Class";
 }
 function sheetEvent(id,iso){
@@ -1906,7 +2084,8 @@ function sheetEvent(id,iso){
     +(ev&&ev.from?" · "+t12(ev.from)+"–"+t12(ev.to):"")+'</div></div>'
     +'<button class="x" data-close aria-label="Close">&times;</button>';
   var rows='<dl>';
-  rows+='<dt>Type</dt><dd>'+kindLabel({kind:kind})+'</dd>';
+  /* a life event's kind IS its category, so the label needs both */
+  rows+='<dt>Type</dt><dd>'+kindLabel({kind:kind,cat:ev&&ev.cat})+'</dd>';
   rows+='<dt>Course</dt><dd>'+esc(c.title||c.code||c.key)+'</dd>';
   if(c.instructor)rows+='<dt>Instructor</dt><dd>'+esc(c.instructor)+'</dd>';
   if(c.room)rows+='<dt>Room</dt><dd>'+esc(c.room)+'</dd>';
@@ -1919,6 +2098,10 @@ function sheetEvent(id,iso){
   rows+='</dl>';
   if(item&&item.note)rows+='<p class="note">'+esc(item.note)+'</p>';
   if(!item&&ev&&ev.kind==="study")rows+='<p class="note">A study block you set on the Courses tab. Move it, add another, or remove it there.</p>';
+  if(!item&&ev&&ev.kind==="life"){
+    if(ev.note)rows+='<p class="note">'+esc(ev.note)+'</p>';
+    rows+='<p class="note">Something you added on the Life tab. Remove it there if it changes.</p>';
+  }
   if(c.rules&&item)rows+='<p class="note"><b>Worth remembering:</b> '+esc(c.rules)+'</p>';
   document.getElementById("sheet-body").innerHTML=rows;
   var foot='';
@@ -1993,12 +2176,52 @@ function renderAll(){
   resetPalette();
   normalizeBlocks();
   STUDY=studyEvents();
-  var has=S.courses.length>0;
+  LIFE=lifeEvents();
+  var has=S.courses.length>0||lifeList().length>0;
   document.getElementById("empty-state").classList.toggle("hide",has);
   document.getElementById("loaded-state").classList.toggle("hide",!has);
   if(has){renderWeeks();renderHorizon();}
   var db=document.getElementById("demobar"); if(db)db.classList.toggle("hide",!(has&&S.demo));
-  renderFilters();renderMonths();renderCourses();
+  renderFilters();renderMonths();renderCourses();renderLife();
+}
+
+
+/* ---------- the Life panel ---------- */
+var LF={cat:"work",dows:[1,3,5],rep:"weekly"};
+function renderLife(){
+  var host=document.getElementById("life-list");if(!host)return;
+  var cats=document.getElementById("lf-cats");
+  if(cats)cats.innerHTML=LIFE_CATS.map(function(c){
+    return '<button type="button" data-lfcat="'+c[0]+'" aria-pressed="'+(LF.cat===c[0]?"true":"false")+'">'
+      +icon(c[0])+'<span>'+esc(c[1])+'</span></button>';
+  }).join("");
+  var days=document.getElementById("lf-days");
+  if(days)days.innerHTML=[1,2,3,4,5,6,0].map(function(d){
+    return '<button type="button" data-lfday="'+d+'" aria-pressed="'+(LF.dows.indexOf(d)>-1?"true":"false")+'">'
+      +dowShort(d)+'</button>';
+  }).join("");
+
+  var L=lifeList();
+  host.innerHTML=L.length?L.map(function(e){
+    return '<div class="liferow">'
+      +'<span class="badgeico">'+icon(e.cat)+'</span>'
+      +'<span class="body"><span class="nm">'+esc(e.t)+'</span>'
+      +'<span class="sb">'+esc(catOf(e.cat)[1])+' · '+esc(lifeWhen(e))+' · '
+      +esc(t12(e.from))+'–'+esc(t12(e.to))+(e.note?' · '+esc(e.note):'')+'</span></span>'
+      +'<button class="x" data-lifedel="'+esc(e.id)+'" aria-label="Remove '+esc(e.t)+'" title="Remove">&times;</button>'
+      +'</div>';
+  }).join(""):'<div class="lifeempty">Nothing here yet. Add a shift, a training session, a standing '
+      +'appointment — anything that takes hours you might otherwise plan to study in.</div>';
+
+  var n=document.getElementById("life-note");
+  if(n)n.textContent=L.length?(L.length+(L.length===1?" thing":" things")+" in your week"):"optional";
+  var ow=document.getElementById("lf-oncewrap"),wk=document.getElementById("lf-weekly");
+  if(ow&&wk){ow.classList.toggle("hide",LF.rep!=="once");wk.classList.toggle("hide",LF.rep==="once");}
+}
+function lfMsg(t,bad){
+  var m=document.getElementById("lf-msg");if(!m)return;
+  m.textContent=t||"";
+  m.style.color=bad?"var(--bad-deep)":"var(--ink-2)";
 }
 
 /* ===================== extraction ===================== */
@@ -2175,6 +2398,8 @@ function allExportEvents(){
     out.push({title:c.key+" — "+i.t+(i.w?" · "+i.w:""),date:i.d,allDay:true,desc:(i.note||"")+(c.title?"\n\n"+c.code+" "+c.title:""),loc:c.room||"",alarm:i.k!=="other"});
   });
   STUDY.forEach(function(s){var c=courseOf(s.c);out.push({title:"Study — "+c.key+": "+s.t,date:s.d,allDay:false,from:s.from,to:s.to,desc:"",loc:"",alarm:false});});
+  LIFE.forEach(function(e){out.push({title:e.t,date:e.d,allDay:false,from:e.from,to:e.to,
+    desc:(e.note||"")+(e.note?"\n\n":"")+catOf(e.cat)[1],loc:"",alarm:false});});
   S.courses.forEach(function(c){(c.classes||[]).forEach(function(r){if(r.off)out.push({title:c.key+" — "+r.topic,date:r.date,allDay:true,desc:"",loc:"",alarm:false});});});
   return out.sort(function(a,b){return a.date<b.date?-1:1;});
 }
@@ -2337,6 +2562,19 @@ document.addEventListener("click",function(e){
     return;
   }
   if(t.closest("#stats-refresh")){loadOwnerStats();return;}
+  if((x=t.closest("[data-lfcat]"))){LF.cat=x.dataset.lfcat;renderLife();return;}
+  if((x=t.closest("[data-lfday]"))){
+    var d=+x.dataset.lfday,i=LF.dows.indexOf(d);
+    if(i>-1)LF.dows.splice(i,1);else LF.dows.push(d);
+    renderLife();return;
+  }
+  if((x=t.closest("[data-lifedel]"))){
+    var id=x.dataset.lifedel;
+    var e=lifeList().filter(function(v){return v.id===id;})[0];
+    if(e&&!confirm("Remove “"+e.t+"” from your schedule?"))return;
+    S.life=lifeList().filter(function(v){return v.id!==id;});
+    save();renderAll();return;
+  }
   if(t.closest("#buildstamp")){sheetWhatsNew(null);return;}
   if(t.closest('[data-act="update"]')){applyUpdate();return;}
   if(t.closest('[data-act="update-later"]')){
@@ -2351,7 +2589,7 @@ document.addEventListener("click",function(e){
   if(t.closest("#home-close")){showPanel(LAST_PANEL);window.scrollTo({top:0,behavior:"smooth"});return;}
   if(t.closest("#addbtn")||t.closest("#start1")||t.closest("#demo-add")||t.closest("#home-add")){openAdd();return;}
   if(t.closest("#demo-shuffle")){loadSample(true);return;}
-  if(t.closest("#demo-clear")){S={courses:[],items:[],done:{},version:1};save();renderAll();showPanel("p-weeks");return;}
+  if(t.closest("#demo-clear")){S={courses:[],items:[],done:{},life:lifeList(),version:1};save();renderAll();showPanel("p-weeks");return;}
   if(t.closest("#backtoinput")){PENDING=null;openAdd();return;}
   if(t.closest("#cancel-add")){showPanel("p-weeks");return;}
   if(t.closest("#pickfile")){document.getElementById("file").click();return;}
@@ -2404,7 +2642,7 @@ document.addEventListener("click",function(e){
   if(t.closest("#addrow")&&PENDING){PENDING.items.push({id:uid(),c:PENDING.course.key,t:"",d:null,k:"due",w:"",note:""});drawReview();return;}
   if(t.closest("#commit")&&PENDING){
     if(PENDING.items.some(function(i){return !i.t.trim();})){alert("Give every row a name, or remove the blank ones.");return;}
-    if(S.demo){ S={courses:[],items:[],done:{},version:1}; }
+    if(S.demo){ S={courses:[],items:[],done:{},life:lifeList(),version:1}; }
     S.courses.push(PENDING.course);PENDING.items.forEach(function(i){S.items.push(i);});
     /* Give it one study block straight away, chosen from when this course actually
        meets rather than from a rota — the suggestion needs the course to be in S
@@ -2430,6 +2668,33 @@ document.addEventListener("click",function(e){
     try{var p=JSON.parse(raw);if(!p.courses)throw 0;S=p;save();renderAll();alert("Imported.");}catch(err){alert("That did not parse as Syllabus Desk data.");}
     return;
   }
+});
+
+
+document.addEventListener("submit",function(e){
+  if(e.target.id!=="life-form")return;
+  e.preventDefault();
+  var title=(document.getElementById("lf-title").value||"").trim();
+  var from=document.getElementById("lf-from").value||"";
+  var to=document.getElementById("lf-to").value||"";
+  var note=(document.getElementById("lf-note").value||"").trim();
+  var date=document.getElementById("lf-date").value||"";
+  if(!title){lfMsg("Give it a name first — “Shift”, “Training”, “Drive Mum to the clinic”.",1);return;}
+  if(!from||!to){lfMsg("It needs a start and an end.",1);return;}
+  if(tMin(to)<=tMin(from)){lfMsg("The end time is not after the start time.",1);return;}
+  var entry={id:uid(),t:title.slice(0,80),cat:LF.cat,from:from,to:to,note:note.slice(0,140)};
+  if(LF.rep==="once"){
+    if(!isISO(date)){lfMsg("Pick the date it happens on.",1);return;}
+    entry.d=date;
+  }else{
+    if(!LF.dows.length){lfMsg("Choose at least one day of the week.",1);return;}
+    entry.dows=LF.dows.slice().sort();
+  }
+  lifeList().push(entry);
+  save();renderAll();
+  document.getElementById("lf-title").value="";
+  document.getElementById("lf-note").value="";
+  lfMsg("Added — it is in your two weeks and your calendar now.");
 });
 
 /* ---------- account forms ---------- */
@@ -2467,6 +2732,7 @@ document.addEventListener("submit",function(e){
 document.addEventListener("change",function(e){
   var t=e.target,x;
   if(t.id==="m-jump"){goMonth(t.value);return;}
+  if(t.id==="lf-rep"){LF.rep=t.value;renderLife();return;}
   if((x=t.closest("[data-tick]"))){
     if(x.checked)S.done[x.dataset.tick]=1;else delete S.done[x.dataset.tick];
     save();var r=x.closest(".it");if(r)r.classList.toggle("done",x.checked);return;
@@ -2580,10 +2846,13 @@ function doRecover(email){
 
 /* ===================== accounts: sync ===================== */
 function termPayload(){
-  return {courses:S.courses||[],items:S.items||[],done:S.done||{},version:S.version||1,
+  return {courses:S.courses||[],items:S.items||[],done:S.done||{},life:lifeList(),version:S.version||1,
           theme:(document.documentElement.getAttribute("data-theme")||"light")};
 }
-function realCourses(st){return (st&&st.courses&&!st.demo)?st.courses.length:0;}
+function realCourses(st){
+  if(!st||st.demo)return 0;
+  return (st.courses?st.courses.length:0)+((st.life&&st.life.length)?1:0);
+}
 
 function pushTerm(){
   if(!sbOn()||!SESS||SYNC.applying)return Promise.resolve();
@@ -2611,7 +2880,7 @@ function pullTerm(){
 function adoptCloud(row){
   SYNC.applying=true;
   var p=row.payload||{};
-  S={courses:p.courses||[],items:p.items||[],done:p.done||{},version:p.version||1};
+  S={courses:p.courses||[],items:p.items||[],done:p.done||{},life:p.life||[],version:p.version||1};
   try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
   if(p.theme==="dark"||p.theme==="light"){
     document.documentElement.setAttribute("data-theme",p.theme);
@@ -2914,7 +3183,7 @@ drop.addEventListener("drop",function(e){
 /* ===================== terms ===================== */
 function loadOwnerTerm(){
   if(S.courses.length&&!confirm("Loading your term replaces what is here. Continue?"))return;
-  S={courses:[],items:[],done:{},version:1};
+  S={courses:[],items:[],done:{},life:lifeList(),version:1};
   var C=[
    {key:"ACCT",code:"ACCT 2210-02",title:"Financial Accounting",instructor:"Tony Bell",email:"",room:"",meets:"Mon / Wed",time:"",color:"--accent",
     weights:[["Homework & professionalism",10],["Midterm 1",25],["Midterm 2",25],["Final exam",40]],
@@ -3057,7 +3326,7 @@ function demoItems(kind){
 }
 function loadSample(quiet){
   if(!quiet&&S.courses.length&&!confirm("Loading the example term replaces what is here. Continue?"))return;
-  S={courses:[],items:[],done:{},version:1,demo:true};
+  S={courses:[],items:[],done:{},life:lifeList(),version:1,demo:true};
   var pick=shuffled(DEMO_COURSES).slice(0,5);
   /* always keep one course with nothing posted, so the flagging behaviour is visible */
   if(!pick.some(function(c){return c.kind==="blank";})){
