@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v2.8  (10 September 2026)
+  Syllabus Desk  v2.9  (10 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -338,6 +338,11 @@ input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:po
 .dayrow .sb{display:block;font-family:var(--font-mono);font-size:.62rem;color:var(--ink-2);margin-top:3px}
 .dayrow .go{color:var(--ink-3);font-size:1rem}
 .countdown{font-family:var(--font-mono);font-size:.72rem;font-weight:500;letter-spacing:.04em}
+.cdchip{font-family:var(--font-mono);font-size:.62rem;font-weight:600;letter-spacing:.04em;
+  font-variant-numeric:tabular-nums}
+.assumed{font-style:italic;color:var(--ink-3)}
+.revtime{display:flex;align-items:center;gap:6px}
+.revtime .btn{white-space:nowrap}
 @media(max-width:620px){
   .sheet{padding:0;align-items:flex-end}
   .sheet-card{width:100%;max-height:88vh;animation:slideup .2s ease-out}
@@ -1469,6 +1474,15 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           <button class="btn" id="set-install">How to install it</button>
         </div>
         <div class="excard">
+          <h4>Deadlines with no time</h4>
+          <p>Most outlines give a date and no hour. Off, those count down in whole days.
+          On, they count down to <b>11:59 pm</b> and say so — an assumption, labelled as one.</p>
+          <div class="seg" role="group" aria-label="Assume 11:59 pm">
+            <button type="button" data-eod-set="0">Days only</button>
+            <button type="button" data-eod-set="1">Assume 11:59 pm</button>
+          </div>
+        </div>
+        <div class="excard">
           <h4>This build</h4>
           <p id="set-build" class="hint" style="margin:0 0 12px"></p>
           <button class="btn" id="set-whatsnew">What changed</button>
@@ -1633,11 +1647,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"2.8",date:"10 September 2026",year:2026};
+var BUILD={v:"2.9",date:"10 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["2.9","Deadlines can carry the hour, not just the day. Give an assignment a time — 11pm, 11:59 pm, 23:59 — and it counts down in days, hours and minutes wherever it appears, ticking as you watch. The reader picks the time up on its own when an outline says one out loud, and the calendar export stops treating a midnight deadline as an all-day banner."],
   ["2.8","The Log in page stops lecturing. The long explanation of what an account stores has moved to the rights notice where the rest of it already lived, leaving one line above the forms and the part you need before you type — that your email is visible to the site's owner and your password is not — right beside the button."],
   ["2.7","An Owner tab of its own, and it opens by itself. Sign in with the owner account and the tab appears in the row with the others, leading with who has signed up — no hunting inside Settings, and no second password after the server has already checked who you are."],
   ["2.6","Accounts are switched on. Make one with an email and a password and your courses, dates, ticks, study blocks and personal entries follow you to your phone and any other computer. It stays optional — everything on this page still works without one, exactly as before."],
@@ -1693,6 +1708,91 @@ function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(m){return
 function fmtDay(d){return DOWN[d.getDay()].slice(0,3)+" "+MON[d.getMonth()].slice(0,3)+" "+d.getDate();}
 function daysTo(iso){return Math.round((P(iso)-TODAY)/864e5);}
 function isISO(s){return /^\d{4}-\d{2}-\d{2}$/.test(s)&&!isNaN(P(s).getTime());}
+
+/* ---------- how long until it is due ----------
+   A date alone can only honestly say "in 3 days". A date WITH a time can say
+   how many hours and minutes, and that is worth having for the 11pm deadline
+   you think you have all evening for. So `at` is optional on every item: when
+   it is there the countdown is exact and ticks; when it is not, the wording
+   stays at day resolution rather than inventing an hour.
+
+   ASSUME_EOD is the one exception, and it is opt-in and labelled: turn it on
+   in Settings and an item with a date but no time counts down to 11:59pm,
+   with "assumed" printed beside it so nobody mistakes it for the real thing. */
+function assumeEOD(){try{return localStorage.getItem("sd.eod")==="1";}catch(e){return false;}}
+function effAt(it){ return it && it.at ? it.at : (assumeEOD() ? "23:59" : ""); }
+function dueDate(iso,at){
+  var d=P(iso), m=tMin(at||"23:59");
+  d.setHours(Math.floor(m/60), m%60, 0, 0);
+  return d;
+}
+function cdText(iso,at){
+  var ms=dueDate(iso,at).getTime()-Date.now(), late=ms<0, s2=Math.floor(Math.abs(ms)/1000);
+  var dd=Math.floor(s2/86400), hh=Math.floor(s2%86400/3600), mm=Math.floor(s2%3600/60);
+  var body;
+  if(dd>0)      body=dd+"d "+hh+"h "+mm+"m";
+  else if(hh>0) body=hh+"h "+mm+"m";
+  else if(mm>0) body=mm+"m";
+  else          body=late?"just now":"under a minute";
+  if(late)return body==="just now"?"due just now":body+" late";
+  return "in "+body;
+}
+function cdColour(iso,at){
+  var ms=dueDate(iso,at).getTime()-Date.now();
+  if(ms<0)return "var(--bad-deep)";
+  if(ms<6*3600e3)return "var(--bad)";
+  if(ms<36*3600e3)return "var(--warn)";
+  if(ms<7*864e5)return "var(--ink-2)";
+  return "var(--ink-3)";
+}
+/* one attribute, one loop: anything that wants a live countdown asks for it
+   here rather than each renderer running its own timer */
+function cdTag(iso,at,cls){
+  if(!iso)return "";
+  var exact=!!at;
+  return '<span class="'+(cls||"cdchip")+'" data-cd="'+esc(iso)+'" data-cdat="'+esc(at||"")
+    +'" style="color:'+(exact?cdColour(iso,at):"var(--ink-3)")+'">'
+    +esc(exact?cdText(iso,at):countdown(iso))+'</span>';
+}
+function tickCountdowns(){
+  Array.prototype.forEach.call(document.querySelectorAll("[data-cd]"),function(el){
+    var iso=el.dataset.cd, at=el.dataset.cdat;
+    if(!at){el.textContent=countdown(iso);return;}
+    el.textContent=cdText(iso,at);
+    el.style.color=cdColour(iso,at);
+  });
+}
+setInterval(tickCountdowns, 20000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)tickCountdowns();});
+/* a time typed by a person, in whatever shape they type it */
+function parseTimeLoose(v){
+  v=String(v||"").trim().toLowerCase();
+  if(!v)return "";
+  if(/^(noon|midday)$/.test(v))return "12:00";
+  if(/^midnight$/.test(v))return "00:00";
+  var m=v.match(/^(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)?$/);
+  if(!m)return null;
+  var h=+m[1], mi=m[2]?+m[2]:0, ap=(m[3]||"").replace(/[.\s]/g,"");
+  if(mi>59)return null;
+  if(ap==="pm"&&h<12)h+=12;
+  if(ap==="am"&&h===12)h=0;
+  if(!ap&&h>23)return null;
+  if(h>23)return null;
+  return tStr(h*60+mi);
+}
+function askTime(it){
+  var cur=it.at?t12(it.at):"";
+  var v=window.prompt(
+    "What time is “"+it.t+"” due?\n\n"
+    +"Type it however you like — 11pm, 11:59 pm, 23:59, noon.\n"
+    +"Leave it blank to go back to a date with no time.", cur);
+  if(v===null)return;
+  var t=parseTimeLoose(v);
+  if(t===null){alert("That did not read as a time, so nothing changed.\n\nTry 11pm, 11:59 pm, or 23:59.");return;}
+  it.at=t||"";
+  save();renderAll();
+}
+
 function countdown(iso){var n=daysTo(iso);if(n<0)return "passed";if(n===0)return "today";if(n===1)return "tomorrow";if(n<7)return "in "+n+" days";var w=Math.floor(n/7);return "in "+n+" days · "+w+(w===1?" wk":" wks");}
 function t12(t){if(!t)return "";var a=t.split(":"),h=+a[0],m=a[1]||"00";var ap=h>=12?"pm":"am";h=h%12||12;return h+(m==="00"?"":":"+m)+ap;}
 function uid(){return Math.random().toString(36).slice(2,9);}
@@ -1897,7 +1997,7 @@ function suggestBlocks(key){
 function t12r(f,t){return t12(f)+"–"+t12(t);}
 function eventsOn(iso){
   var out=[];
-  S.items.forEach(function(i){if(i.d===iso)out.push({kind:i.k,c:i.c,t:i.t,w:i.w,id:i.id,ord:1});});
+  S.items.forEach(function(i){if(i.d===iso)out.push({kind:i.k,c:i.c,t:i.t,w:i.w,id:i.id,at:i.at||"",d:i.d,ord:1});});
   S.courses.forEach(function(c){(c.classes||[]).forEach(function(r){
     if(r.date===iso)out.push({kind:r.off?"off":"class",c:c.key,t:r.topic,id:"cl-"+c.key+"-"+iso,ord:r.off?4:2,time:c.time&&c.time.indexOf(":")>-1?c.time:""});
   });});
@@ -1909,6 +2009,13 @@ function eventsOn(iso){
 }
 function itemHTML(ev,tick){
   var col=colorOf(ev.c),badge="",when="";
+  /* only things that are DUE get a countdown — a class or a study block is an
+     appointment, not a deadline, and a ticking clock on one is just noise.
+     Something already ticked off does not need one either. */
+  if(ev.d&&!S.done[ev.id]&&["due","exam","quiz","pres"].indexOf(ev.kind)>-1){
+    var _at=ev.at||(assumeEOD()?"23:59":"");
+    if(_at)ev.cd=cdTag(ev.d,_at,"cdchip");
+  }
   if(ev.kind==="exam")badge='<span class="badge b-exam">exam'+(ev.w?" "+esc(ev.w):"")+'</span>';
   else if(ev.kind==="due")badge='<span class="badge b-due">due'+(ev.w?" "+esc(ev.w):"")+'</span>';
   else if(ev.kind==="pres")badge='<span class="badge b-due">present'+(ev.w?" "+esc(ev.w):"")+'</span>';
@@ -1918,6 +2025,7 @@ function itemHTML(ev,tick){
   else if(ev.kind==="off")badge='<span class="badge b-off">no class</span>';
   if(ev.from)when=t12(ev.from)+"–"+t12(ev.to);
   else if(ev.kind==="class"&&ev.time)when=ev.time;
+  else if(ev.at)when=t12(ev.at);
   var done=!!S.done[ev.id];
   return '<div class="it'+(done?" done":"")+'">'
    +'<span class="rail" style="background:'+col+'"></span>'
@@ -1927,7 +2035,8 @@ function itemHTML(ev,tick){
       ? '<span class="ck" style="color:'+textColorOf(ev.c)+'">'+icon(ev.cat)+'</span> '
       : '<span class="ck" style="color:'+textColorOf(ev.c)+'">'+esc(courseOf(ev.c).key)+'</span> ')
    +esc(ev.t)+'</span>'+badge
-   +(when?'<div class="when">'+esc(when)+'</div>':'')+'</span></div>';
+   +(when||ev.cd?'<div class="when">'+esc(when)
+      +(ev.cd&&when?' · ':'')+(ev.cd||'')+'</div>':'')+'</span></div>';
 }
 
 
@@ -2016,10 +2125,14 @@ function renderHorizon(){
   var total=up.length;up=up.slice(0,12);
   var html=up.map(function(i){
     var col=colorOf(i.c),n=daysTo(i.d);
-    var cd=n<=3?"var(--bad)":n<=10?"var(--warn)":"var(--ink-3)";
+    var at=effAt(i);
+    var cd=at?cdColour(i.d,at):(n<=3?"var(--bad)":n<=10?"var(--warn)":"var(--ink-3)");
     return '<div class="hcard" style="--hc:'+col+'"><div class="d" style="color:'+textColorOf(i.c)+'">'+esc(courseOf(i.c).code)+'</div>'
-      +'<div class="t">'+esc(i.t)+'</div><div class="m">'+fmtDay(P(i.d))+(i.w?" · "+esc(i.w):"")+'</div>'
-      +'<div class="cd" style="color:'+cd+'">'+countdown(i.d)+'</div></div>';
+      +'<div class="t">'+esc(i.t)+'</div><div class="m">'+fmtDay(P(i.d))
+      +(i.at?" · "+esc(t12(i.at)):(at?' · <span class="assumed">11:59 pm assumed</span>':""))
+      +(i.w?" · "+esc(i.w):"")+'</div>'
+      +'<div class="cd" data-cd="'+esc(i.d)+'" data-cdat="'+esc(at)+'" style="color:'+cd+'">'
+      +esc(at?cdText(i.d,at):countdown(i.d))+'</div></div>';
   }).join("");
   html+=tbd.map(function(i){
     var col=colorOf(i.c);
@@ -2160,7 +2273,8 @@ function sheetDay(iso){
           +'<span class="rail" style="background:'+colorOf(e.c)+'"></span>'
           +'<span class="body"><span class="nm'+(S.done[e.id]?'" style="text-decoration:line-through;color:var(--ink-3)':'')+'">'
           +esc(courseOf(e.c).key)+' — '+esc(e.t)+'</span>'
-          +'<span class="sb">'+kindLabel(e)+(e.from?" · "+t12(e.from)+"–"+t12(e.to):"")+(e.w?" · "+esc(e.w):"")+'</span></span>'
+          +'<span class="sb">'+kindLabel(e)+(e.from?" · "+t12(e.from)+"–"+t12(e.to):"")
+          +(e.at?" · due "+esc(t12(e.at)):"")+(e.w?" · "+esc(e.w):"")+'</span></span>'
           +'<span class="go">&rsaquo;</span></button>';
       }).join("")+'</div>'
     : '<p style="color:var(--ink-3);font-size:.88rem;margin:0">Nothing scheduled on this day.</p>';
@@ -2185,7 +2299,8 @@ function sheetEvent(id,iso){
     '<div style="min-width:0"><div class="code" style="--c:'+textColorOf(c.key)+'">'+esc(c.code||c.key)+'</div>'
     +'<h3 id="sheet-title">'+esc(title)+'</h3>'
     +'<div class="when">'+(date?fmtDay(P(date))+", "+P(date).getFullYear():"no date set")
-    +(ev&&ev.from?" · "+t12(ev.from)+"–"+t12(ev.to):"")+'</div></div>'
+    +(ev&&ev.from?" · "+t12(ev.from)+"–"+t12(ev.to):"")
+    +(item&&item.at?" · "+t12(item.at):"")+'</div></div>'
     +'<button class="x" data-close aria-label="Close">&times;</button>';
   var rows='<dl>';
   /* a life event's kind IS its category, so the label needs both */
@@ -2196,8 +2311,13 @@ function sheetEvent(id,iso){
   if(item&&item.w)rows+='<dt>Weight</dt><dd>'+esc(item.w)+' of the final grade</dd>';
   if(date){
     var n=daysTo(date);
-    var col2=n<0?"var(--ink-3)":n<=3?"var(--bad)":n<=10?"var(--warn)":"var(--ok)";
-    rows+='<dt>When</dt><dd><span class="countdown" style="color:'+col2+'">'+countdown(date)+'</span></dd>';
+    var at2=item?effAt(item):"";
+    var col2=at2?cdColour(date,at2):(n<0?"var(--ink-3)":n<=3?"var(--bad)":n<=10?"var(--warn)":"var(--ok)");
+    rows+='<dt>Due</dt><dd>'+esc(fmtDay(P(date)))+', '+P(date).getFullYear()
+      +(item&&item.at?' at <b>'+esc(t12(item.at))+'</b>'
+        :(at2?' · <span class="assumed">11:59 pm assumed</span>':' · <span class="assumed">no time given</span>'))+'</dd>';
+    rows+='<dt>Countdown</dt><dd><span class="countdown" data-cd="'+esc(date)+'" data-cdat="'+esc(at2)
+      +'" style="color:'+col2+'">'+esc(at2?cdText(date,at2):countdown(date))+'</span></dd>';
   }
   rows+='</dl>';
   if(item&&item.note)rows+='<p class="note">'+esc(item.note)+'</p>';
@@ -2214,6 +2334,7 @@ function sheetEvent(id,iso){
     foot+='<button class="btn sm" data-done="'+esc(id)+'">'+(S.done[id]?"Mark not done":"Mark done")+'</button>';
   }
   if(item)foot+='<button class="btn sm" data-setdate="'+esc(item.id)+'">'+(item.d?"Change date":"Set date")+'</button>';
+  if(item&&item.d)foot+='<button class="btn sm" data-settime="'+esc(item.id)+'">'+(item.at?"Change time":"Set time")+'</button>';
   foot+='<span class="spacer" style="flex:1"></span><button class="btn sm primary" data-close>Close</button>';
   document.getElementById("sheet-foot").innerHTML=foot;
   openSheet();
@@ -2224,7 +2345,11 @@ function renderCourses(){
     var col="var("+c.color+")";
     var rows=S.items.filter(function(i){return i.c===c.key;}).map(function(i){
       return '<tr><td style="width:100%"><span class="name">'+esc(i.t)+'</span>'+(i.note?'<div class="sub">'+esc(i.note)+'</div>':'')+'</td>'
-        +(i.d?'<td class="dt">'+fmtDay(P(i.d))+'</td>':'<td class="dt"><button class="tbd" data-tbd="'+i.id+'">set</button></td>')
+        +(i.d?'<td class="dt">'+fmtDay(P(i.d))
+             +(i.at?'<div class="sub mono">'+esc(t12(i.at))+'</div>'
+                   :'<div class="sub"><button class="tbd" data-settime="'+i.id+'">+ time</button></div>')
+             +'</td>'
+           :'<td class="dt"><button class="tbd" data-tbd="'+i.id+'">set</button></td>')
         +'<td class="wt">'+esc(i.w||"—")+'</td></tr>';
     }).join("")||'<tr><td colspan="3" style="color:var(--ink-3)">No graded items found in this outline.</td></tr>';
     var tot=(c.weights||[]).reduce(function(a,b){return a+(+b[1]||0);},0),bar="",key="";
@@ -2374,6 +2499,10 @@ function tctlApply(box){
     if(what==="blkfrom"){b.from=v;if(tMin(b.to)<=tMin(b.from))b.to=addMin(b.from,90);}
     else{b.to=v;if(tMin(b.to)<=tMin(b.from))b.to=addMin(b.from,90);}
     save();renderAll();return;
+  }
+  if(what==="revat"){
+    if(PENDING&&PENDING.items[+key]){PENDING.items[+key].at=v;drawReview();}
+    return;
   }
   if(what==="lffrom"){LF.from=v;if(tMin(LF.to)<=tMin(LF.from))LF.to=addMin(LF.from,90);renderLife();return;}
   if(what==="lfto"){LF.to=v;if(tMin(LF.to)<=tMin(LF.from))LF.to=addMin(LF.from,90);renderLife();return;}
@@ -2572,6 +2701,7 @@ function showReview(d,note){
       blocks:[]},   /* filled in from the course's own schedule once it is saved */
     items:(Array.isArray(d.items)?d.items:[]).map(function(i){
       return {id:uid(),c:key,t:String(i.title||"Untitled").slice(0,140),d:isISO(i.date)?i.date:null,
+        at:/^\d{2}:\d{2}$/.test(i.time||"")?i.time:"",
         k:["exam","quiz","due","pres","other"].indexOf(i.kind)>-1?i.kind:"due",w:String(i.weight||""),note:String(i.note||"").slice(0,300)};
     })
   };
@@ -2588,6 +2718,10 @@ function drawReview(){
     return '<tr'+(i.d?"":' class="missing"')+'>'
       +'<td><input data-ri="'+ix+'" data-rf="t" value="'+esc(i.t)+'"></td>'
       +'<td style="width:150px"><input class="dt" type="date" data-ri="'+ix+'" data-rf="d" value="'+esc(i.d||"")+'"></td>'
+      +'<td style="width:126px">'+(i.at
+          ? '<span class="revtime">'+timeCtl("revat",String(ix),i.at,"Due")
+            +'<button class="btn sm ghost" data-rnotime="'+ix+'" aria-label="remove the time">&times;</button></span>'
+          : '<button class="btn sm ghost" data-rtime="'+ix+'">+ time</button>')+'</td>'
       +'<td style="width:112px"><select data-ri="'+ix+'" data-rf="k">'
       +["exam","quiz","due","pres","other"].map(function(k){return '<option value="'+k+'"'+(i.k===k?" selected":"")+'>'+({exam:"Exam",quiz:"Quiz",due:"Due",pres:"Present",other:"Other"})[k]+'</option>';}).join("")
       +'</select></td><td style="width:82px"><input data-ri="'+ix+'" data-rf="w" value="'+esc(i.w)+'" placeholder="—"></td>'
@@ -2604,8 +2738,8 @@ function drawReview(){
     +(PENDING.note?' '+esc(PENDING.note):'')+'</p></div>'
     +'<div class="fieldgrid">'+fld("code","Course code",c.code)+fld("title","Title",c.title)+fld("instructor","Instructor",c.instructor)
     +fld("email","Email",c.email)+fld("meets","Meets",c.meets)+fld("time","Time",c.time)+fld("room","Room",c.room)+'</div>'
-    +'<div style="overflow-x:auto"><table class="rev"><thead><tr><th>Item</th><th>Date</th><th>Type</th><th>Weight</th><th></th><th></th></tr></thead><tbody>'
-    +(rows||'<tr><td colspan="6" style="color:var(--ink-3);padding:16px 8px">Nothing graded was found. Add a row, or go back and paste more of the outline.</td></tr>')
+    +'<div style="overflow-x:auto"><table class="rev"><thead><tr><th>Item</th><th>Date</th><th>Time</th><th>Type</th><th>Weight</th><th></th><th></th></tr></thead><tbody>'
+    +(rows||'<tr><td colspan="7" style="color:var(--ink-3);padding:16px 8px">Nothing graded was found. Add a row, or go back and paste more of the outline.</td></tr>')
     +'</tbody></table></div>'
     +'<div class="rev-foot"><button class="btn primary" id="commit">Save this course</button><button class="btn" id="addrow">Add a row</button>'
     +'<button class="btn ghost" id="backtoinput">Start over</button><span class="hint" style="margin-left:auto">Saved to this browser only</span></div>';
@@ -2617,7 +2751,12 @@ function allExportEvents(){
   var out=[];
   S.items.forEach(function(i){
     if(!i.d)return;var c=courseOf(i.c);
-    out.push({title:c.key+" — "+i.t+(i.w?" · "+i.w:""),date:i.d,allDay:true,desc:(i.note||"")+(c.title?"\n\n"+c.code+" "+c.title:""),loc:c.room||"",alarm:i.k!=="other"});
+    /* a due TIME belongs in the calendar as a time, not as an all-day banner
+       you scroll past — half an hour so it reads as a block, not a dot */
+    var ex={title:c.key+" — "+i.t+(i.w?" · "+i.w:""),date:i.d,allDay:!i.at,
+            desc:(i.note||"")+(c.title?"\n\n"+c.code+" "+c.title:""),loc:c.room||"",alarm:i.k!=="other"};
+    if(i.at){ex.from=i.at;ex.to=addMin(i.at,30);}
+    out.push(ex);
   });
   STUDY.forEach(function(s){var c=courseOf(s.c);out.push({title:"Study — "+c.key+": "+s.t,date:s.d,allDay:false,from:s.from,to:s.to,desc:"",loc:"",alarm:false});});
   LIFE.forEach(function(e){out.push({title:e.t,date:e.d,allDay:false,from:e.from,to:e.to,
@@ -2806,6 +2945,10 @@ document.addEventListener("click",function(e){
     try{localStorage.setItem("sd.theme",nx);}catch(err){}
     resetPalette();renderAll();return;
   }
+  if((x=t.closest("[data-eod-set]"))){
+    try{x.dataset.eodSet==="1"?localStorage.setItem("sd.eod","1"):localStorage.removeItem("sd.eod");}catch(err){}
+    renderAll();paintSettings();return;
+  }
   if(t.closest("#set-install")){sheetInstall();return;}
   if(t.closest("#set-whatsnew")){sheetWhatsNew(null);return;}
   if(t.closest("#set-goexport")){showPanel("p-export");window.scrollTo({top:0,behavior:"smooth"});return;}
@@ -2815,6 +2958,11 @@ document.addEventListener("click",function(e){
     S={courses:[],items:[],done:{},life:[],version:1};
     save();loadSample(true);renderAll();showPanel("p-weeks");
     window.scrollTo({top:0,behavior:"smooth"});return;
+  }
+  if((x=t.closest("[data-settime]"))){
+    var it2=S.items.filter(function(i){return i.id===x.dataset.settime;})[0];
+    if(it2)askTime(it2);
+    return;
   }
   if(t.closest("#buildstamp")){sheetWhatsNew(null);return;}
   if(t.closest('[data-act="update"]')){applyUpdate();return;}
@@ -2880,7 +3028,15 @@ document.addEventListener("click",function(e){
     save();renderAll();return;
   }
   if((x=t.closest("[data-rdel]"))&&PENDING){PENDING.items.splice(+x.dataset.rdel,1);drawReview();return;}
-  if(t.closest("#addrow")&&PENDING){PENDING.items.push({id:uid(),c:PENDING.course.key,t:"",d:null,k:"due",w:"",note:""});drawReview();return;}
+  if((x=t.closest("[data-rtime]"))&&PENDING){
+    /* 11:59 pm is the commonest deadline by a mile, so it is the starting
+       point — but only once somebody has ASKED for a time on this row */
+    PENDING.items[+x.dataset.rtime].at="23:59";drawReview();return;
+  }
+  if((x=t.closest("[data-rnotime]"))&&PENDING){
+    PENDING.items[+x.dataset.rnotime].at="";drawReview();return;
+  }
+  if(t.closest("#addrow")&&PENDING){PENDING.items.push({id:uid(),c:PENDING.course.key,t:"",d:null,at:"",k:"due",w:"",note:""});drawReview();return;}
   if(t.closest("#commit")&&PENDING){
     if(PENDING.items.some(function(i){return !i.t.trim();})){alert("Give every row a name, or remove the blank ones.");return;}
     if(S.demo){ S={courses:[],items:[],done:{},life:lifeList(),version:1}; }
@@ -3186,6 +3342,9 @@ function paintSettings(){
   var th=document.documentElement.getAttribute("data-theme")==="dark"?"dark":"light";
   Array.prototype.forEach.call(document.querySelectorAll("[data-theme-set]"),function(b){
     b.setAttribute("aria-pressed",b.dataset.themeSet===th?"true":"false");
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-eod-set]"),function(b){
+    b.setAttribute("aria-pressed",(b.dataset.eodSet==="1")===assumeEOD()?"true":"false");
   });
   var sb=document.getElementById("set-build");
   if(sb)sb.textContent="Syllabus Desk v"+BUILD.v+", built "+BUILD.date+".";
@@ -3543,7 +3702,7 @@ function loadOwnerTerm(){
   ];
   C.forEach(function(c){
     var items=c.items;delete c.items;S.courses.push(c);
-    items.forEach(function(i){S.items.push({id:uid(),c:c.key,t:i.t,d:i.d,k:i.k,w:i.w,note:i.note});});
+    items.forEach(function(i){S.items.push({id:uid(),c:c.key,t:i.t,d:i.d,at:i.at||"",k:i.k,w:i.w,note:i.note});});
   });
   save();renderAll();showPanel("p-weeks");
 }
@@ -3644,7 +3803,7 @@ function loadSample(quiet){
                {date:demoDate(6,3),topic:"No class — mid-semester break",off:true}]};
     S.courses.push(c);
     demoItems(tpl.kind).forEach(function(i){
-      S.items.push({id:uid(),c:key,t:i.t,d:i.d,k:i.k,w:i.w,note:i.note});
+      S.items.push({id:uid(),c:key,t:i.t,d:i.d,at:i.at||"",k:i.k,w:i.w,note:i.note});
       if(i.d&&(i.k==="exam"||i.k==="pres"))c.classes.push({date:i.d,topic:i.t,mark:true});
     });
   });
