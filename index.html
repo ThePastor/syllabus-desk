@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v2.9  (10 September 2026)
+  Syllabus Desk  v3.0  (11 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -1474,6 +1474,16 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           <button class="btn" id="set-install">How to install it</button>
         </div>
         <div class="excard">
+          <h4>Counting</h4>
+          <p>This browser adds <b>1</b> to a visitor count, with no name, email or anything you typed —
+          just a random id, your platform and timezone. <button type="button" class="linkish" id="set-countinfo">What
+          exactly is counted</button>.</p>
+          <div class="seg" role="group" aria-label="Counting">
+            <button type="button" data-count-set="1">Count this device</button>
+            <button type="button" data-count-set="0">Don't count it</button>
+          </div>
+        </div>
+        <div class="excard">
           <h4>Deadlines with no time</h4>
           <p>Most outlines give a date and no hour. Off, those count down in whole days.
           On, they count down to <b>11:59 pm</b> and say so — an assumption, labelled as one.</p>
@@ -1601,8 +1611,22 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
         <h3>Your course material stays yours</h3>
         <p>Outlines you paste or upload are read <b>in your browser</b>. The file itself is never uploaded.</p>
-        <p><b>Without an account</b>, your schedule is stored only in this browser's local storage — not on a server, not visible to anyone else, and not visible to JohnsonXCorp.</p>
+        <p><b>Without an account</b>, your schedule is stored only in this browser's local storage — not on a server, not visible to anyone else, and not visible to JohnsonXCorp. The one thing that does leave, account or not, is the visit count described under <b>What is counted</b> below: a random id and a few numbers, never your course material.</p>
         <p><b>With an account</b>, two things are stored on a server so they can reach your other devices: the <b>email address</b> you signed up with, and your <b>term</b> — courses, dates, ticks and study blocks. Your email address is visible to the owner of this site, along with when you joined and when you last signed in. Your <b>password is never visible to anyone</b>, the owner included: only a one-way hash of it is kept, and a hash cannot be turned back into a password. Access is enforced per row in the database, so no other signed-in person can read your term. Accounts are entirely optional, nothing about them is sold or shared, and <b>Delete my saved term</b> on the Account tab removes what is stored whenever you want.</p>
+        <h3 id="counting-note">What is counted</h3>
+        <p>One number leaves this browser whether or not you have an account: <b>that you opened the
+        page</b>. The first time you arrive, the page makes up a random id for itself, stores it here,
+        and sends it with your <b>platform</b> (iPhone, Windows, and so on), your <b>timezone</b>, how
+        many times this browser has opened the page, whether it has an account, and <b>how many
+        courses</b> it holds — a count, not the courses.</p>
+        <p>What is never sent: your name, your email address if you have no account, any course title,
+        any date, any grade, any note, and anything you typed. The id is random and belongs to this
+        browser — it points at nothing and nobody, and clearing your browser data ends it.</p>
+        <p>It exists so the owner can answer one question honestly: <b>is anyone using this?</b> The
+        table it lands in cannot be read back through the site by anyone, including the owner — the
+        numbers reach him as a daily total. If you would rather not be in it, <b>Settings &rsaquo;
+        Counting &rsaquo; Don't count it</b> stops it on this device immediately.</p>
+
         <p>One exception, stated plainly: when you press <b>Read this outline</b>, the extracted <b>text</b> of that outline is sent to Anthropic's Claude so it can be turned into dates, and it is processed under Anthropic's terms rather than this notice. Nothing else on this page is sent anywhere. If you would rather not, build your term by hand instead — every field is editable.</p>
 
         <h3>No warranty</h3>
@@ -1647,11 +1671,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"2.9",date:"10 September 2026",year:2026};
+var BUILD={v:"3.0",date:"11 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["3.0","The page now counts visits, so whoever runs it can tell whether anyone is using it. It is a count and nothing more — a random id this browser made up, your platform and timezone, and how many courses you hold. No name, no email, nothing you typed, and no login required to use anything. It is spelled out under <b>What is counted</b> in the rights notice, and Settings can switch it off."],
   ["2.9","Deadlines can carry the hour, not just the day. Give an assignment a time — 11pm, 11:59 pm, 23:59 — and it counts down in days, hours and minutes wherever it appears, ticking as you watch. The reader picks the time up on its own when an outline says one out loud, and the calendar export stops treating a midnight deadline as an all-day banner."],
   ["2.8","The Log in page stops lecturing. The long explanation of what an account stores has moved to the rights notice where the rest of it already lived, leaving one line above the forms and the part you need before you type — that your email is visible to the site's owner and your password is not — right beside the button."],
   ["2.7","An Owner tab of its own, and it opens by itself. Sign in with the owner account and the tab appears in the row with the others, leading with who has signed up — no hunting inside Settings, and no second password after the server has already checked who you are."],
@@ -2945,6 +2970,10 @@ document.addEventListener("click",function(e){
     try{localStorage.setItem("sd.theme",nx);}catch(err){}
     resetPalette();renderAll();return;
   }
+  if((x=t.closest("[data-count-set]"))){setCounted(x.dataset.countSet==="1");return;}
+  if(t.closest("#set-countinfo")){showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});
+    setTimeout(function(){var el=document.getElementById("counting-note");
+      if(el)el.scrollIntoView({behavior:"smooth",block:"center"});},60);return;}
   if((x=t.closest("[data-eod-set]"))){
     try{x.dataset.eodSet==="1"?localStorage.setItem("sd.eod","1"):localStorage.removeItem("sd.eod");}catch(err){}
     renderAll();paintSettings();return;
@@ -3185,6 +3214,69 @@ var SYNC={timer:null,busy:false,applying:false,last:null,err:null};
    declined in the preview. */
 function inArtifact(){try{return !!window.claude;}catch(e){return false;}}
 function sbOn(){return !!(SB.url&&SB.key&&!inArtifact());}
+
+/* ---------- counting, without asking ----------
+   Anndy needs to know whether anyone is using this. The obvious way — a
+   sign-up wall — would give him a smaller number AND fewer users, and would
+   make him the keeper of a few hundred classmates' email addresses. So the
+   count is anonymous instead: one row per browser, keyed by a random id the
+   browser invents for itself.
+
+   What goes up: that id, a coarse platform name, the browser's timezone, how
+   many times this browser has opened the page, whether it has an account, and
+   how many courses it holds. What does not: any name, any email, any course
+   title, any date, anything typed. The database table it lands in has no
+   policies at all, so nothing can read it back through the API — the numbers
+   reach Anndy through the daily digest and nowhere else.
+
+   It is in the rights notice in those words, and Settings can switch it off. */
+function deviceId(){
+  try{
+    var k=localStorage.getItem("sd.did");
+    if(!k){
+      k=(window.crypto&&crypto.randomUUID?crypto.randomUUID().replace(/-/g,"")
+         :Math.random().toString(36).slice(2)+Date.now().toString(36)+Math.random().toString(36).slice(2));
+      localStorage.setItem("sd.did",k);
+    }
+    return k;
+  }catch(e){return "";}
+}
+function isCounted(){try{return localStorage.getItem("sd.nocount")!=="1";}catch(e){return true;}}
+function setCounted(on){
+  try{on?localStorage.removeItem("sd.nocount"):localStorage.setItem("sd.nocount","1");}catch(e){}
+  paintSettings();
+}
+function platformName(){
+  var u=navigator.userAgent||"";
+  if(/iPhone|iPod/.test(u))return "iPhone";
+  if(/iPad/.test(u)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1))return "iPad";
+  if(/Android/.test(u))return "Android";
+  if(/Macintosh|Mac OS X/.test(u))return "Mac";
+  if(/Windows/.test(u))return "Windows";
+  if(/CrOS/.test(u))return "Chromebook";
+  if(/Linux/.test(u))return "Linux";
+  return "Other";
+}
+function tzName(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||"";}catch(e){return "";}}
+function pingUsage(){
+  /* nothing to talk to, no network to talk over, or asked not to */
+  if(!SB.url||!SB.key||inArtifact()||!isCounted())return;
+  var id=deviceId(); if(!id)return;
+  try{
+    var last=+(localStorage.getItem("sd.pinged")||0);
+    if(Date.now()-last<36e5)return;        /* at most once an hour, so a reload is not a "user" */
+    localStorage.setItem("sd.pinged",String(Date.now()));
+  }catch(e){}
+  var real=0;
+  try{real=(S.demo?0:(S.courses||[]).length);}catch(e){}
+  fetch(SB.url+"/rest/v1/rpc/sd_ping",{
+    method:"POST",
+    headers:{apikey:SB.key,Authorization:"Bearer "+SB.key,"Content-Type":"application/json"},
+    body:JSON.stringify({p_id:id,p_signed_up:!!SESS,p_courses:real,
+                         p_platform:platformName(),p_tz:tzName()})
+  })["catch"](function(){});   /* a count is never worth an error in front of a student */
+}
+
 function sbURL(p){return SB.url.replace(/\/+$/,"")+p;}
 function sbHeaders(auth){
   var h={"apikey":SB.key,"Content-Type":"application/json"};
@@ -3342,6 +3434,9 @@ function paintSettings(){
   var th=document.documentElement.getAttribute("data-theme")==="dark"?"dark":"light";
   Array.prototype.forEach.call(document.querySelectorAll("[data-theme-set]"),function(b){
     b.setAttribute("aria-pressed",b.dataset.themeSet===th?"true":"false");
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-count-set]"),function(b){
+    b.setAttribute("aria-pressed",(b.dataset.countSet==="1")===isCounted()?"true":"false");
   });
   Array.prototype.forEach.call(document.querySelectorAll("[data-eod-set]"),function(b){
     b.setAttribute("aria-pressed",(b.dataset.eodSet==="1")===assumeEOD()?"true":"false");
@@ -3885,6 +3980,8 @@ renderAll();sizeTopbar();scheduleUpdateChecks();noteUpdated();
 paintAccount();
 /* signed in from a previous visit: bring the account copy down before they touch anything */
 if(sbOn()&&SESS){pullTerm().then(reconcile)["catch"](function(){});}
+/* after the page is up, so nothing about the count can delay what a student sees */
+setTimeout(pingUsage,1500);
 if(window.claude&&window.claude.use){
   SAMPLE_PROBE=window.claude.use("sample").then(function(x){sampleFn=x;return x;})
     ["catch"](function(){sampleFn=null;return null;});
