@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v3.0  (11 September 2026)
+  Syllabus Desk  v3.1  (13 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -1671,11 +1671,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"3.0",date:"11 September 2026",year:2026};
+var BUILD={v:"3.1",date:"13 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["3.1","The outline reader stops inventing dates. A word that merely began like a month — <b>Mark</b>-recapture, <b>Mar</b>keting, <b>Jun</b>ior, <b>Nov</b>el — was being read as that month, so an outline could show you a deadline that did not exist. It now has to be a real month. It also reads the dates many outlines only state in the grading table (\u201cMidterm \u2014 20% (Thursday, October 15)\u201d), and no longer lets a grading line hand its date to the wrong item."],
   ["3.0","The page now counts visits, so whoever runs it can tell whether anyone is using it. It is a count and nothing more — a random id this browser made up, your platform and timezone, and how many courses you hold. No name, no email, nothing you typed, and no login required to use anything. It is spelled out under <b>What is counted</b> in the rights notice, and Settings can switch it off."],
   ["2.9","Deadlines can carry the hour, not just the day. Give an assignment a time — 11pm, 11:59 pm, 23:59 — and it counts down in days, hours and minutes wherever it appears, ticking as you watch. The reader picks the time up on its own when an outline says one out loud, and the calendar export stops treating a midnight deadline as an all-day banner."],
   ["2.8","The Log in page stops lecturing. The long explanation of what an account stores has moved to the rights notice where the rest of it already lived, leaving one line above the forms and the part you need before you type — that your email is visible to the site's owner and your password is not — right beside the button."],
