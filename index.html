@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v3.8  (14 September 2026)
+  Syllabus Desk  v3.9  (14 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -911,6 +911,30 @@ table.users td.n{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-2
   background:var(--surface)}
 .covchip b{color:var(--ink)}
 @media print{.load{display:none}}
+/* ============================== marks ==============================
+   A column in the table that is already there, not a screen of its own. The
+   input is small and quiet because most of the term it is empty. */
+.mk{width:74px;min-width:0;font-family:var(--font-mono);font-size:.76rem;text-align:right;
+  border:1px solid var(--line-soft);border-radius:2px;background:var(--surface);color:var(--ink);
+  padding:5px 7px}
+.mk::placeholder{color:var(--ink-3);opacity:.7}
+.mk.set{border-color:var(--accent);background:var(--accent-soft)}
+table.assess td.mkc{text-align:right;white-space:nowrap;width:86px;padding-right:0}
+.standing{border:1px solid var(--line-soft);border-left:var(--accent-bar) solid var(--accent);
+  background:var(--surface-2);padding:13px 15px;margin-top:10px}
+.standing .row1{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.standing .big{font-family:var(--font-display);font-size:1.7rem;font-weight:600;letter-spacing:-.03em;
+  line-height:1}
+.standing .of{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3)}
+.standing .need{font-size:.84rem;color:var(--ink-2);margin-top:9px;line-height:1.5}
+.standing .need b{color:var(--ink)}
+.standing .priv{font-size:.72rem;color:var(--ink-3);margin-top:9px;line-height:1.45}
+.targetrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.targetrow .lab{flex:0 0 auto}
+.targetrow select{border:1px solid var(--line-soft);border-radius:2px;background:var(--surface);
+  color:var(--ink);font-family:var(--font-mono);font-size:.76rem;padding:6px 8px}
+@media print{.mk,.standing{display:none}}
 .hide{display:none!important}
 </style>
 </head>
@@ -1971,6 +1995,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         is written into this browser's own storage. It stays on this device. It is not sent to a server, it
         is not visible to JohnsonXCorp, and clearing your browser data deletes it. This site sets <b>no
         cookies</b> and carries <b>no analytics, no advertising and no tracking scripts of any kind</b>.</p>
+        <p><b>Marks are a special case.</b> If you record what you scored on something, that stays on this device and is <b>never</b> sent to the server, never part of your account, and never visible to the owner of this site — not by policy but by construction: the code that talks to the server names the fields it sends, and marks are not among them. They travel only if you export the data file yourself.</p>
         <p>The one thing that does leave, account or not, is the visit count set out under <b>What is counted</b>
         below: a random id and a few numbers, never your course material and never anything you typed.</p>
 
@@ -2246,11 +2271,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"3.8",date:"14 September 2026",year:2026};
+var BUILD={v:"3.9",date:"14 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["3.9","<b>What am I actually sitting at?</b> Each graded item now has a <b>Mark</b> box on the Courses tab \u2014 type \u201c17/20\u201d, \u201c85\u201d or \u201c85%\u201d, whichever you have \u2014 and the course shows your standing on the work that has come back, plus what you need on the rest to finish where you are aiming. It never pretends 92% of the 10% marked so far is a 92: it says how much has actually been graded. <b>Marks stay on this device.</b> They are not sent to the server, not part of your account, and not visible to whoever runs this site \u2014 the code that syncs names the fields it sends and marks are not among them."],
   ["3.8","<b>Where the term gets heavy.</b> The page already knew every date and every weight; putting them together shows you the week that carries a third of your marks, months before it arrives. One bar per week for the rest of term, the worst few spelled out in words, and a straight answer to how much of the term is still ahead of you. Two things it refuses to fake: percentages from different courses are only comparable if you treat the courses as equal, so it says so; and a forecast can only count work that has a date, so it also tells you how much of each course still has none."],
   ["3.7","You can find things now. <b>Find</b> in the top bar \u2014 or just press <b>/</b> \u2014 searches every course, deadline, study block and personal entry at once, in any order: type \u201cecon quiz\u201d or \u201cquiz econ\u201d and you get the same answer. Picking a deadline takes you to it in the calendar and opens it. On a computer there are shortcuts for the places you go most \u2014 <b>T</b>, <b>C</b>, <b>O</b>, <b>N</b>, <b>E</b>, <b>P</b>, and <b>?</b> for the list \u2014 and they stay quiet while you are typing. Nothing searched ever leaves the device."],
   ["3.6","Your term, on one sheet of paper. <b>Export \u203a Print the term</b> lays out every dated item month by month with its course and its weight, the courses behind the codes, and the things an outline weighted but never dated \u2014 then your browser\u2019s print dialog will save it as a PDF if you would rather. Printing any other screen used to give you the tab bar and the footer; it now gives you the page. The sheet carries its own reminder that your outline and your instructor are still the authority on every date, because paper outlives the screen it came from."],
@@ -2998,7 +3024,7 @@ function renderCourses(){
       +'<div class="blk"><h4>Assessments</h4><table class="assess"><thead><tr><th>Item</th><th>Date</th><th style="text-align:right">Weight</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
       +'<div class="blk"><h4>Class schedule</h4><details class="sched"><summary>'+((c.classes||[]).length)+' meetings on record</summary><div class="schedlist">'+sch+'</div></details></div>'
       +'</div><div>'
-      +((c.weights||[]).length?'<div class="blk"><h4>Grade weighting'+(tot&&tot!==100?' — adds to '+tot+'%':'')+'</h4><div class="wbar">'+bar+'</div><div class="wkey">'+key+'</div></div>':'')
+      +marksBlock(c,tot,bar,key)
       +(c.rules?'<div class="blk"><h4>The rule that bites</h4><p style="font-size:.86rem;margin:0;color:var(--ink-2)">'+esc(c.rules)+'</p></div>':'')
       +'<div class="blk"><h4>Study blocks'+(blocks.length?' \u00b7 '+blocks.length:'')+'</h4>'
         +'<div class="blocklist">'+(blist||'<div class="blockempty">No study time set aside for this course yet.</div>')+'</div>'
@@ -3026,6 +3052,151 @@ function renderAll(){
 
 
 
+
+/* ===================== marks, and only here =====================
+   MARKS is deliberately not part of S.
+
+   S is the term, and the term is what termPayload() sends to the server when
+   somebody has an account. A mark is a different kind of fact — it is how a
+   student is doing, which is nobody's business but theirs — so it lives in its
+   own key, is written by its own save, and is never assembled into a payload.
+   Keeping it out is a structural guarantee rather than a promise: there is no
+   code path that could send it, which is the same standard the outline reader
+   is held to.
+
+   The arithmetic is the honest kind. "Standing" is only over work that has
+   been marked, and it says how much of the course that is, because 92% of the
+   10% that has come back is not a 92 and should never look like one. */
+var MARKS_KEY="sd.marks", MARKS={};
+function loadMarks(){
+  try{var raw=localStorage.getItem(MARKS_KEY);MARKS=raw?(JSON.parse(raw)||{}):{};}
+  catch(e){MARKS={};}
+  if(!MARKS||typeof MARKS!=="object")MARKS={};
+}
+function saveMarks(){
+  try{localStorage.setItem(MARKS_KEY,JSON.stringify(MARKS));}catch(e){}
+}
+function setMarks(obj){
+  MARKS=(obj&&typeof obj==="object")?obj:{};
+  saveMarks();
+}
+/* "17/20", "85", "85%", "8.5/10" — all of them mean a percentage */
+function parseMark(v){
+  var t=String(v==null?"":v).trim();
+  if(!t)return null;
+  var frac=t.match(/^(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)$/);
+  if(frac){var den=parseFloat(frac[2]);if(!den)return null;
+    return Math.max(0,parseFloat(frac[1])/den*100);}
+  var pct=t.match(/^(\d+(?:\.\d+)?)\s*%?$/);
+  if(pct)return Math.max(0,parseFloat(pct[1]));
+  return null;
+}
+function markOf(id){
+  var m=MARKS[id];
+  return (m==null||m==="")?null:parseMark(m);
+}
+/* What can be marked, for one course.
+
+   The grading breakdown wins when there is one: it is the scheme the outline
+   states, it sums to 100, and "weekly quizzes 15%" is how a student thinks
+   about a course with eleven quizzes in it. Per-item weights are the fallback
+   for outlines that never gave a breakdown. Taking both would count a midterm
+   twice, so it is strictly one or the other. */
+function gradeLines(key){
+  var c=courseOf(key);
+  var ws=(c.weights||[]).filter(function(w){return +w[1]>0;});
+  if(ws.length){
+    return ws.map(function(w,ix){
+      return {id:"w:"+key+":"+ix, name:String(w[0]), pct:+w[1], from:"scheme"};
+    });
+  }
+  return (S.items||[]).filter(function(i){return i.c===key&&pctOf(i.w)>0;})
+    .map(function(i){return {id:i.id,name:i.t,pct:pctOf(i.w),from:"item"};});
+}
+function standing(key){
+  var got=0,gotW=0,pendW=0;
+  gradeLines(key).forEach(function(l){
+    var m=markOf(l.id);
+    if(m==null){pendW+=l.pct;return;}
+    gotW+=l.pct;got+=l.pct*(m/100);
+  });
+  var known=gotW+pendW;
+  return {pct:gotW?(got/gotW*100):null, gotW:gotW, pendW:pendW, known:known,
+          earned:got, lost:gotW-got};
+}
+/* What is needed, on average, across everything still to come — counting only
+   work this course actually has on record. */
+function needFor(key,target){
+  var st=standing(key);
+  if(!st.pendW)return null;
+  var need=(target-st.earned)/st.pendW*100;
+  return {need:need,pend:st.pendW};
+}
+var TARGETS=[50,60,70,80,90];
+function targetOf(key){
+  var t=MARKS["target:"+key];
+  return t?+t:80;
+}
+function marksBlock(c,tot,bar,key){
+  var lines=gradeLines(c.key);
+  var hasScheme=(c.weights||[]).length>0;
+  if(!lines.length)return "";
+  var rows=lines.map(function(l){
+    var raw=MARKS[l.id]||"";
+    return '<tr><td style="width:100%"><span class="name">'+esc(l.name)+'</span></td>'
+      +'<td class="wt">'+Math.round(l.pct)+'%</td>'
+      +'<td class="mkc"><input class="mk'+(raw?" set":"")+'" data-mark="'+esc(l.id)+'" '
+      +'value="'+esc(raw)+'" placeholder="\u2014" inputmode="decimal" autocomplete="off" '
+      +'aria-label="Mark for '+esc(l.name)+'"></td></tr>';
+  }).join("");
+  return '<div class="blk"><h4>Grade weighting'+(hasScheme&&tot&&tot!==100?' \u2014 adds to '+tot+'%':'')+'</h4>'
+    +(hasScheme?'<div class="wbar">'+bar+'</div><div class="wkey">'+key+'</div>':'')
+    +'<table class="assess" style="margin-top:14px"><thead><tr><th>What</th>'
+    +'<th style="text-align:right">Worth</th><th style="text-align:right">Your mark</th></tr></thead>'
+    +'<tbody>'+rows+'</tbody></table>'
+    +standingHTML(c)+'</div>';
+}
+function markRow(i){
+  var w=pctOf(i.w);
+  if(!w)return '<td class="mkc"></td>';
+  var raw=MARKS[i.id]||"";
+  return '<td class="mkc"><input class="mk'+(raw?" set":"")+'" data-mark="'+esc(i.id)+'" '
+    +'value="'+esc(raw)+'" placeholder="\u2014" inputmode="decimal" autocomplete="off" '
+    +'aria-label="Mark for '+esc(i.t)+'"></td>';
+}
+function standingHTML(c){
+  var st=standing(c.key);
+  if(!st.known)return "";
+  if(!st.gotW){
+    return '<div class="standing"><div class="row1"><span class="of">Nothing marked yet</span></div>'
+      +'<div class="need">Put a mark in the <b>Your mark</b> column as each piece comes back \u2014 '
+      +'"17/20", "85" and "85%" all work \u2014 and this becomes your standing.</div>'
+      +'<div class="priv">Marks stay on this device. They are never sent to the server, never part '
+      +'of your account, and nobody who runs this site can see them.</div></div>';
+  }
+  var target=targetOf(c.key);
+  var nd=needFor(c.key,target);
+  var opts=TARGETS.map(function(t){
+    return '<option value="'+t+'"'+(t===target?" selected":"")+'>'+t+'%</option>';}).join("");
+  var line;
+  if(!nd)line='<b>Everything on record has been marked.</b> That is your grade for the work this '
+    +'outline lists.';
+  else if(nd.need>100)line='To finish on <b>'+target+'%</b> you would need <b>'+Math.round(nd.need)
+    +'%</b> on the remaining '+Math.round(nd.pend)+'% \u2014 which is more than is available. '
+    +'Worth a conversation with your instructor rather than a late night.';
+  else if(nd.need<0)line='You have already secured <b>'+target+'%</b> overall, even at zero on '
+    +'everything still to come.';
+  else line='To finish on <b>'+target+'%</b> you need an average of <b>'+Math.round(nd.need)
+    +'%</b> across the remaining '+Math.round(nd.pend)+'% of the grade.';
+  return '<div class="standing"><div class="row1">'
+    +'<span class="big">'+st.pct.toFixed(1)+'%</span>'
+    +'<span class="of">on the '+Math.round(st.gotW)+'% marked so far</span></div>'
+    +'<div class="targetrow"><span class="lab of">Aiming for</span>'
+    +'<select data-target="'+esc(c.key)+'" aria-label="Target grade">'+opts+'</select></div>'
+    +'<div class="need">'+line+'</div>'
+    +'<div class="priv">Marks stay on this device \u2014 never sent to the server, never part of your '
+    +'account, and invisible to whoever runs this site.</div></div>';
+}
 
 /* ===================== where the term gets heavy =====================
    Two things this has to get right or it is worse than nothing.
@@ -4272,11 +4443,20 @@ document.addEventListener("click",function(e){
   if((x=t.closest("[data-find]"))){findGo(+x.dataset.find);return;}
   if(t.closest("#set-keys")){sheetKeys();return;}
   if(t.closest("#exp-print")){printTerm();return;}
-  if(t.closest("#exp-json")){offer("syllabus-desk-data.json",JSON.stringify(S,null,2),"Saved. Keep this if you switch browsers.");return;}
+  if(t.closest("#exp-json")){
+    /* the file is the student's own, on their own disk, so it carries the marks
+       too — otherwise switching browsers silently loses them. The server copy
+       still never does. */
+    var bundle=Object.assign({},S,{marks:MARKS});
+    offer("syllabus-desk-data.json",JSON.stringify(bundle,null,2),
+      "Saved. Keep this if you switch browsers — it includes your marks, which never leave this device any other way.");return;}
   if(t.closest("#imp-json")){
     var raw=window.prompt("Paste the contents of your exported JSON file.\n\nThis replaces everything currently on this page.");
     if(!raw)return;
-    try{var p=JSON.parse(raw);if(!p.courses)throw 0;S=p;save();renderAll();alert("Imported.");}catch(err){alert("That did not parse as Syllabus Desk data.");}
+    try{var p=JSON.parse(raw);if(!p.courses)throw 0;
+      /* marks must not ride into S — S is what syncs */
+      if(p.marks){setMarks(p.marks);delete p.marks;}
+      S=p;save();renderAll();alert("Imported.");}catch(err){alert("That did not parse as Syllabus Desk data.");}
     return;
   }
 });
@@ -4343,6 +4523,17 @@ document.addEventListener("submit",function(e){
 });
 document.addEventListener("change",function(e){
   var t=e.target,x;
+  if((x=t.closest("[data-mark]"))){
+    var id=x.dataset.mark,v=String(x.value||"").trim();
+    if(!v)delete MARKS[id];
+    else if(parseMark(v)==null){x.value=MARKS[id]||"";return;}   /* refuse nonsense quietly */
+    else MARKS[id]=v;
+    saveMarks();renderCourses();
+    return;
+  }
+  if((x=t.closest("[data-target]"))){
+    MARKS["target:"+x.dataset.target]=x.value;saveMarks();renderCourses();return;
+  }
   if(t.id==="m-jump"){goMonth(t.value);return;}
   if(t.id==="lf-rep"){LF.rep=t.value;renderLife();return;}
   if((x=t.closest("[data-tick]"))){
@@ -4540,6 +4731,9 @@ function doRecover(email){
 
 /* ===================== accounts: sync ===================== */
 function termPayload(){
+  /* Named fields, never a spread of S. Marks are not in this list and must never
+     be added to it: this function is the only thing that reaches the server, so
+     it is also the only place that could ever leak them. */
   return {courses:S.courses||[],items:S.items||[],done:S.done||{},life:lifeList(),version:S.version||1,
           theme:(document.documentElement.getAttribute("data-theme")||"light")};
 }
@@ -5162,7 +5356,7 @@ _bs.title="What changed in this version";
    build — one missing span must never take the rest of the boot with it */
 var _ry=document.getElementById("r-year");if(_ry)_ry.textContent=BUILD.year;
 Array.prototype.forEach.call(document.querySelectorAll(".r-year"),function(el){el.textContent=BUILD.year;});
-load();restoreSession();paintOwner();
+load();loadMarks();restoreSession();paintOwner();
 if(!S.courses.length){ loadSample(true); }   /* first visit: show a worked example, not an empty shell */
 renderAll();sizeTopbar();scheduleUpdateChecks();noteUpdated();
 wirePWA();wireKeys();applyHash();
