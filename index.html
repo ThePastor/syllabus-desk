@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v3.6  (14 September 2026)
+  Syllabus Desk  v3.7  (14 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -828,6 +828,47 @@ table.users td.n{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-2
     font-size:8pt;line-height:1.45}
   #printsheet .ps-none{font-size:9pt;font-style:italic}
 }
+/* ============================ find anything ============================
+   A panel rather than a page, because search is something you do on the way to
+   somewhere else. It borrows the sheet's scrim so there is one idea of "a thing
+   over the page", but it sits at the top where a search field belongs and where
+   a phone keyboard will not cover it. */
+.find[hidden]{display:none!important}
+.find{position:fixed;inset:0;z-index:62;display:flex;align-items:flex-start;
+  justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px 16px}
+.find-card{position:relative;width:min(620px,100%);max-height:min(76vh,680px);
+  display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);
+  border-top:var(--accent-bar) solid var(--accent);box-shadow:var(--shadow)}
+.find-top{display:flex;align-items:center;gap:10px;padding:12px 14px;
+  border-bottom:1px solid var(--line-soft)}
+.find-top input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);
+  font-family:var(--font-body);font-size:1.05rem;padding:8px 0;outline:none}
+.find-top .mag{font-family:var(--font-mono);font-size:.8rem;color:var(--ink-3);flex:0 0 auto}
+.find-body{overflow-y:auto;-webkit-overflow-scrolling:touch}
+.find-group{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);padding:11px 14px 5px;background:var(--surface-2);
+  border-bottom:1px solid var(--line-soft)}
+.find-row{display:flex;align-items:center;gap:11px;width:100%;text-align:left;font:inherit;
+  border:0;border-bottom:1px solid var(--line-soft);background:transparent;color:var(--ink);
+  padding:11px 14px;cursor:pointer}
+.find-row:last-child{border-bottom:0}
+.find-row:hover,.find-row.on{background:var(--tint-1)}
+.find-row .rail{flex:0 0 3px;align-self:stretch;min-height:26px;background:var(--fc,var(--ink-3))}
+.find-row .b{min-width:0;flex:1}
+.find-row .nm{display:block;font-size:.92rem;font-weight:500}
+.find-row .sb{display:block;font-family:var(--font-mono);font-size:.63rem;color:var(--ink-2);margin-top:3px}
+.find-row mark{background:var(--mint);color:var(--mint-ink);padding:0 1px}
+.find-empty{padding:26px 14px;color:var(--ink-2);font-size:.9rem}
+.find-foot{padding:9px 14px;border-top:1px solid var(--line-soft);background:var(--surface-2);
+  font-family:var(--font-mono);font-size:.6rem;letter-spacing:.06em;color:var(--ink-3);
+  display:flex;gap:14px;flex-wrap:wrap}
+.kbd{font-family:var(--font-mono);font-size:.62rem;border:1px solid var(--line-soft);
+  border-bottom-width:2px;border-radius:3px;padding:1px 5px;color:var(--ink-2);background:var(--surface)}
+.keylist{display:grid;gap:1px;background:var(--line-soft);border:1px solid var(--line-soft)}
+.keyrow{display:flex;align-items:center;gap:12px;background:var(--surface);padding:9px 12px;font-size:.86rem}
+.keyrow .k{flex:0 0 96px}
+@media(max-width:560px){.find{padding:0}.find-card{max-height:100%;height:100%;border:0}}
+@media print{.find{display:none!important}}
 .hide{display:none!important}
 </style>
 </head>
@@ -1339,6 +1380,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
   </nav>
   <div class="topacts">
     <span class="netpill" id="netpill" hidden role="status"><i></i><span class="lbl">Offline</span></span>
+    <button class="btn sm" id="findbtn" title="Find (press /)" aria-label="Find">Find</button>
     <button class="btn sm" id="themebtn" title="Switch light and dark" aria-label="Switch theme">Theme</button>
     <button class="btn primary sm" id="addbtn">Add course</button>
   </div>
@@ -1740,6 +1782,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           </div>
         </div>
         <div class="excard">
+          <h4>Keyboard</h4>
+          <p>On a computer: <b>/</b> to find anything, <b>T</b> for the fortnight, <b>C</b> for the calendar,
+          <b>N</b> for a new course. They stay quiet while you are typing in a field.</p>
+          <button class="btn" id="set-keys">All the shortcuts</button>
+        </div>
+        <div class="excard">
           <h4>This build</h4>
           <p id="set-build" class="hint" style="margin:0 0 12px"></p>
           <button class="btn" id="set-whatsnew">What changed</button>
@@ -2118,6 +2166,23 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
   </div>
 </main>
 
+<div class="find" id="find" hidden>
+  <div class="scrim" data-findclose></div>
+  <div class="find-card" role="dialog" aria-modal="true" aria-label="Find in your term">
+    <div class="find-top">
+      <span class="mag" aria-hidden="true">&#9906;</span>
+      <!-- type=text, not type=search: Chromium draws its own clear cross inside a
+           search field, and two crosses side by side is a question, not a control -->
+      <input id="find-q" type="text" inputmode="search" placeholder="Find a course, a deadline, anything&hellip;"
+             autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Find in your term">
+      <button class="x" data-findclose aria-label="Close">&times;</button>
+    </div>
+    <div class="find-body" id="find-body"></div>
+    <div class="find-foot"><span><span class="kbd">&uarr;</span> <span class="kbd">&darr;</span> move</span>
+      <span><span class="kbd">Enter</span> open</span><span><span class="kbd">Esc</span> close</span></div>
+  </div>
+</div>
+
 <div id="printsheet" aria-hidden="true"></div>
 
 <footer class="foot"><div class="wrap foot-in">
@@ -2135,11 +2200,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"3.6",date:"14 September 2026",year:2026};
+var BUILD={v:"3.7",date:"14 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["3.7","You can find things now. <b>Find</b> in the top bar \u2014 or just press <b>/</b> \u2014 searches every course, deadline, study block and personal entry at once, in any order: type \u201cecon quiz\u201d or \u201cquiz econ\u201d and you get the same answer. Picking a deadline takes you to it in the calendar and opens it. On a computer there are shortcuts for the places you go most \u2014 <b>T</b>, <b>C</b>, <b>O</b>, <b>N</b>, <b>E</b>, <b>P</b>, and <b>?</b> for the list \u2014 and they stay quiet while you are typing. Nothing searched ever leaves the device."],
   ["3.6","Your term, on one sheet of paper. <b>Export \u203a Print the term</b> lays out every dated item month by month with its course and its weight, the courses behind the codes, and the things an outline weighted but never dated \u2014 then your browser\u2019s print dialog will save it as a PDF if you would rather. Printing any other screen used to give you the tab bar and the footer; it now gives you the page. The sheet carries its own reminder that your outline and your instructor are still the authority on every date, because paper outlives the screen it came from."],
   ["3.5","Everything you tap is now big enough to tap. The tick box beside each item was fourteen points square \u2014 the smallest thing in the app and the one people press most \u2014 and most other controls were under half the size Apple asks for. On anything you touch, every button, tab, field and tick now has a <b>44-point target</b>, while the box itself stays visually quiet and rows do not grow. Pointing with a mouse or trackpad keeps the tighter spacing. The page also stops assuming the screen is a plain rectangle: installed on an iPhone it now clears the camera notch and the home bar."],
   ["3.4","iPad stops being treated as a big phone. Held in portrait, an iPad was collapsing the fortnight into one column and the calendar into coloured dots, so half the screen went to waste and a month could not be read without tapping every day. From now on any screen wider than 700 points keeps <b>both weeks side by side</b>, keeps the <b>words in the calendar</b> with rows tall enough to hold them, keeps a course\u2019s detail in two columns, and spends two rows on the top bar instead of three."],
@@ -2913,6 +2979,187 @@ function renderAll(){
 
 
 
+
+/* ===================== find anything =====================
+   One index over everything the term holds, rebuilt on each keystroke. That is
+   cheap at this size — a heavy term is a few hundred rows — and it means the
+   results can never be stale, which a cached index would eventually be.
+
+   Matching is deliberately forgiving: every word in the query has to appear
+   somewhere in the row, in any order and any field, so "econ quiz" finds the
+   ECON quiz and "quiz econ" finds it too. */
+var FIND={open:false,rows:[],sel:0};
+
+function findIndex(){
+  var rows=[];
+  (S.courses||[]).forEach(function(c){
+    rows.push({group:"Courses",nm:(c.code||c.key),
+      sb:[c.title,c.instructor,c.room,c.meets].filter(Boolean).join("  \u00b7  "),
+      hay:[c.key,c.code,c.title,c.instructor,c.room,c.meets].join(" ").toLowerCase(),
+      col:colorOf(c.key),go:{t:"course",k:c.key}});
+  });
+  (S.items||[]).forEach(function(i){
+    var c=courseOf(i.c);
+    rows.push({group:i.d?"Dated":"No date yet",nm:i.t,
+      sb:[c.key,i.d?fmtDay(P(i.d)):"no date",i.w||"",i.at?ampm(i.at):""].filter(Boolean).join("  \u00b7  "),
+      hay:[i.t,i.c,c.code,c.title,i.w,i.note,i.d,PS_KIND[i.k]||""].join(" ").toLowerCase(),
+      col:colorOf(i.c),go:{t:"item",id:i.id,d:i.d,k:i.c}});
+  });
+  (S.courses||[]).forEach(function(c){
+    (c.blocks||[]).forEach(function(bk){
+      rows.push({group:"Study blocks",nm:"Study \u2014 "+(c.code||c.key),
+        sb:[DOWN[bk.dow]||"",bk.from?ampm(bk.from):"",bk.to?("to "+ampm(bk.to)):""].filter(Boolean).join("  \u00b7  "),
+        hay:["study",c.key,c.code,c.title,DOWN[bk.dow]||""].join(" ").toLowerCase(),
+        col:colorOf(c.key),go:{t:"course",k:c.key}});
+    });
+  });
+  lifeList().forEach(function(e){
+    rows.push({group:"The rest of your life",nm:e.t,
+      sb:[catOf(e.cat)[1],e.d?fmtDay(P(e.d)):"",e.from?ampm(e.from):""].filter(Boolean).join("  \u00b7  "),
+      hay:[e.t,e.note,catOf(e.cat)[1]].join(" ").toLowerCase(),
+      col:"var(--life)",go:{t:"life"}});
+  });
+  return rows;
+}
+function findMark(text,words){
+  var out=esc(String(text||""));
+  words.forEach(function(w){
+    if(w.length<2)return;
+    out=out.replace(new RegExp("("+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","ig"),"<mark>$1</mark>");
+  });
+  return out;
+}
+function findRun(){
+  var q=(document.getElementById("find-q")||{}).value||"";
+  var words=q.toLowerCase().split(/\s+/).filter(Boolean);
+  var body=document.getElementById("find-body");
+  if(!body)return;
+  if(!words.length){
+    FIND.rows=[];FIND.sel=0;
+    body.innerHTML='<div class="find-empty">Type to search your courses, deadlines, study blocks '
+      +'and everything on the Life tab. Nothing leaves this device \u2014 it is your own term being '
+      +'searched, not the internet.</div>';
+    return;
+  }
+  var hits=findIndex().filter(function(r){
+    return words.every(function(w){return r.hay.indexOf(w)>-1;});
+  });
+  FIND.rows=hits;FIND.sel=0;
+  if(!hits.length){
+    body.innerHTML='<div class="find-empty">Nothing matches <b>'+esc(q)+'</b>.</div>';
+    return;
+  }
+  var h="",group=null;
+  hits.forEach(function(r,ix){
+    if(r.group!==group){group=r.group;h+='<div class="find-group">'+esc(group)+'</div>';}
+    h+='<button type="button" class="find-row'+(ix===0?' on':'')+'" data-find="'+ix+'" '
+      +'style="--fc:'+r.col+'"><span class="rail"></span><span class="b">'
+      +'<span class="nm">'+findMark(r.nm,words)+'</span>'
+      +'<span class="sb">'+findMark(r.sb,words)+'</span></span></button>';
+  });
+  body.innerHTML=h;
+}
+function findMove(step){
+  if(!FIND.rows.length)return;
+  FIND.sel=(FIND.sel+step+FIND.rows.length)%FIND.rows.length;
+  var body=document.getElementById("find-body");
+  Array.prototype.forEach.call(body.querySelectorAll(".find-row"),function(el){
+    var on=+el.dataset.find===FIND.sel;
+    el.classList.toggle("on",on);
+    if(on&&el.scrollIntoView)el.scrollIntoView({block:"nearest"});
+  });
+}
+function findGo(ix){
+  var r=FIND.rows[ix];if(!r)return;
+  closeFind();
+  var g=r.go;
+  if(g.t==="life"){showPanel("p-life");window.scrollTo({top:0,behavior:"smooth"});return;}
+  if(g.t==="course"||!g.d){
+    showPanel("p-courses");
+    setTimeout(function(){
+      var card=document.querySelector('.course [data-del="'+String(g.k).replace(/"/g,"")+'"]');
+      var art=card?card.closest(".course"):null;
+      if(art&&art.scrollIntoView)art.scrollIntoView({block:"center",behavior:"smooth"});
+    },60);
+    return;
+  }
+  /* a dated item: go to it in the calendar and open it, which is what somebody
+     searching for a deadline actually wants to see */
+  showPanel("p-cal");
+  setTimeout(function(){
+    try{goMonth(g.d.slice(0,7),true);}catch(e){}
+    setTimeout(function(){try{sheetEvent(g.id,g.d);}catch(e){}},220);
+  },60);
+}
+function openFind(){
+  var el=document.getElementById("find");if(!el)return;
+  FIND.open=true;el.hidden=false;
+  var q=document.getElementById("find-q");
+  if(q){q.value="";q.focus();}
+  findRun();
+}
+function closeFind(){
+  var el=document.getElementById("find");if(!el)return;
+  FIND.open=false;el.hidden=true;
+}
+
+/* ---------- the keyboard ----------
+   Only when nobody is typing. A shortcut that fires while you are filling in a
+   course title is not a shortcut, it is a bug with a keystroke. */
+function typingInAField(t){
+  if(!t)return false;
+  var n=(t.tagName||"").toLowerCase();
+  return n==="input"||n==="textarea"||n==="select"||t.isContentEditable;
+}
+var KEYS=[["/  or  Ctrl K","Find anything"],["T","The next two weeks"],["C","Full term calendar"],
+          ["O","Course by course"],["N","Add a course"],["E","Export"],["P","Print the term"],
+          ["?","This list"],["Esc","Close whatever is open"]];
+function sheetKeys(){
+  SHEET_BACK=null;
+  document.getElementById("sheet-head").innerHTML=
+    '<div style="min-width:0"><div class="code" style="--c:var(--accent-deep)">Keyboard</div>'
+    +'<h3 id="sheet-title">Shortcuts</h3>'
+    +'<div class="when">They do nothing while you are typing in a field</div></div>'
+    +'<button class="x" data-close aria-label="Close">&times;</button>';
+  document.getElementById("sheet-body").innerHTML='<div class="keylist">'
+    +KEYS.map(function(k){return '<div class="keyrow"><span class="k"><span class="kbd">'
+      +esc(k[0])+'</span></span><span>'+esc(k[1])+'</span></div>';}).join("")+'</div>';
+  document.getElementById("sheet-foot").innerHTML=
+    '<span class="spacer" style="flex:1"></span><button class="btn sm primary" data-close>Got it</button>';
+  openSheet();
+}
+function wireKeys(){
+  document.addEventListener("keydown",function(e){
+    /* the search box has its own keys while it is open */
+    if(FIND.open){
+      if(e.key==="Escape"){e.preventDefault();closeFind();return;}
+      if(e.key==="ArrowDown"){e.preventDefault();findMove(1);return;}
+      if(e.key==="ArrowUp"){e.preventDefault();findMove(-1);return;}
+      if(e.key==="Enter"){e.preventDefault();findGo(FIND.sel);return;}
+      return;
+    }
+    if((e.ctrlKey||e.metaKey)&&(e.key==="k"||e.key==="K")){e.preventDefault();openFind();return;}
+    if(e.ctrlKey||e.metaKey||e.altKey)return;
+    if(typingInAField(e.target))return;
+    if(e.key==="Escape"){
+      var sh=document.getElementById("sheet");
+      if(sh&&!sh.hidden){e.preventDefault();closeSheet();}
+      return;
+    }
+    switch(e.key){
+      case "/": e.preventDefault();openFind();break;
+      case "t": case "T": showPanel("p-weeks");window.scrollTo({top:0,behavior:"smooth"});break;
+      case "c": case "C": showPanel("p-cal");window.scrollTo({top:0,behavior:"smooth"});break;
+      case "o": case "O": showPanel("p-courses");window.scrollTo({top:0,behavior:"smooth"});break;
+      case "e": case "E": showPanel("p-export");window.scrollTo({top:0,behavior:"smooth"});break;
+      case "n": case "N": e.preventDefault();openAdd();break;
+      case "p": case "P": e.preventDefault();printTerm();break;
+      case "?": e.preventDefault();sheetKeys();break;
+    }
+  });
+  var q=document.getElementById("find-q");
+  if(q)q.addEventListener("input",findRun);
+}
 
 /* ===================== the term, on one sheet =====================
    Built when it is asked for and thrown away after, because it is a rendering
@@ -3830,6 +4077,10 @@ document.addEventListener("click",function(e){
     });
     return;
   }
+  if(t.closest("#findbtn")){openFind();return;}
+  if(t.closest("[data-findclose]")){closeFind();return;}
+  if((x=t.closest("[data-find]"))){findGo(+x.dataset.find);return;}
+  if(t.closest("#set-keys")){sheetKeys();return;}
   if(t.closest("#exp-print")){printTerm();return;}
   if(t.closest("#exp-json")){offer("syllabus-desk-data.json",JSON.stringify(S,null,2),"Saved. Keep this if you switch browsers.");return;}
   if(t.closest("#imp-json")){
@@ -4724,7 +4975,7 @@ Array.prototype.forEach.call(document.querySelectorAll(".r-year"),function(el){e
 load();restoreSession();paintOwner();
 if(!S.courses.length){ loadSample(true); }   /* first visit: show a worked example, not an empty shell */
 renderAll();sizeTopbar();scheduleUpdateChecks();noteUpdated();
-wirePWA();applyHash();
+wirePWA();wireKeys();applyHash();
 window.addEventListener("hashchange",applyHash);
 paintAccount();
 /* signed in from a previous visit: bring the account copy down before they touch anything */
