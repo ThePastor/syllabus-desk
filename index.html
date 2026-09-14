@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v3.9  (14 September 2026)
+  Syllabus Desk  v4.0  (14 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -2271,11 +2271,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"3.9",date:"14 September 2026",year:2026};
+var BUILD={v:"4.0",date:"14 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["4.0","<b>Plan time for this.</b> Open any deadline and the page works backwards from it: how many ninety-minute sessions the weight deserves, spaced every other day rather than stacked the night before, and dropped only into hours you are genuinely free \u2014 around your classes, your shifts, your practices and the study blocks you already keep. If the days before a deadline are full it tells you how many sessions would not fit instead of quietly dropping them, which is worth knowing in advance rather than on the night. Accepted sessions join your fortnight, your calendar and your exports."],
   ["3.9","<b>What am I actually sitting at?</b> Each graded item now has a <b>Mark</b> box on the Courses tab \u2014 type \u201c17/20\u201d, \u201c85\u201d or \u201c85%\u201d, whichever you have \u2014 and the course shows your standing on the work that has come back, plus what you need on the rest to finish where you are aiming. It never pretends 92% of the 10% marked so far is a 92: it says how much has actually been graded. <b>Marks stay on this device.</b> They are not sent to the server, not part of your account, and not visible to whoever runs this site \u2014 the code that syncs names the fields it sends and marks are not among them."],
   ["3.8","<b>Where the term gets heavy.</b> The page already knew every date and every weight; putting them together shows you the week that carries a third of your marks, months before it arrives. One bar per week for the rest of term, the worst few spelled out in words, and a straight answer to how much of the term is still ahead of you. Two things it refuses to fake: percentages from different courses are only comparable if you treat the courses as equal, so it says so; and a forecast can only count work that has a date, so it also tells you how much of each course still has none."],
   ["3.7","You can find things now. <b>Find</b> in the top bar \u2014 or just press <b>/</b> \u2014 searches every course, deadline, study block and personal entry at once, in any order: type \u201cecon quiz\u201d or \u201cquiz econ\u201d and you get the same answer. Picking a deadline takes you to it in the calendar and opens it. On a computer there are shortcuts for the places you go most \u2014 <b>T</b>, <b>C</b>, <b>O</b>, <b>N</b>, <b>E</b>, <b>P</b>, and <b>?</b> for the list \u2014 and they stay quiet while you are typing. Nothing searched ever leaves the device."],
@@ -2513,7 +2514,7 @@ function normalizeBlocks(){
 }
 function blockLabel(c){return "Study — "+(c.code||c.key);}
 function studyEvents(){
-  var out=[],range=termRange();
+  var out=planEvents(),range=termRange();
   if(range) S.courses.forEach(function(c){
     if(!(c.blocks||[]).length)return;
     var d=new Date(range[0]),end=P(range[1]);
@@ -2967,6 +2968,8 @@ function sheetEvent(id,iso){
   if(kind!=="off"){
     foot+='<button class="btn sm" data-done="'+esc(id)+'">'+(S.done[id]?"Mark not done":"Mark done")+'</button>';
   }
+  if(item&&item.d&&item.k!=="off")foot+='<button class="btn sm" data-plan="'+esc(item.id)+'">'
+    +(planOf(item.id).length?"Replan time":"Plan time for this")+'</button>';
   if(item)foot+='<button class="btn sm" data-setdate="'+esc(item.id)+'">'+(item.d?"Change date":"Set date")+'</button>';
   if(item&&item.d)foot+='<button class="btn sm" data-settime="'+esc(item.id)+'">'+(item.at?"Change time":"Set time")+'</button>';
   foot+='<span class="spacer" style="flex:1"></span><button class="btn sm primary" data-close>Close</button>';
@@ -3052,6 +3055,158 @@ function renderAll(){
 
 
 
+
+/* ===================== planning backwards =====================
+   A block is a rhythm; a plan is an answer to "when am I doing this one thing".
+
+   Three rules, and the third is the one that makes it trustworthy.
+
+   1. How much: sessions come from the weight, because a 25% essay deserves more
+      evenings than a 4% problem set, and nobody wants to be asked.
+   2. When: backwards from the deadline, spaced every other day where there is
+      room, because five evenings in a row before a Friday is not a plan either.
+   3. Where: only into time that is actually free. Classes, shifts, practices,
+      appointments and existing study blocks are all obstacles. If they leave no
+      room, the plan says how many sessions it could place and how many it could
+      not — it never quietly drops one. */
+function planList(){return Array.isArray(S.plan)?S.plan:(S.plan=[]);}
+function dowOf(iso){return P(iso).getDay();}
+
+/* Everything already spoken for on one specific date. busyOn() covers the
+   weekly rhythm; this adds the things that only happen once. */
+function busyDate(iso){
+  var out=busyOn(dowOf(iso)).slice();
+  /* Read the life entries themselves, not the expanded LIFE list. That list is
+     only built across the term's range, and a term whose only dated thing is
+     the deadline you are planning for has a range one day long — so the shifts
+     you work every week would be invisible on exactly the days that matter.
+     This was a real bug, caught by a test that gave the student a shift every
+     evening and then watched the planner book straight through it. */
+  var day=dowOf(iso);
+  lifeList().forEach(function(e){
+    if(!e.from||!e.to)return;
+    if(e.d){ if(e.d===iso)out.push([e.from,e.to]); return; }
+    var dows=e.dows||[];
+    if(dows.indexOf(day)>-1&&weekOn(iso,e.every,e.anchor))out.push([e.from,e.to]);
+  });
+  planList().forEach(function(pn){
+    if(pn.d===iso)out.push([pn.from,pn.to]);
+  });
+  return out;
+}
+function freeSlotOn(iso){
+  var busy=busyDate(iso);
+  for(var i=0;i<SLOT_TIMES.length;i++){
+    var f=SLOT_TIMES[i],t=addMin(f,90);
+    var clash=busy.some(function(b){return overlap(f,t,b[0],b[1]);});
+    if(!clash)return {from:f,to:t};
+  }
+  return null;
+}
+function sessionsFor(pct){
+  if(!pct)return 2;
+  return Math.max(1,Math.min(6,Math.ceil(pct/6)));
+}
+/* Returns {want, sessions:[{d,from,to}], short} — never throws away a session
+   silently; `short` is how many would not fit. */
+function planFor(item){
+  if(!item||!item.d)return null;
+  var want=sessionsFor(pctOf(item.w));
+  var due=P(item.d), today=P(ISO(new Date()));
+  var first=new Date(due.getTime()-13*864e5);
+  if(first<today)first=today;
+  /* candidate days, latest first: the work belongs near the deadline */
+  var days=[];
+  for(var d=new Date(due.getTime()-864e5); d>=first; d=new Date(d.getTime()-864e5))
+    days.push(ISO(d));
+  if(!days.length)return {want:want,sessions:[],short:want,noRoom:true};
+
+  var picked=[],used={};
+  /* first pass: every other day, so the work is spaced */
+  for(var step=0; step<2 && picked.length<want; step++){
+    for(var i=step; i<days.length && picked.length<want; i+=(step===0?2:1)){
+      var iso=days[i];
+      if(used[iso])continue;
+      var slot=freeSlotOn(iso);
+      if(!slot)continue;
+      used[iso]=1;
+      picked.push({d:iso,from:slot.from,to:slot.to});
+    }
+  }
+  picked.sort(function(a,b){return a.d<b.d?-1:1;});
+  return {want:want,sessions:picked,short:Math.max(0,want-picked.length),noRoom:!picked.length};
+}
+function planOf(itemId){
+  return planList().filter(function(pn){return pn.forId===itemId;});
+}
+function savePlan(item,sessions){
+  var keep=planList().filter(function(pn){return pn.forId!==item.id;});
+  sessions.forEach(function(sn,ix){
+    keep.push({id:"pl-"+item.id+"-"+ix,forId:item.id,c:item.c,d:sn.d,
+               from:sn.from,to:sn.to,t:item.t});
+  });
+  S.plan=keep;save();renderAll();
+}
+function dropPlan(itemId){
+  S.plan=planList().filter(function(pn){return pn.forId!==itemId;});
+  save();renderAll();
+}
+function planEvents(){
+  return planList().map(function(pn){
+    var c=courseOf(pn.c);
+    return {id:pn.id,c:pn.c,d:pn.d,t:"Work on "+(pn.t||"it")+" — "+(c.code||c.key),
+            k:"study",from:pn.from,to:pn.to,planned:true};
+  });
+}
+/* ---------- the proposal, before anything is saved ---------- */
+function sheetPlan(itemId){
+  var item=(S.items||[]).filter(function(i){return i.id===itemId;})[0];
+  if(!item)return;
+  var c=courseOf(item.c),existing=planOf(itemId);
+  var pl=planFor(item);
+  SHEET_BACK=null;
+  document.getElementById("sheet-head").innerHTML=
+    '<div style="min-width:0"><div class="code" style="--c:'+textColorOf(c.key)+'">'
+    +esc(c.code||c.key)+'</div><h3 id="sheet-title">Time for '+esc(item.t)+'</h3>'
+    +'<div class="when">'+esc(fmtDay(P(item.d)))+(item.w?" · "+esc(item.w):"")+'</div></div>'
+    +'<button class="x" data-close aria-label="Close">&times;</button>';
+
+  var body="";
+  if(existing.length){
+    body+='<p class="note" style="margin:0 0 14px"><b>'+existing.length+' session'
+      +(existing.length===1?"":"s")+' already planned</b> for this. Proposing again replaces them.</p>';
+  }
+  if(!pl.sessions.length){
+    body+='<div class="err"><b>No free time before this is due.</b> Every slot between now and '
+      +esc(fmtDay(P(item.d)))+' already has a class, a shift or something else on it. Move something '
+      +'on the Life tab, or plan this one by hand.</div>';
+  }else{
+    body+='<p style="margin:0 0 12px;font-size:.9rem;color:var(--ink-2)">'
+      +'Worth '+esc(item.w||"no stated weight")+', so <b>'+pl.want+' session'+(pl.want===1?"":"s")
+      +'</b> of ninety minutes, working backwards from the deadline and only where you are free.</p>';
+    body+='<div class="keylist">'+pl.sessions.map(function(sn){
+      return '<div class="keyrow"><span class="k"><span class="kbd">'
+        +esc(fmtDay(P(sn.d)))+'</span></span><span>'+esc(t12r(sn.from,sn.to))+'</span></div>';
+    }).join("")+'</div>';
+    if(pl.short){
+      body+='<p class="note" style="margin-top:14px"><b>'+pl.short+' of the '+pl.want
+        +' would not fit.</b> The days before this deadline are already full, so this is what there is '
+        +'room for rather than what it would take. That is worth knowing now instead of on the night.</p>';
+    }
+  }
+  document.getElementById("sheet-body").innerHTML=body;
+  var foot='';
+  if(pl.sessions.length)
+    foot+='<button class="btn sm primary" data-planok="'+esc(itemId)+'">Put '+pl.sessions.length
+      +' in my calendar</button>';
+  if(existing.length)
+    foot+='<button class="btn sm danger" data-plandrop="'+esc(itemId)+'">Remove the plan</button>';
+  foot+='<span class="spacer" style="flex:1"></span><button class="btn sm" data-close>Not now</button>';
+  document.getElementById("sheet-foot").innerHTML=foot;
+  PLAN_PROPOSED=pl;
+  openSheet();
+}
+var PLAN_PROPOSED=null;
 
 /* ===================== marks, and only here =====================
    MARKS is deliberately not part of S.
@@ -4437,6 +4592,13 @@ document.addEventListener("click",function(e){
     });
     return;
   }
+  if((x=t.closest("[data-plan]"))){sheetPlan(x.dataset.plan);return;}
+  if((x=t.closest("[data-planok]"))){
+    var it=(S.items||[]).filter(function(i){return i.id===x.dataset.planok;})[0];
+    if(it&&PLAN_PROPOSED)savePlan(it,PLAN_PROPOSED.sessions);
+    closeSheet();sdToast("Planned. The sessions are in your fortnight, your calendar and your exports.");return;}
+  if((x=t.closest("[data-plandrop]"))){dropPlan(x.dataset.plandrop);closeSheet();
+    sdToast("Plan removed.");return;}
   if((x=t.closest("[data-lw]"))){loadGo(+x.dataset.lw);return;}
   if(t.closest("#findbtn")){openFind();return;}
   if(t.closest("[data-findclose]")){closeFind();return;}
@@ -4734,7 +4896,8 @@ function termPayload(){
   /* Named fields, never a spread of S. Marks are not in this list and must never
      be added to it: this function is the only thing that reaches the server, so
      it is also the only place that could ever leak them. */
-  return {courses:S.courses||[],items:S.items||[],done:S.done||{},life:lifeList(),version:S.version||1,
+  return {courses:S.courses||[],items:S.items||[],done:S.done||{},life:lifeList(),
+          plan:planList(),version:S.version||1,
           theme:(document.documentElement.getAttribute("data-theme")||"light")};
 }
 function realCourses(st){
