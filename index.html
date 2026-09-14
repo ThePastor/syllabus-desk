@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v4.2  (14 September 2026)
+  Syllabus Desk  v4.3  (14 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -972,6 +972,20 @@ table.assess td.mkc{text-align:right;white-space:nowrap;width:86px;padding-right
 .finding .ds{display:block;font-size:.84rem;color:var(--ink-2);line-height:1.5}
 .chk-ok{border:1px solid var(--line-soft);border-left:var(--accent-bar) solid var(--ok);
   background:var(--ok-soft);padding:15px 17px;margin-bottom:22px;font-size:.9rem;color:var(--ink-2)}
+/* ========================= the course file ========================= */
+.cf-fix{border:1px solid var(--line-soft);margin:12px 0 16px}
+.cf-row{display:flex;align-items:center;gap:11px;padding:10px 12px;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.cf-row:last-child{border-bottom:0}
+.cf-row .b{flex:1;min-width:150px;font-size:.88rem}
+.cf-row input[type=date]{border:1px solid var(--line-soft);border-radius:2px;background:var(--surface);
+  color:var(--ink);font-family:var(--font-mono);font-size:.78rem;padding:7px 8px;min-height:38px}
+.cf-what{margin:14px 0 0;font-size:.85rem}
+.cf-what summary{cursor:pointer;font-weight:500;padding:4px 0}
+.cf-what ul{margin:8px 0 0;padding-left:20px;color:var(--ink-2)}
+.cf-what li{margin:4px 0}
+.authored{background:var(--ok-soft);border-left:var(--accent-bar) solid var(--ok-deep);
+  padding:11px 13px;font-size:.88rem;line-height:1.5}
+@media (pointer:coarse){.cf-row input[type=date]{min-height:44px}}
 .hide{display:none!important}
 </style>
 </head>
@@ -1723,7 +1737,8 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         <div class="drop" id="drop">
           <h4>Drop your course outline here</h4>
           <p>PDF, Word (.docx) or plain text. The file is read in your browser — it is not uploaded anywhere.</p>
-          <input type="file" id="file" accept=".pdf,.docx,.txt,.md" class="hide">
+          <p style="margin:0 0 4px">Given a <b>course file</b> by whoever teaches it? Drop that in instead &mdash; it is already written out, so there is nothing to read and nothing to check twice.</p>
+          <input type="file" id="file" accept=".pdf,.docx,.txt,.md,.json,.sdcourse" class="hide">
           <button class="btn" id="pickfile">Choose a file</button>
         </div>
         <p style="margin:20px 0 9px;font-size:.85rem;color:var(--ink-3)">Or paste the outline text. The schedule table and the grading breakdown are the parts that carry the dates.</p>
@@ -2341,11 +2356,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"4.2",date:"14 September 2026",year:2026};
+var BUILD={v:"4.3",date:"14 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["4.3","<b>The course file.</b> Whoever writes the outline can now check it and then save a <b>course file</b> \u2014 their schedule, written out by them. A student drops that into <b>Add a course</b> and the whole course is there in one tap: no pasting, no PDF, no reader deciding what \u201cWeek 6\u201d meant, and every date is the one their instructor published rather than one this page worked out. Dates the outline left blank can be filled in on the way out, so a \u201cTBA\u201d gets fixed once for everybody instead of being emailed about forty times. The file holds course information only \u2014 no student data of any kind, nothing that records who opens it, and no link back to whoever made it."],
   ["4.2","<b>Something for whoever writes the outline.</b> Paste a draft into <b>Settings \u203a Check an outline</b> and it runs the same reader your students run, then says what it found and what it could not: graded items with no date anywhere in the schedule, a weights column that adds to 95, a deadline on Thanksgiving or Remembrance Day, two things due the same day, three in one week. It is a proof-reader for the schedule, it runs entirely on your own device, and it uploads and stores nothing."],
   ["4.1","<b>More than one term.</b> When this one ends, <b>Settings \u203a Terms \u203a Start a new term</b> puts it away and hands you an empty one \u2014 it is not deleted, and you can open it again whenever you want, which swaps it with whatever is live rather than overwriting anything. Name a term yourself or let it work out \u201cFall 2026\u201d from the dates in it. Past terms travel with your account if you have one, and with the data export if you do not."],
   ["4.0","<b>Plan time for this.</b> Open any deadline and the page works backwards from it: how many ninety-minute sessions the weight deserves, spaced every other day rather than stacked the night before, and dropped only into hours you are genuinely free \u2014 around your classes, your shifts, your practices and the study blocks you already keep. If the days before a deadline are full it tells you how many sessions would not fit instead of quietly dropping them, which is worth knowing in advance rather than on the night. Accepted sessions join your fortnight, your calendar and your exports."],
@@ -3302,6 +3318,7 @@ function checkOutline(text){
 function esc0(x){return String(x);}
 function renderCheck(res){
   var host=document.getElementById("chk-out");if(!host)return;
+  CHECKED=res;
   var d=res.parsed;
   var stops=res.findings.filter(function(f){return f.sev==="stop";}).length;
   var looks=res.findings.filter(function(f){return f.sev==="look";}).length;
@@ -3358,6 +3375,7 @@ function renderCheck(res){
   }
   h+='<p class="hint">Checked on this device with the same reader your students use. '
     +'Nothing here was uploaded or saved.</p>';
+  if((d.items||[]).length||(res.classes||[]).length)h+=cfBlock(res);
   host.innerHTML=h;
 }
 function runCheck(){
@@ -3370,11 +3388,146 @@ function runCheck(){
       +'the schedule table and the grading breakdown are the parts that carry the dates.</div>';
     return;
   }
+  CF_DATES={};
   host.innerHTML='<div class="working"><span class="spin"></span><span>Reading it the way a student would…</span></div>';
   setTimeout(function(){
     try{renderCheck(checkOutline(txt));}
     catch(e){host.innerHTML='<div class="err"><b>That could not be read.</b> '+esc(e.message||"")+'</div>';}
   },40);
+}
+
+/* ===================== the course file =====================
+   One tap instead of a parse.
+
+   The format is not a new format. It is exactly what the reader already hands
+   to the review screen, with four header fields on the front so the page can
+   tell an authored file from somebody's shopping list. That is the whole trick:
+   importing is `showReview(theFile)`, because an authored course and a read
+   course are the same thing by the time a student sees either one.
+
+   What is NOT in it matters as much. No student data, no marks, no device
+   identifier, no callback of any kind — an instructor who saves one of these
+   has published course information, not collected anything, and there is
+   nothing in it for them to look after afterwards. */
+var SDFILE="syllabus-desk.course", SDFILE_V=1;
+var CHECKED=null;          /* the last check, so the export can be built from it */
+var CF_DATES={};           /* dates the instructor filled in for undated items */
+
+function isCourseFile(o){
+  return !!(o&&typeof o==="object"&&o.file===SDFILE&&+o.v===SDFILE_V
+            &&(Array.isArray(o.items)||Array.isArray(o.classes)));
+}
+/* Text a student might paste straight out of an email, rather than save first. */
+function courseFileIn(txt){
+  txt=String(txt||"").trim();
+  if(txt.charAt(0)!=="{")return null;
+  try{var o=JSON.parse(txt);return isCourseFile(o)?o:null;}catch(e){return null;}
+}
+function cfSlug(code){
+  return (String(code||"course").trim().toLowerCase().replace(/[^a-z0-9]+/g,"-")
+          .replace(/^-|-$/g,"")||"course").slice(0,40);
+}
+/* Built from the parse, with the instructor's own fixes applied on top. Fields
+   are named one at a time on purpose — a spread would quietly ship whatever the
+   reader happened to attach, and this file gets handed to strangers. */
+function courseFileFrom(d,term){
+  d=d||{};
+  var items=(d.items||[]).map(function(i,ix){
+    var fixed=CF_DATES[ix];
+    return {title:String(i.title||"Untitled").slice(0,140),
+            date:isISO(fixed)?fixed:(isISO(i.date)?i.date:null),
+            time:/^\d{2}:\d{2}$/.test(i.time||"")?i.time:"",
+            kind:["exam","quiz","due","pres","other"].indexOf(i.kind)>-1?i.kind:"due",
+            weight:String(i.weight||""),note:String(i.note||"").slice(0,300)};
+  });
+  return {file:SDFILE,v:SDFILE_V,made:ISO(new Date()),term:String(term||"").slice(0,40),
+    code:String(d.code||"").slice(0,60),title:String(d.title||"").slice(0,120),
+    instructor:String(d.instructor||"").slice(0,80),email:String(d.email||"").slice(0,120),
+    room:String(d.room||"").slice(0,40),meets:String(d.meets||"").slice(0,60),
+    time:String(d.time||"").slice(0,40),
+    weights:(d.weights||[]).filter(function(w){return w&&w.length>1;})
+      .map(function(w){return [String(w[0]).slice(0,60),+w[1]||0];}),
+    rules:String(d.rules||"").slice(0,600),
+    items:items,
+    classes:(d.classes||[]).filter(function(r){return r&&isISO(r.date);})
+      .map(function(r){return {date:r.date,topic:String(r.topic||"").slice(0,160),
+                               off:!!r.off,mark:!!r.mark};})};
+}
+/* The block that appears under a check. Undated items get a date field each,
+   because "the reader could not find this date" and "here it is" belong on the
+   same screen — that is the entire difference between a warning and a fix. */
+function cfBlock(res){
+  var d=res.parsed||{},un=[];
+  (d.items||[]).forEach(function(i,ix){if(!isISO(i.date))un.push([ix,i]);});
+  var h='<div class="prose" style="max-width:none"><h3>Hand this to your students</h3></div>'
+    +'<div class="callout"><p style="margin:0 0 10px">Save a <b>course file</b> and your students '
+    +'are done in one tap: no pasting, no PDF, no reader deciding what &ldquo;Week&nbsp;6&rdquo; meant. '
+    +'They see your schedule exactly as you wrote it, because nothing was read to get it there.</p>'
+    +'<p style="margin:0 0 4px">Email it, post it on your course page, or put it beside the outline &mdash; '
+    +'it is one small file and it opens in any browser.</p>';
+  if(un.length){
+    h+='<p class="note" style="margin:14px 0 0"><b>'+un.length+' item'+(un.length===1?"":"s")
+      +' would arrive with no date.</b> Fill in what you know and it goes into the file &mdash; '
+      +'your students stop guessing and stop emailing you about it.</p>'
+      +'<div class="cf-fix">'+un.map(function(pair){
+        var ix=pair[0],i=pair[1];
+        return '<div class="cf-row"><span class="b">'+esc(i.title)
+          +(i.weight?' <span style="color:var(--ink-3)">&middot; '+esc(i.weight)+'</span>':'')+'</span>'
+          +'<input type="date" data-cfd="'+ix+'" value="'+esc(CF_DATES[ix]||"")+'" '
+          +'aria-label="Date for '+esc(i.title)+'"></div>';
+      }).join("")+'</div>'
+      +'<p class="hint" style="margin:0 0 14px">Leave one blank and it stays undated in the file, '
+      +'flagged for students the same way it is flagged here. Nothing is invented.</p>';
+  }
+  var guess=guessTermName({items:(d.items||[]).map(function(i){return {d:i.date};}),courses:[]});
+  if(guess==="Untitled term")guess="Fall "+(new Date()).getFullYear();
+  h+='<label class="f" style="max-width:280px;margin:14px 0"><span>Term (optional)</span>'
+    +'<input class="termname" id="cf-term" placeholder="'+esc(guess)+'" maxlength="40"></label>'
+    +'<div class="row"><button class="btn primary" id="cf-make">Save the course file</button>'
+    +'<button class="btn ghost" id="cf-copy">Copy it instead</button></div>'
+    +'<details class="cf-what"><summary>Exactly what goes in the file</summary><ul>'
+    +'<li>The course code and title, and the term name if you set one.</li>'
+    +'<li>Your name and whatever contact details and room the outline prints.</li>'
+    +'<li>When it meets, the grading breakdown, and the one paragraph of rules the reader pulled out.</li>'
+    +'<li>Every dated item and every class meeting above, including the ones still flagged undated.</li>'
+    +'</ul><p style="margin:10px 0 0;color:var(--ink-2)">And nothing else. There is no student '
+    +'information in it, nothing that records who opens it, and no link back to you &mdash; once it '
+    +'is saved it is a file on your computer, not an account. You have published course information, '
+    +'not collected anything, so there is nothing here for you to look after afterwards.</p></details>'
+    +'</div>';
+  return h;
+}
+function cfMake(copy){
+  if(!CHECKED){alert("Check an outline first.");return;}
+  var termEl=document.getElementById("cf-term");
+  var o=courseFileFrom(CHECKED.parsed,termEl?termEl.value:"");
+  var txt=JSON.stringify(o,null,1);
+  if(copy){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){
+        sdToast("Copied. Paste it into an email or your course page — students paste it straight back in.");
+      },function(){alert("Could not reach the clipboard here. Use Save instead.");});
+    }else alert("This browser will not let the page copy for you. Use Save instead.");
+    return;
+  }
+  offer(cfSlug(o.code)+".syllabus-desk.json",txt,
+    "Saved. Send that file to your students — they open Add a course, drop it in, and their "
+    +"whole term is there. Nothing in it was read or guessed.");
+}
+/* The student end. An authored file goes to the same review screen a parse does,
+   so there is one code path for "check this before you save it". */
+function takeCourseFile(o,fname){
+  var d={};
+  ["code","title","instructor","email","room","meets","time","weights","rules","items","classes"]
+    .forEach(function(k){d[k]=o[k];});
+  d._engine="authored";
+  showReview(d,"");
+  PENDING.authored={made:o.made||"",term:o.term||"",fname:fname||""};
+  drawReview();
+  showPanel("p-add");
+  document.getElementById("add-input").classList.add("hide");
+  document.getElementById("add-review").classList.remove("hide");
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 /* ===================== one term open, the rest kept =====================
@@ -4652,7 +4805,12 @@ function drawReview(){
     '<div class="review-head" style="--ck:var('+c.color+')"><div class="ctop"><span class="ccode" style="color:var('+c.color+')">'+esc(c.code)+'</span><span class="ctitle">'+esc(c.title)+'</span></div>'
     +'<p style="margin:10px 0 0;font-size:.86rem;color:var(--ink-2)">Found <b>'+its.length+'</b> graded item'+(its.length===1?"":"s")+' and <b>'+c.classes.length+'</b> class meeting'+(c.classes.length===1?"":"s")+'. '
     +(missing?'<b style="color:var(--warn)">'+missing+' had no date in the outline</b> — fill them in now, or leave them flagged.':'Every item came back with a date. Still worth a glance.')+'</p>'
-    +'<p class="hint" style="margin:9px 0 0">'+(PENDING.engine==="claude"
+    +(PENDING.authored?'<div class="authored" style="margin:12px 0 0"><b>This came as a file from '
+        +'whoever teaches it</b> \u2014 written out by them, not read off a PDF by this page, so every '
+        +'date below is the date they published'+(PENDING.authored.made?' on '+esc(PENDING.authored.made):'')
+        +(PENDING.authored.term?' for '+esc(PENDING.authored.term):'')+'. Save it as it is; you can still '
+        +'change anything afterwards.</div>':'')
+    +'<p class="hint" style="margin:9px 0 0"'+(PENDING.authored?' hidden':'')+'>'+(PENDING.engine==="claude"
         ? 'Read by Claude. It is good at messy outlines and still gets dates wrong sometimes \u2014 check them against your course page.'
         : 'Read by the built-in reader, on your own device \u2014 pattern matching, no AI, nothing sent anywhere. It is reliable on ordinary schedule tables and will miss unusual ones, so <b>check every date</b> and add anything it skipped.')
     +(PENDING.note?' '+esc(PENDING.note):'')+'</p></div>'
@@ -4937,6 +5095,8 @@ document.addEventListener("click",function(e){
   if(t.closest("#pickfile")){document.getElementById("file").click();return;}
   if(t.closest("#parse")){
     var txt=document.getElementById("paste").value.trim();
+    var cfo=courseFileIn(txt);
+    if(cfo){document.getElementById("parse-status").innerHTML="";takeCourseFile(cfo,"");return;}
     if(txt.length<120){document.getElementById("parse-status").innerHTML='<div class="err"><b>That is not much to go on.</b> Paste more of the outline — the schedule table and the grading breakdown are the parts that carry the dates.</div>';return;}
     parseOutline(txt);return;
   }
@@ -5016,6 +5176,8 @@ document.addEventListener("click",function(e){
     return;
   }
   if(t.closest("#chk-go")){runCheck();return;}
+  if(t.closest("#cf-make")){cfMake(false);return;}
+  if(t.closest("#cf-copy")){cfMake(true);return;}
   if(t.closest("#chk-clear")){
     var ta=document.getElementById("chk-text");if(ta)ta.value="";
     var co=document.getElementById("chk-out");if(co)co.innerHTML="";
@@ -5147,11 +5309,27 @@ document.addEventListener("change",function(e){
   if(t.id==="file"&&t.files&&t.files[0]){
     var f=t.files[0];
     document.getElementById("parse-status").innerHTML='<div class="working"><span class="spin"></span><span>Reading '+esc(f.name)+'…</span></div>';
+    /* An authored course file skips the reader entirely — there is nothing to read. */
+    if(/\.(json|sdcourse)$/i.test(f.name||"")){
+      f.text().then(function(raw){
+        var o=courseFileIn(raw);
+        if(o){document.getElementById("parse-status").innerHTML="";takeCourseFile(o,f.name);return;}
+        document.getElementById("parse-status").innerHTML='<div class="err"><b>That is not a course '
+          +'file.</b> '+esc(f.name)+' is a JSON file, but not one your instructor made with Syllabus '
+          +'Desk. If you meant to restore your own data, use <b>Export &amp; import \u203a Import</b> '
+          +'instead. To add a course, drop the outline itself in here.</div>';
+      })["catch"](function(){document.getElementById("parse-status").innerHTML='<div class="err"><b>Could not read that file.</b></div>';});
+      return;
+    }
     readFile(f).then(function(txt){
       document.getElementById("paste").value=txt;
       document.getElementById("parse-status").innerHTML='<div class="hint" style="padding:12px 0">Pulled '+txt.length.toLocaleString()+' characters out of '+esc(f.name)+'. Skim it, then read the outline.</div>';
       updateCount();
     }).catch(function(err){document.getElementById("parse-status").innerHTML='<div class="err"><b>Could not read that file.</b> '+esc(err.message||"")+'</div>';});
+    return;
+  }
+  if((x=t.closest("[data-cfd]"))){
+    if(isISO(x.value))CF_DATES[+x.dataset.cfd]=x.value;else delete CF_DATES[+x.dataset.cfd];
     return;
   }
   if((x=t.closest("[data-cf]"))&&PENDING){PENDING.course[x.dataset.cf]=x.value;return;}
