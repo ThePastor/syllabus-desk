@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v3.2  (14 September 2026)
+  Syllabus Desk  v3.3  (14 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -29,6 +29,12 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23DEF47F'/%3E%3Crect x='10.29' y='12.57' width='43.43' height='4.57' fill='%230C0C0D'/%3E%3Crect x='10.29' y='19.43' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='21.72' y='19.43' width='9.14' height='9.14' fill='%23387A84'/%3E%3Crect x='33.15' y='19.43' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='44.58' y='19.43' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='10.29' y='30.86' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='21.72' y='30.86' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='33.15' y='30.86' width='9.14' height='9.14' fill='%23387A84'/%3E%3Crect x='44.58' y='30.86' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='10.29' y='42.29' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='21.72' y='42.29' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3Crect x='33.15' y='42.29' width='9.14' height='9.14' fill='%23387A84'/%3E%3Crect x='44.58' y='42.29' width='9.14' height='9.14' fill='%230C0C0D'/%3E%3C/svg%3E">
 <link rel="alternate icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="application-name" content="Syllabus Desk">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Syllabus Desk">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Syllabus Desk">
 <meta property="og:title" content="Syllabus Desk - your whole term, on one page">
@@ -140,6 +146,16 @@ a{color:var(--accent-deep)}
 .tab{border:0;border-bottom:var(--accent-bar) solid transparent;background:transparent;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding:0 15px;cursor:pointer;white-space:nowrap}
 .tab:hover{color:var(--ink);background:var(--surface-2)}
 .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+/* Offline is a state worth naming. A page that silently shows yesterday's
+   copy is worse than one that says which copy you are looking at. */
+.netpill{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);
+  font-size:.58rem;letter-spacing:.11em;text-transform:uppercase;color:var(--warn);
+  background:var(--warn-soft);border:1px solid var(--warn);border-radius:2px;
+  padding:5px 9px;white-space:nowrap}
+.netpill i{width:6px;height:6px;border-radius:50%;background:var(--warn);flex:0 0 auto}
+@media(max-width:430px){.netpill .lbl{position:absolute;width:1px;height:1px;margin:-1px;
+  padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .netpill{padding:6px 7px}}
 .topacts{display:flex;align-items:center;gap:8px;padding-left:var(--gut-in);border-left:1px solid var(--line-soft);margin-left:var(--gut-in)}
 @media(max-width:860px){
   /* two rows on a phone: brand + actions, then the tabs scrolling underneath */
@@ -1202,6 +1218,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
     <button class="tab hide" id="ownertab" data-panel="p-owner" aria-selected="false">Owner</button>
   </nav>
   <div class="topacts">
+    <span class="netpill" id="netpill" hidden role="status"><i></i><span class="lbl">Offline</span></span>
     <button class="btn sm" id="themebtn" title="Switch light and dark" aria-label="Switch theme">Theme</button>
     <button class="btn primary sm" id="addbtn">Add course</button>
   </div>
@@ -1990,11 +2007,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"3.2",date:"14 September 2026",year:2026};
+var BUILD={v:"3.3",date:"14 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["3.3","It installs, and it works with no signal. Add it to your home screen and it gets its own icon and its own window &mdash; and from now on it <b>opens offline</b>, with your whole term, the calendar, the countdowns and the exports all working. Only reading a brand-new outline and signing in still need a connection. On Android and desktop the install is now one tap instead of a menu hunt, the top bar says <b>Offline</b> when you are, and a link can point straight at a tab."],
   ["3.2","A proper legal notice, and two smaller promises kept. <b>Legal &amp; privacy</b> now holds a real privacy policy, terms of use, an accuracy statement and an accessibility statement, with an effective date, how long anything is kept, and one address for questions. You can now <b>delete your account</b> yourself — email address and all — instead of asking anyone. Two claims that were not true are fixed: this website never sends your outline to Claude, and the two outside libraries are fetched rather than carried. Those libraries now load only when you actually open a PDF or a Word file, and each is checked against a published fingerprint before your browser will run it, so opening the page no longer tells a content network you were here."],
   ["3.1","The outline reader stops inventing dates. A word that merely began like a month — <b>Mark</b>-recapture, <b>Mar</b>keting, <b>Jun</b>ior, <b>Nov</b>el — was being read as that month, so an outline could show you a deadline that did not exist. It now has to be a real month. It also reads the dates many outlines only state in the grading table (\u201cMidterm \u2014 20% (Thursday, October 15)\u201d), and no longer lets a grading line hand its date to the wrong item."],
   ["3.0","The page now counts visits, so whoever runs it can tell whether anyone is using it. It is a count and nothing more — a random id this browser made up, your platform and timezone, and how many courses you hold. No name, no email, nothing you typed, and no login required to use anything. It is spelled out under <b>What is counted</b> in the rights notice, and Settings can switch it off."],
@@ -2765,10 +2783,97 @@ function renderAll(){
 
 
 
+/* ===================== installed, and offline =====================
+   Three things, and they are separate on purpose.
+
+   The service worker makes the page open with no signal. It is registered only
+   on the real site: inside the claude.ai copy there is no sw.js to register and
+   no origin of our own to scope it to, and on file:// the API does not exist.
+
+   The install prompt is the browser's, not ours. Chrome, Edge and Android hand
+   it over before they show their own; iOS never does. So the Install button
+   installs where that is possible and explains where it is not, instead of
+   always explaining.
+
+   Offline is said out loud. The alternative is a page that quietly shows a
+   saved copy while a student assumes it is current. */
+var PWA={prompt:null,installed:false};
+
+function swSupported(){
+  try{
+    return !inArtifact() && "serviceWorker" in navigator &&
+           (location.protocol==="https:"||location.hostname==="127.0.0.1"||location.hostname==="localhost");
+  }catch(e){return false;}
+}
+function registerSW(){
+  if(!swSupported())return;
+  try{
+    navigator.serviceWorker.register("sw.js",{scope:"./"})["catch"](function(){});
+  }catch(e){}
+}
+/* after a student takes an update, tell the worker to re-fetch the shell so the
+   offline copy is the build they just moved to, not the one before it */
+function refreshShell(){
+  try{
+    if(navigator.serviceWorker&&navigator.serviceWorker.controller)
+      navigator.serviceWorker.controller.postMessage("sd-refresh");
+  }catch(e){}
+}
+function canInstallNow(){return !!PWA.prompt;}
+function paintNet(){
+  var el=document.getElementById("netpill");
+  if(el)el.hidden=!!navigator.onLine;
+}
+function wirePWA(){
+  registerSW();
+  paintNet();
+  window.addEventListener("online",paintNet);
+  window.addEventListener("offline",paintNet);
+  window.addEventListener("beforeinstallprompt",function(e){
+    e.preventDefault();          /* keep it until the student asks for it */
+    PWA.prompt=e;
+  });
+  window.addEventListener("appinstalled",function(){
+    PWA.prompt=null;PWA.installed=true;
+    sdToast("Installed. Open it from your home screen \u2014 it works without a signal.");
+  });
+}
+function doInstall(){
+  if(!PWA.prompt)return false;
+  var p=PWA.prompt;PWA.prompt=null;
+  try{
+    p.prompt();
+    if(p.userChoice&&p.userChoice.then)p.userChoice.then(function(){},function(){});
+  }catch(e){}
+  closeSheet();
+  return true;
+}
+
+/* ---------- a link can point at a tab ----------
+   So a shortcut on a home screen, or an instructor writing "add your outline
+   here", can land on the right screen instead of the front page. */
+var HASHPANEL={weeks:"p-weeks",home:"p-weeks",today:"p-weeks",calendar:"p-cal",cal:"p-cal",
+  courses:"p-courses",life:"p-life",export:"p-export",add:"p-add",account:"p-account",
+  login:"p-account",settings:"p-settings",legal:"p-rights",rights:"p-rights",privacy:"p-rights"};
+function panelFromHash(){
+  var h="";
+  try{h=(location.hash||"").replace(/^#/,"").toLowerCase();}catch(e){}
+  return HASHPANEL[h]||null;
+}
+function applyHash(){
+  var id=panelFromHash();
+  if(!id)return false;
+  if(id==="p-add"){openAdd();return true;}
+  showPanel(id);window.scrollTo({top:0,behavior:"auto"});
+  return true;
+}
+
 /* ---------- adding it to a home screen ----------
-   There is no service worker here, so this is the browser's own "add to home
-   screen", which makes a real icon that opens the site full-screen. Saying that
-   plainly beats implying an app-store install that is not happening. */
+   Since v3.3 there is a service worker and a manifest, so this is a real
+   install: its own icon, its own window, and it opens with no signal. On
+   Chrome, Edge and Android the browser hands us its prompt and the button below
+   does the install outright. On iPhone and iPad it never does, so there the
+   honest thing is three steps and no pretending. */
 function isIOS(){
   return /iPad|iPhone|iPod/.test(navigator.userAgent)||
     (navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
@@ -2794,15 +2899,23 @@ function sheetInstall(){
     +'<button class="x" data-close aria-label="Close">&times;</button>';
   document.getElementById("sheet-body").innerHTML=
     '<p style="margin:0 0 14px;font-size:.9rem;color:var(--ink-2)">It opens straight into your term with '
-    +'no address bar taking up the top of the screen.</p>'
+    +'no address bar taking up the top of the screen &mdash; and <b>it opens with no signal</b>, which is '
+    +'the point on a campus with a basement lecture hall.</p>'
+    +(canInstallNow()
+       ? '<p class="note" style="margin:0 0 14px">Your browser can do this in one tap. The steps below are '
+         +'the manual route if you would rather.</p>'
+       : '')
     +'<ol class="wn-list">'+steps.map(function(st){
         return '<li><b>'+st[0]+'</b><span>'+st[1]+'</span></li>';}).join("")+'</ol>'
-    +'<p class="note" style="margin-top:14px">Two honest notes. It still needs a connection to open, '
-    +'because there is no offline copy — once it is open, everything except reading a new outline '
-    +'works without one. And on iPhone the home-screen version keeps <b>separate storage</b> from Safari, '
-    +'so use <b>Export data</b> on the Export tab and import it once inside, or add your courses again there.</p>';
+    +'<p class="note" style="margin-top:14px">What works offline: your whole term, the calendar, the '
+    +'countdowns, ticking things off, and the exports. What needs a connection: reading a <b>new</b> '
+    +'outline from a PDF or Word file, and signing in. On iPhone the home-screen version keeps '
+    +'<b>separate storage</b> from Safari, so use <b>Export data</b> on the Export tab and import it once '
+    +'inside, or add your courses again there.</p>';
   document.getElementById("sheet-foot").innerHTML=
-    '<span class="spacer" style="flex:1"></span><button class="btn sm primary" data-close>Got it</button>';
+    (canInstallNow()?'<button class="btn sm primary" id="do-install">Install it now</button>':'')
+    +'<span class="spacer" style="flex:1"></span>'
+    +'<button class="btn sm'+(canInstallNow()?'':' primary')+'" data-close>Got it</button>';
   openSheet();
 }
 
@@ -3373,6 +3486,7 @@ document.addEventListener("click",function(e){
     renderAll();paintSettings();return;
   }
   if(t.closest("#set-install")){sheetInstall();return;}
+  if(t.closest("#do-install")){doInstall();return;}
   if(t.closest("#set-whatsnew")){sheetWhatsNew(null);return;}
   if(t.closest("#set-goexport")){showPanel("p-export");window.scrollTo({top:0,behavior:"smooth"});return;}
   if(t.closest("#set-rights")||t.closest("#acct-rights")){showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});return;}
@@ -4037,6 +4151,7 @@ function showUpdateBtn(){
 /* leave a note for the page that comes back, so it can say what it landed on */
 function applyUpdate(){
   try{sessionStorage.setItem("sd:from",BUILD.v);}catch(e){}
+  refreshShell();   /* the offline copy should be the build they just moved to */
   dismissUpdatePop();
   location.reload();
 }
@@ -4377,6 +4492,8 @@ Array.prototype.forEach.call(document.querySelectorAll(".r-year"),function(el){e
 load();restoreSession();paintOwner();
 if(!S.courses.length){ loadSample(true); }   /* first visit: show a worked example, not an empty shell */
 renderAll();sizeTopbar();scheduleUpdateChecks();noteUpdated();
+wirePWA();applyHash();
+window.addEventListener("hashchange",applyHash);
 paintAccount();
 /* signed in from a previous visit: bring the account copy down before they touch anything */
 if(sbOn()&&SESS){pullTerm().then(reconcile)["catch"](function(){});}
