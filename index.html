@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v3.1  (13 September 2026)
+  Syllabus Desk  v3.2  (14 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -17,6 +17,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://gwwiaijfqovhizrmfxuk.supabase.co https://cdnjs.cloudflare.com; worker-src 'self' blob: https://cdnjs.cloudflare.com; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Course outlines in, one calendar out. Paste or upload your outlines and get every exam, quiz and deadline laid out week by week - exportable to Google or Apple Calendar.">
 <meta name="color-scheme" content="light dark">
@@ -47,8 +48,6 @@ img{max-width:100%}[hidden]{display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{
   color-scheme:light;
@@ -1489,10 +1488,11 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
             <label class="f"><span>Password again</span>
               <input type="password" id="su-pass2" autocomplete="new-password" required minlength="8"></label>
             <button class="btn primary" type="submit" id="su-go">Create account <span class="arw">&rarr;</span></button>
-            <p class="acct-fine">Your email and your term are stored on a server so they can reach your
-            other devices, and <b>your email is visible to the owner of this site</b> — your password never
-            is, only a one-way hash of it. <button type="button" class="linkish" id="acct-rights">Read the
-            full notice</button>. Use a password you do not use anywhere else.</p>
+            <p class="acct-fine">Your email and your term are stored on a server in <b>Canada</b> so they
+            can reach your other devices, and <b>your email is visible to the owner of this site</b> &mdash;
+            your password never is, only a one-way hash of it. You can delete the account and everything in it
+            yourself, at any time. <button type="button" class="linkish" id="acct-rights">Read the privacy
+            policy</button>. Use a password you do not use anywhere else.</p>
           </form>
 
           <form class="acctcard" id="signin-form" novalidate>
@@ -1539,8 +1539,15 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           </div>
           <div class="excard">
             <h4>Delete what is stored</h4>
-            <p>Removes your saved term from the server. What is in this browser stays until you clear it.</p>
+            <p>Removes your saved term from the server and leaves the account. What is in this browser stays
+            until you clear it.</p>
             <button class="btn danger sm" id="acct-wipe">Delete my saved term</button>
+          </div>
+          <div class="excard">
+            <h4>Delete the account itself</h4>
+            <p>Removes the account, the email address and the stored term together &mdash; at once, for good,
+            with nothing left to ask anyone for. Your term stays in this browser until you clear it.</p>
+            <button class="btn danger sm" id="acct-close">Delete my account</button>
           </div>
         </div>
       </div>
@@ -1607,7 +1614,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           <button class="btn danger" id="set-wipe">Clear this device</button>
         </div>
         <div class="excard">
-          <h4>Rights and licence</h4>
+          <h4>Legal &amp; privacy</h4>
           <p>Who owns this, what you may do with it, and exactly what happens to your course material.</p>
           <button class="btn" id="set-rights">Read the notice</button>
         </div>
@@ -1682,60 +1689,275 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
   <div class="panel" id="p-rights">
     <section>
-      <div class="sec-head"><h2>All rights reserved</h2><span class="note">© <span id="r-year"></span> JohnsonXCorp</span></div>
-      <div class="prose">
-        <h3>Who owns this</h3>
-        <p>Syllabus Desk is published by <b>JohnsonXCorp</b>. Copyright &copy; <span class="r-year"></span> JohnsonXCorp. All rights reserved.</p>
-        <p>This is <b>not open source</b>. The page is published so it can be served to you and so that anyone can read it and verify what it does with their files. It is not published for reuse.</p>
+      <div class="sec-head"><h2>Legal &amp; privacy</h2><span class="note">Version 1.0 &middot; in effect 14 September 2026</span></div>
 
-        <h3>What you may do</h3>
+      <div class="callout">
+        <h4>An independent project, not a university service</h4>
+        <p style="margin:0 0 8px">Syllabus Desk is made and run by <b>JohnsonXCorp</b>, the working name of
+        Anndy Johnson, an individual in British Columbia. It is <b>not operated, hosted, funded, endorsed or
+        supervised by Thompson Rivers University</b> or by any other institution. No university holds
+        anything stored here, and nothing on this page is a university record.</p>
+        <p style="margin:0">Your course page and your instructor stay the authority on every date. This is a
+        planning aid, and it says so everywhere it can.</p>
+      </div>
+
+      <div class="row" style="gap:8px;flex-wrap:wrap;margin:24px 0 6px">
+        <a class="btn sm" href="#lg-privacy">1 Privacy</a>
+        <a class="btn sm" href="#lg-terms">2 Terms of use</a>
+        <a class="btn sm" href="#lg-accuracy">3 Accuracy</a>
+        <a class="btn sm" href="#lg-a11y">4 Accessibility</a>
+        <a class="btn sm" href="#lg-licence">5 Rights</a>
+        <a class="btn sm" href="#lg-third">6 Third parties</a>
+        <a class="btn sm" href="#lg-contact">7 Contact</a>
+      </div>
+
+      <div class="prose">
+
+        <h3 id="lg-privacy">1 &middot; Privacy policy</h3>
+        <p><b>Who is responsible.</b> JohnsonXCorp &mdash; Anndy Johnson, British Columbia, Canada &mdash;
+        decides what this page collects and is accountable for it under British Columbia's <i>Personal
+        Information Protection Act</i>. Privacy questions, requests to see or delete what is held, and
+        complaints all go to one address: <a href="mailto:johnsonxcorp@outlook.com">johnsonxcorp@outlook.com</a>. They are answered within
+        <b>30 days</b>.</p>
+
+        <p><b>The short version.</b> Everything here works without giving a name, an email address or
+        anything else. Your outlines are read inside your browser and the file is never uploaded. An account
+        is optional and adds exactly one thing: your term opening on your other devices. One anonymous count
+        leaves this browser so the person who built this can tell whether anyone is using it, and you can
+        switch that off.</p>
+
+        <h4>Without an account, nothing personal is collected</h4>
+        <p>Your term &mdash; courses, dates, ticks, study blocks, life entries and anything you typed &mdash;
+        is written into this browser's own storage. It stays on this device. It is not sent to a server, it
+        is not visible to JohnsonXCorp, and clearing your browser data deletes it. This site sets <b>no
+        cookies</b> and carries <b>no analytics, no advertising and no tracking scripts of any kind</b>.</p>
+        <p>The one thing that does leave, account or not, is the visit count set out under <b>What is counted</b>
+        below: a random id and a few numbers, never your course material and never anything you typed.</p>
+
+        <h4>Your outline stays in your browser</h4>
+        <p>When you paste or choose an outline, it is read and turned into dates by a reader built into this
+        page, running on your own device. On <b>this website the file and its text are never uploaded
+        anywhere</b> &mdash; not to JohnsonXCorp, not to an AI service, not to anyone. There is no code path
+        on this site that could send them.</p>
+        <p class="small">One exception, and it is not this website. Syllabus Desk also exists as a page inside
+        claude.ai. There, and only there, pressing <b>Read this outline</b> may send the extracted text to
+        Anthropic's Claude to be turned into dates, under Anthropic's terms rather than this notice. The
+        review screen names which reader ran, either way.</p>
+
+        <h4>With an account: an email address and your term</h4>
+        <p>If you choose to make one, two things are stored on a server:</p>
+        <ul>
+          <li>the <b>email address</b> you signed up with, together with the date you joined and the date you
+          last signed in;</li>
+          <li>your <b>term</b> &mdash; the same courses, dates, ticks and blocks, so they can reach your other
+          devices.</li>
+        </ul>
+        <p>Your <b>password is not stored</b>. Only a one-way hash of it is kept, and a hash cannot be turned
+        back into a password by anyone, JohnsonXCorp included. Your email address <b>is</b> visible to
+        JohnsonXCorp, along with when you joined, when you were last seen and how many courses you hold
+        &mdash; that, and nothing else. Access to each person's term is enforced row by row inside the
+        database, so no other signed-in person can read yours. Nothing is sold, rented, or shared with anyone
+        for any purpose.</p>
+        <p><b>What it is for.</b> The email address exists to sign you in, to let you reset your own password,
+        and to let the operator answer one question honestly: how many people use this. It is used for
+        nothing else.</p>
+
+        <h4 id="counting-note">What is counted</h4>
+        <p>One thing leaves this browser whether or not you have an account: <b>that the page was opened</b>.
+        The first time you arrive, the page invents a random id for itself, stores it here, and sends it at
+        most once an hour together with your <b>platform</b> (iPhone, Windows, and so on), your
+        <b>timezone</b>, how many times this browser has opened the page, whether it has an account, and
+        <b>how many courses</b> it holds &mdash; a number, not the courses.</p>
+        <p>What is never sent: your name, your email address if you have no account, any course title, any
+        date, any grade, any note, any file, or anything you typed. The id is random and belongs to this
+        browser &mdash; it points at nothing and nobody, and clearing your browser data ends it. The table it
+        lands in cannot be read back through this page by anyone, the operator included; the numbers reach him
+        as a daily total. <b>Settings &rsaquo; Counting &rsaquo; Don't count it</b> stops it on this device
+        immediately.</p>
+
+        <h4>Where it is stored</h4>
+        <p>Accounts and stored terms sit in a Postgres database run by <b>Supabase</b> on Amazon Web Services
+        in the <b>ca&#8209;central&#8209;1 region &mdash; Montr&eacute;al, Canada</b>. Personal information is
+        therefore stored in Canada. Requests to it are routed over Cloudflare's network on the way, so a
+        connection may terminate at an edge server outside Canada in transit; the traffic is encrypted and
+        nothing is stored there. This page itself is served by <b>GitHub Pages</b>, which &mdash; like any web
+        host &mdash; records the IP address of every visitor in its own server logs, outside the operator's
+        control.</p>
+
+        <h4>How long it is kept</h4>
+        <ul>
+          <li><b>Your term in this browser</b> &mdash; until you clear it. Nobody else can reach it.</li>
+          <li><b>Account and stored term</b> &mdash; while the account exists. Gone the moment you press
+          <b>Delete my account</b>. An account with no sign-in for <b>24 months</b> is deleted along with
+          everything in it.</li>
+          <li><b>Visit counts</b> &mdash; <b>24 months</b>, then deleted. They are never linked to an
+          account.</li>
+        </ul>
+
+        <h4>Your rights, and how to use them</h4>
+        <ul>
+          <li><b>See what is held.</b> Signed in, everything held about you is on the Log in tab in front of
+          you. Ask at the address above and you get it in writing within 30 days.</li>
+          <li><b>Correct it.</b> Your term is editable on this page, line by line. To change the email address
+          on an account, ask.</li>
+          <li><b>Delete it.</b> <b>Delete my saved term</b> removes the term from the server and leaves the
+          account. <b>Delete my account</b> removes the account, the email address and the stored term
+          together, at once, for good.</li>
+          <li><b>Withdraw consent.</b> Deleting the account withdraws it for the account; Settings &rsaquo;
+          Counting withdraws it for the count. Neither costs you the use of this page.</li>
+          <li><b>Complain.</b> To the address above, and &mdash; whether or not you come here first &mdash; to
+          the Office of the Information and Privacy Commissioner for British Columbia.</li>
+        </ul>
+
+        <h4>If something goes wrong</h4>
+        <p>If personal information held here is lost or exposed in a way that could reasonably be expected to
+        cause you significant harm, you will be told directly and without unreasonable delay: what happened,
+        what was involved, what is being done about it, and what you can do. The Office of the Information and
+        Privacy Commissioner for British Columbia will be notified as well, even where reporting to it is not
+        compulsory for an organisation of this size.</p>
+
+        <h4>Email you might receive</h4>
+        <p>Exactly one kind: a password reset, when you ask for one. No newsletters, no announcements, no
+        marketing, ever &mdash; there is no mailing list to be on.</p>
+
+        <h4>Age</h4>
+        <p>Syllabus Desk is built for post-secondary students. Everything works with no account at all, so
+        nothing is collected from anyone who does not choose to sign up; accounts are intended for people aged
+        <b>16 or older</b>. This page is not directed at children and no information is knowingly collected
+        from one. If that has happened, write to the address above and it will be deleted.</p>
+
+        <h4>Nothing here decides anything about you</h4>
+        <p>The reader proposes dates and <b>you confirm every one</b>. No profile is built, no score is kept,
+        no behaviour is modelled, and nothing collected is used to evaluate you or to make a decision that
+        affects you.</p>
+
+        <h3 id="lg-terms">2 &middot; Terms of use</h3>
+        <p>Using this page means accepting what follows. If you would rather not, don't use it &mdash; nothing
+        is lost, because it costs nothing and holds nothing of yours until you ask it to.</p>
+
+        <h4>What you are given</h4>
+        <p>A free, personal, revocable permission to use Syllabus Desk to plan your own studies. No fee, no
+        subscription, no account required, and no promise that it will still be here next term.</p>
+
+        <h4>What is expected of you</h4>
+        <ul>
+          <li>Upload only material you have the right to use. A course outline usually belongs to its author or
+          the institution, and your use of it is yours to answer for.</li>
+          <li>Don't try to reach anyone else's account or data, don't probe the service for weaknesses, and
+          don't run automated traffic against it.</li>
+          <li>Don't use it to hold or move anything unlawful, and don't use it to harass anybody.</li>
+          <li>One account per person, with an email address you control.</li>
+        </ul>
+
+        <h4>No warranty</h4>
+        <p>Syllabus Desk is provided <b>as is and as available</b>, with no warranty of any kind, express or
+        implied, including any warranty of merchantability, fitness for a particular purpose, accuracy, or
+        uninterrupted availability. It reads outlines by pattern and <b>it will sometimes get a date
+        wrong</b>.</p>
+
+        <h4>Limit of liability</h4>
+        <p>To the fullest extent the law allows, JohnsonXCorp is not liable for any indirect, incidental,
+        special or consequential loss arising out of this page, and specifically not for a missed deadline, a
+        missed examination, a grade, or any other academic consequence of relying on a date shown here.
+        Nothing in this notice limits liability that cannot be limited by law.</p>
+
+        <h4>Ending it</h4>
+        <p>You may stop whenever you like and delete everything. JohnsonXCorp may change, suspend or withdraw
+        the page, or an individual account that is being abused, at any time. If the page is withdrawn for
+        good, the <b>Export</b> tab is how you keep your term &mdash; and it works without an account.</p>
+
+        <h4>Which law</h4>
+        <p>This notice is governed by the laws of British Columbia and the applicable laws of Canada, and the
+        courts of British Columbia have jurisdiction. If any part of it turns out to be unenforceable, the
+        rest stands.</p>
+
+        <h3 id="lg-accuracy">3 &middot; Academic accuracy</h3>
+        <p>This is the part that matters most, so it is said plainly. <b>Syllabus Desk is not a source of
+        truth.</b> An outline can be ambiguous, a table can be read the wrong way round, and a date can be
+        revised in class and never appear in any document at all.</p>
+        <p>What the page does about that: every date the reader proposes is shown to you for confirmation
+        before anything is saved, anything the outline left blank is <b>flagged rather than invented</b>, and a
+        date taken from an unusual place says where it came from. What you must do about it: check anything
+        that matters against your course page or your instructor, and never sit an examination on this page's
+        word alone.</p>
+
+        <h3 id="lg-a11y">4 &middot; Accessibility</h3>
+        <p>The target is <b>WCAG 2.1 Level AA</b> &mdash; the level the Government of British Columbia sets
+        for its own digital content. In practice: text and interface colours are measured against the actual
+        background they land on, in both light and dark, and most body text clears <b>Level AAA</b> (7:1)
+        rather than AA's 4.5:1; every control can be reached and operated from a keyboard and shows a visible
+        focus ring; the layout reflows to one column on a phone with no sideways scrolling; nothing depends on
+        colour alone to be understood; and the page respects the theme and the text size your device asks
+        for.</p>
+        <p>This is a self-assessment by the developer, tested with automated checks at several screen widths.
+        It is not an audit by a third party and it is not a claim of perfect conformance. If you hit something
+        that does not work for you, write to <a href="mailto:johnsonxcorp@outlook.com">johnsonxcorp@outlook.com</a> &mdash; that is the fastest way
+        to get it fixed.</p>
+
+        <h3 id="lg-licence">5 &middot; Rights and licence</h3>
+        <p>Syllabus Desk is published by <b>JohnsonXCorp</b>. Copyright &copy; <span class="r-year"></span>
+        JohnsonXCorp. All rights reserved.</p>
+        <p>This is <b>not open source</b>. The page is published so it can be served to you, and so that
+        anyone can read it and verify what it does with their files. It is not published for reuse.</p>
+        <h4>What you may do</h4>
         <ul>
           <li>Use Syllabus Desk to plan your own studies, for as long as it is available.</li>
           <li>Read the source in your browser to satisfy yourself about what it does.</li>
-          <li>Keep, edit and share the calendar files and data exports it makes from <b>your own</b> course material. Those are yours — this notice claims nothing over them.</li>
+          <li>Keep, edit and share the calendar files and data exports it makes from <b>your own</b> course
+          material. Those are yours &mdash; this notice claims nothing over them, and nothing over the outline
+          you put in.</li>
         </ul>
-
-        <h3>What you may not do</h3>
+        <h4>What you may not do</h4>
         <ul>
           <li>Copy, republish, rehost, redistribute or sell this page or any part of it.</li>
           <li>Build another product from it, whether or not for money.</li>
           <li>Remove or alter this notice, the copyright line, or the JohnsonXCorp mark.</li>
         </ul>
-        <p class="small">Because the page is served from a public address, anyone can save a copy of the file — that is how the web works, and it is not permission. Everything beyond reading requires prior written permission from the owner.</p>
+        <p class="small">Because the page is served from a public address, anyone can save a copy of the file
+        &mdash; that is how the web works, and it is not permission. Everything beyond reading requires prior
+        written permission from the owner.</p>
 
-        <h3>Your course material stays yours</h3>
-        <p>Outlines you paste or upload are read <b>in your browser</b>. The file itself is never uploaded.</p>
-        <p><b>Without an account</b>, your schedule is stored only in this browser's local storage — not on a server, not visible to anyone else, and not visible to JohnsonXCorp. The one thing that does leave, account or not, is the visit count described under <b>What is counted</b> below: a random id and a few numbers, never your course material.</p>
-        <p><b>With an account</b>, two things are stored on a server so they can reach your other devices: the <b>email address</b> you signed up with, and your <b>term</b> — courses, dates, ticks and study blocks. Your email address is visible to the owner of this site, along with when you joined and when you last signed in. Your <b>password is never visible to anyone</b>, the owner included: only a one-way hash of it is kept, and a hash cannot be turned back into a password. Access is enforced per row in the database, so no other signed-in person can read your term. Accounts are entirely optional, nothing about them is sold or shared, and <b>Delete my saved term</b> on the Account tab removes what is stored whenever you want.</p>
-        <h3 id="counting-note">What is counted</h3>
-        <p>One number leaves this browser whether or not you have an account: <b>that you opened the
-        page</b>. The first time you arrive, the page makes up a random id for itself, stores it here,
-        and sends it with your <b>platform</b> (iPhone, Windows, and so on), your <b>timezone</b>, how
-        many times this browser has opened the page, whether it has an account, and <b>how many
-        courses</b> it holds — a count, not the courses.</p>
-        <p>What is never sent: your name, your email address if you have no account, any course title,
-        any date, any grade, any note, and anything you typed. The id is random and belongs to this
-        browser — it points at nothing and nobody, and clearing your browser data ends it.</p>
-        <p>It exists so the owner can answer one question honestly: <b>is anyone using this?</b> The
-        table it lands in cannot be read back through the site by anyone, including the owner — the
-        numbers reach him as a daily total. If you would rather not be in it, <b>Settings &rsaquo;
-        Counting &rsaquo; Don't count it</b> stops it on this device immediately.</p>
-
-        <p>One exception, stated plainly: when you press <b>Read this outline</b>, the extracted <b>text</b> of that outline is sent to Anthropic's Claude so it can be turned into dates, and it is processed under Anthropic's terms rather than this notice. Nothing else on this page is sent anywhere. If you would rather not, build your term by hand instead — every field is editable.</p>
-
-        <h3>No warranty</h3>
-        <p>Syllabus Desk is provided as is, without warranty of any kind. It reads outlines with an AI model and <b>it will sometimes get a date wrong</b>. It is a planning aid, not a source of truth: your course page and your instructor are. Check anything that matters, and do not rely on this page alone for an exam date.</p>
-
-        <h3>Third-party components</h3>
-        <p>This page bundles two open-source libraries, each under its own licence, which travel with any copy:</p>
+        <h3 id="lg-third">6 &middot; Third parties and open-source components</h3>
+        <p>Everything this page depends on, and when it is contacted:</p>
+        <div style="overflow-x:auto">
+        <table class="assess"><thead>
+          <tr><th style="width:22%">Who</th><th style="width:34%">What for</th><th>When</th></tr>
+        </thead><tbody>
+          <tr><td><span class="name">GitHub Pages</span></td><td>serves this page</td>
+              <td>every visit. Sees your IP address in its own logs.</td></tr>
+          <tr><td><span class="name">Google Fonts</span></td><td>the three typefaces</td>
+              <td>every visit. Reveals your IP address and browser to Google. Serving them from this site
+              instead is a planned change.</td></tr>
+          <tr><td><span class="name">Supabase</span></td><td>accounts, stored terms, the visit count</td>
+              <td>when you sign in or save, and once an hour for the count. Data in Montr&eacute;al,
+              Canada.</td></tr>
+          <tr><td><span class="name">cdnjs (Cloudflare)</span></td><td>PDF.js and JSZip</td>
+              <td>only when you choose a PDF or a Word file, or package a calendar zip. <b>Never on a plain
+              visit.</b></td></tr>
+          <tr><td><span class="name">Anthropic</span></td><td>the optional Claude reader</td>
+              <td>only in the claude.ai copy of this page, never on this website.</td></tr>
+        </tbody></table>
+        </div>
+        <p style="margin-top:18px">Two open-source libraries, each under its own licence:</p>
         <ul>
-          <li><b>PDF.js</b> — Apache License 2.0, &copy; Mozilla Foundation. Used to read text out of PDF outlines.</li>
-          <li><b>JSZip</b> — MIT License, &copy; Stuart Knightley. Used to read .docx files and to package calendar exports.</li>
+          <li><b>PDF.js</b> &mdash; Apache License 2.0, &copy; Mozilla Foundation. Reads text out of PDF
+          outlines.</li>
+          <li><b>JSZip</b> &mdash; MIT License, &copy; Stuart Knightley. Reads .docx files and packages
+          calendar exports.</li>
         </ul>
-        <p class="small">Typefaces are Inter, Inter Tight and JetBrains Mono, served by Google Fonts under the SIL Open Font License.</p>
+        <p class="small">Both are fetched from the public cdnjs network only at the moment one is needed, and
+        each is pinned to the SHA&#8209;512 digest that cdnjs publishes for it: if the file that arrives is
+        not byte&#8209;for&#8209;byte the file that was pinned, your browser refuses to run it. Typefaces are
+        Inter, Inter Tight and JetBrains Mono, under the SIL Open Font License.</p>
 
-        <h3>Contact</h3>
-        <p class="small">Permission requests and anything else: <a href="mailto:johnsonandy242@gmail.com">johnsonandy242@gmail.com</a>.</p>
+        <h3 id="lg-contact">7 &middot; Contact and changes</h3>
+        <p>Privacy questions, access and deletion requests, accessibility problems, permission to reuse, and
+        anything else: <a href="mailto:johnsonxcorp@outlook.com">johnsonxcorp@outlook.com</a>.</p>
+        <p>The Office of the Information and Privacy Commissioner for British Columbia oversees the private
+        sector in this province and can be contacted independently of the operator at any time.</p>
+        <p class="small">This notice is <b>version 1.0, in effect 14 September 2026</b>. If it changes in a way
+        that affects what is collected, how long it is kept, or who can see it, the change is described in
+        <b>What changed</b> beside the release that made it, and the version and date above move with it.</p>
       </div>
     </section>
   </div>
@@ -1758,18 +1980,19 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
       <path class="jxc-word" fill="currentColor" d="M99.2 17.4c-0.1 0.2 -0.1 14.8 -0.1 32.4l0.1 32 6.8 -0 6.8 -0 0.1 -13.2c0.1 -11.2 0.1 -13.3 0.6 -13.6 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.8 0.5 -1.2 0 -0.6 0.2 -0.8 0.8 -0.8 0.4 -0 1 -0.2 1.2 -0.5 0.3 -0.4 1.2 -0.5 3.5 -0.5l3.1 -0 2.2 2.3 2.2 2.2 0.1 13.7 0.1 13.7 6.8 -0 6.8 -0 0.1 -15.2c0.1 -13.2 0 -15.3 -0.4 -15.6 -0.3 -0.3 -0.5 -1 -0.5 -2 0 -1 -0.2 -1.7 -0.5 -2 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.7 -1.4 -2 -2 -2 -0.3 -0 -0.9 -0.5 -1.5 -1 -0.5 -0.6 -1.2 -1 -1.5 -1 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 0.2 -2 0.5 -0.3 0.3 -1 0.5 -2 0.5 -1 -0 -1.7 0.2 -2 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.7 0.5 -1.1 0.5 -0.3 -0 -0.7 0.2 -0.8 0.5 -0.1 0.3 -0.4 0.5 -0.7 0.5 -0.4 -0 -0.5 -2 -0.5 -11.9l-0.1 -11.9 -6.8 -0.1c-5.2 -0.1 -6.8 -0 -6.9 0.3zM485.9 17.5c-0.1 0.4 -0.9 0.5 -3.8 0.5 -2.8 -0 -3.7 0.1 -4.1 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.7 -0 -9 8.3 -9 9 0 0.3 -0.2 0.7 -0.5 1 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.4 0.3 -0.5 1.6 -0.5 7 0 5.4 0.1 6.7 0.5 7 0.3 0.2 0.5 0.9 0.5 1.5 0 0.6 0.2 1.3 0.5 1.5 0.3 0.2 0.5 0.9 0.5 1.5 0 0.6 0.2 1.3 0.5 1.5 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.7 1.2 1.5 2 0.8 0.8 1.5 1.7 1.5 2 0 0.7 3.4 4 4 4 0.3 -0 1.2 0.7 2 1.5 0.8 0.8 1.7 1.5 2 1.5 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.3 0.3 1 0.5 2 0.5 1 -0 1.7 0.2 2 0.5 0.3 0.4 1.6 0.5 7.5 0.5 5.9 -0 7.2 -0.1 7.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 1 -0.4 1.5 -1 0.5 -0.5 1.2 -1 1.5 -1 0.7 -0 2 -1.4 2 -2 0 -0.3 -1.9 -2.4 -4.3 -4.7 -5 -5 -5.4 -5.1 -7.7 -2.7 -0.8 0.8 -1.7 1.5 -2 1.5 -0.3 -0 -0.7 0.2 -1 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.6 0.7 -9.4 0.7 -10 -0 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.7 -0 -6 -5.3 -6 -6 0 -0.3 -0.2 -0.7 -0.5 -1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.4 -0.3 -0.5 -1.5 -0.5 -6.5 0 -5 0.1 -6.2 0.5 -6.5 0.3 -0.2 0.5 -0.9 0.5 -1.5 0 -0.6 0.2 -1.3 0.5 -1.5 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.7 2.4 -3 3 -3 0.3 -0 0.9 -0.5 1.5 -1 0.7 -0.7 1.3 -1 2 -1 0.6 -0 1.2 -0.2 1.5 -0.5 0.3 -0.4 1.4 -0.5 6 -0.5 4.6 -0 5.7 0.1 6 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 1.2 0.7 2 1.5 0.9 0.9 1.7 1.5 2.1 1.4 0.5 -0.1 9.9 -9.1 9.9 -9.5 0 -0.3 -2.6 -2.4 -3 -2.4 -0.3 -0 -0.9 -0.5 -1.5 -1 -0.5 -0.6 -1.2 -1 -1.5 -1 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 -0.2 -2 -0.5 -0.3 -0.4 -1.2 -0.5 -4.1 -0.5 -2.9 -0 -3.7 -0.1 -3.8 -0.5 -0.1 -0.3 -0.4 -0.5 -0.6 -0.5 -0.2 -0 -0.5 0.2 -0.6 0.5zM30.2 18.2c-0.1 0.1 -0.2 10.2 -0.2 22.3 0 19.2 -0.1 22.1 -0.5 22.5 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.9 -0.4 1.5 -2.3 3.3l-2.3 2.2 -3 -0c-2.3 -0 -3.1 -0.1 -3.4 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -1 -0.5 -1.5 -1 -0.5 -0.5 -1.2 -1 -1.5 -1 -0.7 -0 -9 8.3 -9 9 0 0.7 3.4 4 4 4 0.3 -0 0.9 0.5 1.5 1 0.5 0.5 1.2 1 1.5 1 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.6 0.7 12.4 0.7 13 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.7 -0 6 -5.3 6 -6 0 -0.3 0.2 -0.7 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.9 0.5 -1.5 0 -0.6 0.2 -1.3 0.5 -1.5 0.4 -0.4 0.5 -3.4 0.4 -24.6l-0.1 -24.2 -6.7 -0.1c-3.7 -0 -6.8 0 -6.9 0.1zM70 37.5c-0.3 0.4 -1.1 0.5 -3 0.5 -1.9 -0 -2.7 0.1 -3 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2 1 -0.5 0.5 -1.2 1 -1.5 1 -0.7 -0 -5 4.3 -5 5 0 0.3 -0.4 0.9 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.2 0.7 -0.5 1 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.7 0.6 -0.7 11.4 0 12 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.9 0.5 1.5 0 0.6 0.2 1.3 0.5 1.5 0.3 0.2 0.5 0.7 0.5 1 0 0.7 7.3 8 8 8 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.6 0.7 11.4 0.7 12 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 1 -0.5 1.5 -1 0.5 -0.6 1.2 -1 1.5 -1 0.7 -0 5 -4.4 5 -5.1 0 -0.3 0.2 -0.7 0.5 -0.9 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.3 0.5 -1.1 0.5 -2.5 0 -1.4 0.2 -2.2 0.5 -2.5 0.3 -0.3 0.5 -1.1 0.5 -2.5 0 -1.4 -0.2 -2.2 -0.5 -2.5 -0.3 -0.3 -0.5 -1.1 -0.5 -2.5 0 -1.4 -0.2 -2.2 -0.5 -2.5 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.7 -1.2 -1.5 -2 -0.8 -0.8 -1.5 -1.7 -1.5 -2 0 -0.7 -1.4 -2 -2 -2 -0.3 -0 -1.2 -0.7 -2 -1.5 -0.8 -0.8 -1.7 -1.5 -2 -1.5 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 0.2 -2.5 0.5zm5 13c0.2 0.3 0.7 0.5 0.9 0.5 0.3 -0 1.6 1 2.8 2.2 2.2 2.1 2.3 2.3 2.3 3.8 0 1 0.2 1.7 0.5 2 0.3 0.2 0.5 0.7 0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.3 -0.5 1 -0.5 2 0 1 -0.2 1.7 -0.5 2 -0.3 0.2 -0.5 0.7 -0.5 0.9 0 0.7 -2.3 3.1 -3 3.1 -0.3 -0 -0.7 0.2 -1 0.5 -0.6 0.7 -7.4 0.7 -8 -0 -0.2 -0.3 -0.7 -0.5 -0.9 -0.5 -0.7 -0 -4.1 -3.3 -4.1 -4 0 -0.3 -0.2 -0.7 -0.5 -1 -0.4 -0.3 -0.5 -1.2 -0.5 -3.5 0 -2.3 0.1 -3.2 0.5 -3.5 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -0.9 0 -0.7 2.3 -3.1 3 -3.1 0.3 -0 0.7 -0.2 1 -0.5 0.3 -0.4 1.2 -0.5 3.5 -0.5 2.3 -0 3.2 0.1 3.5 0.5zM172 37.5c-0.3 0.3 -1.1 0.5 -2.5 0.5 -1.4 -0 -2.2 0.2 -2.5 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2 1 -1.4 1.4 -2.3 1.2 -2.5 -0.5l-0.2 -1.3 -6.8 -0 -6.8 -0 0 21.8 0 21.8 6.8 -0 6.8 -0 0.1 -13.2c0.1 -11.2 0.1 -13.3 0.6 -13.6 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.8 0.5 -1.2 0 -0.6 0.2 -0.8 0.8 -0.8 0.4 -0 1 -0.2 1.2 -0.5 0.3 -0.4 1.2 -0.5 3.5 -0.5l3.1 -0 2.2 2.3 2.2 2.2 0.1 13.7 0.1 13.7 6.8 -0 6.8 -0 0.1 -15.2c0.1 -13.2 0 -15.3 -0.4 -15.6 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.9 -0.5 -1.6 -3.3 -4.3 -1.8 -1.8 -3.5 -3.2 -3.8 -3.2 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 0.2 -1.5 0.5zM207 37.5c-0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2 1 -0.5 0.5 -1.2 1 -1.5 1 -0.7 -0 -3 2.4 -3 3.1 0 0.3 -0.2 0.7 -0.5 0.9 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.4 0.3 -0.5 1.1 -0.5 3 0 1.9 0.1 2.7 0.5 3 0.3 0.2 0.5 0.9 0.5 1.5 0 0.6 0.2 1.3 0.5 1.5 0.3 0.2 0.5 0.7 0.5 1 0 0.7 3.3 4 4.1 4 0.3 -0 0.7 0.2 0.9 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.3 0.3 1 0.5 2 0.5 1 -0 1.7 0.2 2 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.5 0.9 -0 2 1.4 2 2.5 0 0.6 -0.3 1.3 -0.8 1.7 -0.7 0.6 -1.2 0.7 -3.8 0.7 -2.3 -0 -3.1 -0.1 -3.4 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -1.2 -0.7 -2 -1.5 -0.8 -0.8 -1.7 -1.5 -2 -1.5 -0.7 -0 -8 7.3 -8 8 0 0.6 2.4 3 3 3 0.3 -0 0.9 0.5 1.5 1 0.5 0.6 1.2 1 1.5 1 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.3 0.3 1 0.5 2 0.5 1 -0 1.7 0.2 2 0.5 0.6 0.7 11.4 0.7 12 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.9 -0 1.5 -0.5 3.8 -2.8 2.2 -2.3 2.7 -2.9 2.7 -3.8 0 -0.6 0.2 -1.2 0.5 -1.5 0.4 -0.3 0.5 -1.2 0.5 -4.1 0 -2.9 -0.1 -3.7 -0.5 -3.8 -0.3 -0.1 -0.5 -0.6 -0.5 -1.1 0 -0.5 -0.2 -1 -0.5 -1.1 -0.3 -0.1 -0.5 -0.5 -0.5 -0.8 0 -0.7 -3.3 -4.1 -4.1 -4.1 -0.3 -0 -0.7 -0.2 -0.9 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.9 -0.4 -1.3 -0.8 -1 -1.1 -0.9 -3 0.2 -3.1 0.4 -0.1 0.9 -0.3 1.1 -0.6 0.5 -0.6 2.5 -0.6 3 0 0.3 0.3 1 0.5 2 0.5 1 -0 1.7 0.2 2 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.4 0.5 -0.1 8 -7.1 8 -7.5 0 -0.3 -3.6 -3.5 -4 -3.5 -0.3 -0 -0.9 -0.5 -1.5 -1 -0.7 -0.7 -1.3 -1 -2 -1 -0.6 -0 -1.2 -0.2 -1.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.3 -0.4 -1.4 -0.5 -5.5 -0.5 -4.1 -0 -5.2 0.1 -5.5 0.5zM252 37.5c-0.3 0.4 -1.1 0.5 -3 0.5 -1.9 -0 -2.7 0.1 -3 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2.5 1.5 -0.8 0.8 -1.7 1.5 -2 1.5 -0.7 -0 -3 2.4 -3 3 0 0.3 -0.4 0.9 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.2 0.7 -0.5 1 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.4 0.3 -0.5 1.3 -0.5 4.5 0 3.2 0.1 4.2 0.5 4.5 0.3 0.3 0.5 1 0.5 2 0 1 0.2 1.7 0.5 2 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.7 5.3 6 6 6 0.3 -0 0.9 0.5 1.5 1 0.7 0.7 1.3 1 2 1 0.6 -0 1.2 0.2 1.5 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.3 0.4 1.4 0.5 6 0.5 4.6 -0 5.7 -0.1 6 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.7 -0 7 -6.3 7 -7 0 -0.3 0.2 -0.7 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.3 0.5 -1 0.5 -2 0 -1 0.2 -1.7 0.5 -2 0.4 -0.3 0.5 -1.3 0.5 -4.5 0 -3.2 -0.1 -4.2 -0.5 -4.5 -0.3 -0.3 -0.5 -1 -0.5 -2 0 -1 -0.2 -1.7 -0.5 -2 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.2 -0.8 -0.5 -1 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.7 -3.4 -4 -4 -4 -0.3 -0 -0.9 -0.5 -1.5 -1 -0.5 -0.6 -1.2 -1 -1.5 -1 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 0.2 -2.5 0.5zm5 13c0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.6 0.5 0.9 0.5 0.7 -0 2.1 1.3 2.1 2 0 0.3 0.2 0.7 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.3 0.5 1.1 0.5 2.5 0 1.4 -0.2 2.2 -0.5 2.5 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.3 0.2 -0.5 0.7 -0.5 0.9 0 0.3 -0.8 1.3 -1.7 2.3l-1.7 1.8 -4.1 -0c-3.2 -0 -4.1 -0.1 -4.5 -0.5 -0.2 -0.3 -0.7 -0.5 -0.9 -0.5 -0.3 -0 -1.3 -0.8 -2.3 -1.7 -1.4 -1.4 -1.8 -2 -1.8 -2.8 0 -0.6 -0.2 -1.2 -0.5 -1.5 -0.3 -0.3 -0.5 -1.1 -0.5 -2.5 0 -1.4 0.2 -2.2 0.5 -2.5 0.3 -0.2 0.5 -0.9 0.5 -1.5 0 -0.8 0.3 -1.4 1 -2 0.6 -0.5 1 -1.3 1 -1.7 0 -0.6 0.2 -0.8 0.8 -0.8 0.4 -0 1 -0.2 1.2 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.3 -0.4 1.1 -0.5 3 -0.5 1.9 -0 2.7 0.1 3 0.5zM306 37.5c-0.3 0.3 -1.1 0.5 -2.5 0.5 -1.4 -0 -2.2 0.2 -2.5 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2 1 -1.4 1.4 -2.3 1.2 -2.5 -0.5l-0.2 -1.3 -6.8 -0 -6.8 -0 0 21.8 0 21.8 6.8 -0 6.8 -0 0.1 -13.2c0.1 -11.2 0.1 -13.3 0.6 -13.6 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.8 -1.3 1.8 -2.3l1.8 -1.7 3 -0c2.9 -0 3 0 4 1 0.5 0.5 1.3 1 1.7 1 0.6 -0 0.8 0.2 0.8 0.8 0 0.4 0.2 1 0.5 1.2 0.4 0.3 0.5 2.5 0.6 14.1l0.1 13.7 6.8 -0 6.8 -0 0.1 -15.7c0.1 -13.7 0 -15.8 -0.4 -16.1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.3 -1 -1.7 0 -0.6 -0.2 -0.8 -0.8 -0.8 -0.5 -0 -1.3 -0.6 -2.2 -1.5 -0.8 -0.8 -1.7 -1.5 -2 -1.5 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 0.2 -1.5 0.5zM533 37.5c-0.3 0.4 -1.1 0.5 -3 0.5 -1.9 -0 -2.7 0.1 -3 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -2.2 1.7 -4.3 3.8 -3.2 3.2 -3.7 3.9 -3.7 4.8 0 0.6 -0.2 1.2 -0.5 1.5 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.4 0.3 -0.5 1.1 -0.5 3.1 0 2 -0.1 2.7 -0.5 2.8 -0.3 0.1 -0.5 0.4 -0.5 0.6 0 0.2 0.2 0.5 0.5 0.6 0.4 0.1 0.5 0.8 0.5 3.3 0 2.4 0.1 3.3 0.5 3.6 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.7 2.4 3 3 3 0.3 -0 0.9 0.5 1.5 1 0.5 0.6 1.2 1 1.5 1 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.6 0.7 11.4 0.7 12 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 1.2 -0.7 2 -1.5 0.8 -0.8 1.7 -1.5 2 -1.5 0.7 -0 2 -1.4 2 -2 0 -0.3 0.7 -1.2 1.5 -2 0.8 -0.8 1.5 -1.7 1.5 -2 0 -0.3 0.2 -0.7 0.5 -1 0.3 -0.2 0.5 -0.9 0.5 -1.5 0 -0.6 0.2 -1.3 0.5 -1.5 0.4 -0.3 0.5 -1.1 0.5 -3.1 0 -2 0.1 -2.7 0.5 -2.8 0.3 -0.1 0.5 -0.4 0.5 -0.6 0 -0.2 -0.2 -0.5 -0.5 -0.6 -0.4 -0.1 -0.5 -0.8 -0.5 -2.8 0 -2 -0.1 -2.8 -0.5 -3.1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.2 -0.8 -0.5 -1 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.7 -6.3 -7 -7 -7 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.3 -0.4 -1.1 -0.5 -3 -0.5 -1.9 -0 -2.7 -0.1 -3 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 0.2 -2 0.5zm4 13c0.2 0.3 0.9 0.5 1.4 0.5 0.8 -0 1.4 0.4 2.8 1.7 1 1 1.8 2 1.8 2.3 0 0.3 0.2 0.7 0.5 1 0.4 0.3 0.5 1.2 0.5 4 0 2.8 -0.1 3.7 -0.5 4 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.2 -0.5 0.8 -0.5 1.2 0 0.6 -0.2 0.8 -0.8 0.8 -0.4 -0 -1.2 0.4 -1.7 1 -0.9 1 -1 1 -4.5 1 -2.7 -0 -3.6 -0.1 -4 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.8 -0.5 -1.2 -0.5 -0.6 -0 -0.8 -0.2 -0.8 -0.8 0 -0.4 -0.4 -1.2 -1 -1.7l-1 -1 0 -4.1c0 -3.2 0.1 -4.1 0.5 -4.5 0.3 -0.2 0.5 -0.7 0.5 -0.9 0 -0.7 3.3 -4.1 4 -4.1 0.3 -0 0.7 -0.2 1 -0.5 0.3 -0.4 1.1 -0.5 3 -0.5 1.9 -0 2.7 0.1 3 0.5zM585 37.5c-0.3 0.3 -1 0.5 -2 0.5 -1 -0 -1.7 0.2 -2 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.3 0.3 -1.9 1 -1.1 1.2 -1.6 1.3 -1.6 0.1 -0 -0.6 -0.3 -1.1 -0.8 -1.5 -0.7 -0.5 -1.5 -0.6 -6.9 -0.5l-6.1 0.1 0 21.8 0 21.8 6.8 -0 6.8 -0 0.1 -13.7c0.1 -11.7 0.1 -13.8 0.6 -14.1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.7 1.4 -2 2.1 -2 0.3 -0 0.7 -0.2 0.9 -0.5 0.6 -0.7 5.4 -0.7 6 -0 0.3 0.4 0.9 0.5 2.1 0.4 1.4 -0.1 1.7 -0.2 1.8 -0.8 0.1 -0.4 1 -1.6 2.1 -2.6 1.1 -1.1 2 -2.2 2 -2.5 0 -0.3 0.5 -1 1 -1.5 1.3 -1.2 1.3 -2.7 0.2 -3.8 -0.4 -0.4 -1 -0.7 -1.3 -0.7 -0.3 -0 -0.7 -0.2 -0.9 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 -0.2 -2 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 0.2 -2 0.5zM622 37.5c-0.3 0.3 -1 0.5 -2 0.5 -1 -0 -1.7 0.2 -2 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.7 0.5 -1.1 0.5 -0.3 -0 -0.7 0.2 -0.8 0.5 -0.4 1 -1.1 0.5 -1.2 -0.9l-0.1 -1.4 -6.8 -0 -6.8 -0 0 31.3 0 31.3 6.8 -0 6.8 -0 0.2 -10.3c0.2 -10.1 0.2 -10.3 0.8 -10.4 0.4 -0.1 1.1 0.3 1.7 0.9 0.7 0.7 1.3 1 2 1 0.6 -0 1.2 0.2 1.5 0.5 0.6 0.7 9.4 0.7 10 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.7 -0 5 -4.3 5 -5 0 -0.3 0.5 -0.9 1 -1.5 0.7 -0.7 1 -1.3 1 -2 0 -0.6 0.2 -1.2 0.5 -1.5 0.3 -0.3 0.5 -1 0.5 -2 0 -1 0.2 -1.7 0.5 -2 0.4 -0.3 0.5 -1.3 0.5 -4.5 0 -3.2 -0.1 -4.2 -0.5 -4.5 -0.3 -0.3 -0.5 -1 -0.5 -2 0 -1 -0.2 -1.7 -0.5 -2 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.2 -0.8 -0.5 -1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.8 -0.3 -1.4 -1.5 -2.5 -0.9 -0.9 -1.5 -1.8 -1.5 -2.2 0 -0.6 -0.2 -0.8 -0.8 -0.8 -0.5 -0 -1.3 -0.6 -2.2 -1.5 -0.8 -0.8 -1.7 -1.5 -2 -1.5 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.3 -0.4 -1.1 -0.5 -3 -0.5 -1.9 -0 -2.7 -0.1 -3 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 0.2 -1.5 0.5zm2 13c0.2 0.3 0.7 0.5 1 0.5 0.3 -0 1 0.4 1.5 1 0.5 0.5 1.3 1 1.7 1 0.6 -0 0.8 0.2 0.8 0.8 0 0.4 0.2 1 0.5 1.2 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.3 0.5 1.1 0.5 2.5 0 1.4 -0.2 2.2 -0.5 2.5 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.3 0.2 -0.5 0.7 -0.5 0.9 0 0.7 -2.3 3.1 -3 3.1 -0.3 -0 -0.7 0.2 -1 0.5 -0.3 0.4 -1.2 0.5 -4 0.5 -2.8 -0 -3.7 -0.1 -4 -0.5 -0.2 -0.3 -0.7 -0.5 -0.9 -0.5 -0.7 -0 -3.1 -2.3 -3.1 -3 0 -0.3 -0.2 -0.7 -0.5 -1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.3 0.5 -1 0.5 -2 0 -1 0.2 -1.7 0.5 -2 0.3 -0.2 0.5 -0.7 0.5 -0.9 0 -0.7 3.3 -4.1 4 -4.1 0.3 -0 0.7 -0.2 1 -0.5 0.3 -0.4 1.1 -0.5 3 -0.5 1.9 -0 2.7 0.1 3 0.5z"/>
       <path class="jxc-x" d="M335.2 3.4c-0.1 0.2 -0.1 21.4 -0.1 46.9l0.1 46.5 13.8 -0 13.8 -0 0 -6.8 0 -6.8 -6.8 -0.2 -6.8 -0.2 0 -32.8 0 -32.8 6.9 -0.1 6.9 -0.1 0 -6.3c0 -6.1 -0 -6.3 -0.8 -7 -0.8 -0.7 -0.9 -0.7 -13.8 -0.7 -10.2 -0 -13.1 0.1 -13.2 0.4zM419.1 3.4c-0.1 0.2 -0.1 3.3 -0.1 6.9l0.1 6.5 6.2 0.1c6 0.1 6.2 0.1 6.9 0.8l0.7 0.8 -0.1 32.2 -0.1 32.1 -6.8 0.2 -6.8 0.2 0 6.8 0 6.8 13.8 -0 13.8 -0 0.1 -46.1 0.1 -46.2 -0.7 -0.8 -0.7 -0.8 -13.1 -0c-10.4 -0 -13.2 0.1 -13.3 0.4zM360 19.4c0 0.2 0.5 0.7 1 1.1 0.6 0.4 1 1 1 1.4 0 0.4 0.5 1.1 1 1.6 0.6 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.7 1.2 1.5 2 0.8 0.8 1.5 1.7 1.5 2 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.7 1.2 1.5 2 0.8 0.8 1.5 1.7 1.5 2 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.6 0 0.3 0.2 0.7 0.5 0.8 0.3 0.1 0.5 0.4 0.5 0.6 0 0.2 -0.2 0.5 -0.5 0.6 -0.3 0.1 -0.5 0.5 -0.5 0.8 0 0.3 -0.7 1.3 -1.5 2.1 -0.8 0.8 -1.5 1.7 -1.5 2 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.7 1.2 -1.5 2 -0.8 0.8 -1.5 1.7 -1.5 2 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.2 0.7 -0.5 0.9 -0.3 0.2 -0.5 0.5 -0.3 0.7 0.2 0.3 2.4 0.4 7.3 0.4l7.1 -0 1.2 -1.3c0.7 -0.7 1.2 -1.5 1.2 -1.8 0 -0.3 0.5 -0.9 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.2 -0.7 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.8 1.5 -2.1 2.2 -1.9 0.3 0.1 0.6 0.4 0.7 0.8 0.1 0.4 0.5 1.1 1.1 1.6 0.5 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.2 0.7 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.2 0.7 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.4 0.9 0.8 1.3 0.8 0.7 1 0.7 8.4 0.7 7.4 -0.1 7.6 -0.1 7.7 -0.8 0.1 -0.4 -0.3 -1.1 -0.9 -1.7 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.3 -1 -1.7 0 -0.4 -0.2 -0.8 -0.5 -0.9 -0.3 -0.1 -0.5 -0.5 -0.5 -0.9 0 -0.4 0.2 -0.8 0.5 -0.9 0.3 -0.1 0.5 -0.5 0.5 -0.9 0 -0.4 0.5 -1.2 1 -1.7 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.7 -1.2 1.5 -2 0.8 -0.8 1.5 -1.7 1.5 -2 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.3 1 -1.6 0 -0.4 0.4 -1 1 -1.4 2.1 -1.4 1.5 -1.5 -6.9 -1.4 -7.8 0.1 -7.9 0.1 -8 0.8 -0.1 0.4 -0.5 1.1 -1.1 1.6 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.2 0.7 -0.5 1 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.6 0.5 -1 1.2 -1.1 1.6 -0.1 0.6 -0.3 0.7 -1.4 0.7 -1.1 -0 -1.4 -0.1 -1.4 -0.7 -0.1 -0.4 -0.5 -1.1 -1.1 -1.6 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.2 -0.7 -0.5 -1 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.6 -0.5 -1 -1.2 -1.1 -1.6 -0.1 -0.7 -0.2 -0.7 -8.5 -0.8 -6.6 -0.1 -8.4 -0 -8.4 0.3z"/>
     </svg>
-    <a href="#rights" id="rightslink">&copy; <span class="r-year"></span> JohnsonXCorp &middot; All rights reserved</a>
+    <a href="#rights" id="rightslink">&copy; <span class="r-year"></span> JohnsonXCorp &middot; Legal &amp; privacy</a>
     <button type="button" class="build" id="buildstamp"></button>
   </span>
 </div></footer>
 
 <script>
 "use strict";
-var BUILD={v:"3.1",date:"13 September 2026",year:2026};
+var BUILD={v:"3.2",date:"14 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["3.2","A proper legal notice, and two smaller promises kept. <b>Legal &amp; privacy</b> now holds a real privacy policy, terms of use, an accuracy statement and an accessibility statement, with an effective date, how long anything is kept, and one address for questions. You can now <b>delete your account</b> yourself — email address and all — instead of asking anyone. Two claims that were not true are fixed: this website never sends your outline to Claude, and the two outside libraries are fetched rather than carried. Those libraries now load only when you actually open a PDF or a Word file, and each is checked against a published fingerprint before your browser will run it, so opening the page no longer tells a content network you were here."],
   ["3.1","The outline reader stops inventing dates. A word that merely began like a month — <b>Mark</b>-recapture, <b>Mar</b>keting, <b>Jun</b>ior, <b>Nov</b>el — was being read as that month, so an outline could show you a deadline that did not exist. It now has to be a real month. It also reads the dates many outlines only state in the grading table (\u201cMidterm \u2014 20% (Thursday, October 15)\u201d), and no longer lets a grading line hand its date to the wrong item."],
   ["3.0","The page now counts visits, so whoever runs it can tell whether anyone is using it. It is a count and nothing more — a random id this browser made up, your platform and timezone, and how many courses you hold. No name, no email, nothing you typed, and no login required to use anything. It is spelled out under <b>What is counted</b> in the rights notice, and Settings can switch it off."],
   ["2.9","Deadlines can carry the hour, not just the day. Give an assignment a time — 11pm, 11:59 pm, 23:59 — and it counts down in days, hours and minutes wherever it appears, ticking as you watch. The reader picks the time up on its own when an outline says one out loud, and the calendar export stops treating a midnight deadline as an all-day banner."],
@@ -2695,6 +2918,41 @@ function lfMsg(t,bad){
   m.style.color=bad?"var(--bad-deep)":"var(--ink-2)";
 }
 
+/* ============================== outside code ==============================
+   Two libraries are not ours: PDF.js reads text out of a PDF, JSZip reads a
+   .docx and packages the calendar zip. They used to load from a public CDN on
+   every single visit, which meant opening this page told that CDN you had
+   opened it even if you never touched a file.
+
+   They now load at the moment one is needed, and never otherwise. Each is
+   pinned to the SHA-512 the CDN itself publishes: if the file that arrives is
+   not byte-for-byte the file we pinned, the browser refuses to run it. That is
+   the whole point — a compromised CDN cannot quietly become a keylogger on a
+   page that holds your sign-in.  */
+var LIBS={
+  jszip:{g:"JSZip",
+    src:"https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
+    sri:"sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg=="},
+  pdfjs:{g:"pdfjsLib",
+    src:"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
+    sri:"sha512-q+4liFwdPC/bNdhUpZx6aXDx/h77yEQtn4I1slHydcbZK34nLaR3cAeYSJshoxIOq3mjEf7xJE8YWIUHMn+oCQ=="}
+};
+var LIBQ={};
+function needLib(k){
+  var L=LIBS[k];
+  if(!L)return Promise.reject(new Error("unknown library"));
+  try{ if(window[L.g])return Promise.resolve(window[L.g]); }catch(e){}
+  if(LIBQ[k])return LIBQ[k];
+  LIBQ[k]=new Promise(function(res,rej){
+    var el=document.createElement("script");
+    el.src=L.src;el.integrity=L.sri;el.crossOrigin="anonymous";el.referrerPolicy="no-referrer";
+    el.onload=function(){ window[L.g]?res(window[L.g]):rej(new Error("empty")); };
+    el.onerror=function(){ LIBQ[k]=null;rej(new Error("blocked")); };
+    document.head.appendChild(el);
+  });
+  return LIBQ[k];
+}
+
 /* ===================== extraction ===================== */
 function readFile(f){
   var n=(f.name||"").toLowerCase();
@@ -2703,8 +2961,14 @@ function readFile(f){
   return f.text();
 }
 function readPDF(f){
-  if(!window.pdfjsLib)return Promise.reject(new Error("The PDF reader did not load. Copy the outline text and paste it instead."));
-  try{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";}catch(e){}
+  return needLib("pdfjs").then(function(){
+    try{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";}catch(e){}
+    return readPDFNow(f);
+  },function(){
+    throw new Error("The PDF reader could not be loaded. Open the outline, copy the text, and paste it below instead.");
+  });
+}
+function readPDFNow(f){
   return f.arrayBuffer().then(function(b){return pdfjsLib.getDocument({data:b}).promise;}).then(function(doc){
     var ps=[];for(var i=1;i<=doc.numPages;i++)ps.push(i);
     return Promise.all(ps.map(function(n){
@@ -2721,7 +2985,11 @@ function readPDF(f){
    .catch(function(){throw new Error("Could not read that PDF here. Open it, copy the text, and paste it below instead.");});
 }
 function readDOCX(f){
-  if(!window.JSZip)return Promise.reject(new Error("The Word reader did not load. Paste the text instead."));
+  return needLib("jszip").then(function(){return readDOCXNow(f);},function(){
+    throw new Error("The Word reader could not be loaded. Open the file, copy the text, and paste it below instead.");
+  });
+}
+function readDOCXNow(f){
   return JSZip.loadAsync(f).then(function(z){var x=z.file("word/document.xml");if(!x)throw new Error("x");return x.async("string");})
    .then(function(xml){
      return xml.replace(/<w:tab\/>/g," | ").replace(/<\/w:p>/g,"\n").replace(/<\/w:tr>/g,"\n").replace(/<\/w:tc>/g," | ")
@@ -3039,6 +3307,34 @@ document.addEventListener("click",function(e){
     })["catch"](function(err){acctMsg("acct-msg2","bad","Could not delete it."," "+(err.message||""));});
     return;
   }
+  if(t.closest("#acct-close")){
+    /* The whole point of a delete button is that nobody has to ask a stranger
+       to be forgotten. So it does the real thing server-side, and if that call
+       is unavailable it still removes the term and says plainly what is left
+       and who removes it — never a dead end, never a silent failure. */
+    if(!confirm("Delete your account.\n\nThis permanently removes your email address and the term saved on the server.\n\nThe term in THIS browser stays until you clear it — the Export tab can save you a copy first.\n\nThere is no undo."))return;
+    if(!confirm("Last check: delete the account for "+((SESS&&SESS.user&&SESS.user.email)||"this address")+"?"))return;
+    acctMsg("acct-msg2","work","Deleting the account…","");
+    var uid_=(SESS&&SESS.user&&SESS.user.id)||"";
+    withToken().then(function(){
+      return sbFetch("/rest/v1/rpc/sd_delete_me",{method:"POST",body:"{}"},true);
+    }).then(function(){
+      signOutLocal();paintAccount();
+      acctMsg("acct-msg","ok","Your account is deleted.",
+        " Nothing about you is left on the server. Your term is still in this browser.");
+      showPanel("p-account");window.scrollTo({top:0,behavior:"smooth"});
+    })["catch"](function(err){
+      var why=(err&&err.message)||"no reason given";
+      var after=function(){
+        acctMsg("acct-msg2","bad","The saved term has been removed, but the account itself could not be deleted from here.",
+          " Email johnsonxcorp@outlook.com and it will be deleted within 30 days. ("+why+")");
+      };
+      if(!uid_){after();return;}
+      sbFetch("/rest/v1/"+SB_TABLE+"?user_id=eq."+encodeURIComponent(uid_),
+        {method:"DELETE",headers:{"Prefer":"return=minimal"}},true).then(after,after);
+    });
+    return;
+  }
   if(t.closest("#stats-refresh")){loadOwnerStats();return;}
   if((x=t.closest('[data-p="ap"]'))){
     var box=x.closest(".tctl");if(!box)return;
@@ -3177,9 +3473,13 @@ document.addEventListener("click",function(e){
   }
   if(t.closest("#exp-csv")){offer("my-term-google.csv",buildCSV(),"Saved. In Google Calendar on a computer: Settings → Import & export → Import, pick this file, and choose the calendar it lands in.");return;}
   if(t.closest("#exp-ics")){
-    if(!window.JSZip){alert("The zip library did not load, so the .ics cannot be packaged. Use the Google CSV instead.");return;}
-    var z=new JSZip();z.file("my-term.ics",buildICS());
-    z.generateAsync({type:"blob"}).then(function(b){offer("my-term.zip",b,"Saved. Unzip it, then open my-term.ics — your calendar app takes it from there.");});
+    needLib("jszip").then(function(){
+      var z=new JSZip();z.file("my-term.ics",buildICS());
+      return z.generateAsync({type:"blob"}).then(function(b){offer("my-term.zip",b,"Saved. Unzip it, then open my-term.ics — your calendar app takes it from there.");});
+    })["catch"](function(){
+      /* the zip is a convenience, not the deliverable — hand over the raw .ics */
+      offer("my-term.ics",buildICS(),"Saved. The packaging library could not be loaded, so this is the .ics on its own — your calendar app still takes it.");
+    });
     return;
   }
   if(t.closest("#exp-json")){offer("syllabus-desk-data.json",JSON.stringify(S,null,2),"Saved. Keep this if you switch browsers.");return;}
@@ -4067,7 +4367,9 @@ function askOwner(){
 var _bs=document.getElementById("buildstamp");
 _bs.textContent="· v"+BUILD.v+" · "+BUILD.date;
 _bs.title="What changed in this version";
-document.getElementById("r-year").textContent=BUILD.year;
+/* the year appears in several places and not all of them exist in every
+   build — one missing span must never take the rest of the boot with it */
+var _ry=document.getElementById("r-year");if(_ry)_ry.textContent=BUILD.year;
 Array.prototype.forEach.call(document.querySelectorAll(".r-year"),function(el){el.textContent=BUILD.year;});
 load();restoreSession();paintOwner();
 if(!S.courses.length){ loadSample(true); }   /* first visit: show a worked example, not an empty shell */
