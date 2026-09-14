@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v3.4  (14 September 2026)
+  Syllabus Desk  v3.5  (14 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -725,6 +725,67 @@ table.users td.n{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-2
 @media(max-width:560px){.sdtoast{left:12px;right:12px;transform:translateY(14px);max-width:none}
   .sdtoast.show{transform:none}}
 @media (prefers-reduced-motion:reduce){.sdtoast{transition:none}}
+/* ============================ made for thumbs ============================
+   pointer:coarse is the right question to ask. It asks whether the thing doing
+   the pointing is a finger, not whether the screen is small — so an iPad with a
+   trackpad keeps the tighter desktop spacing, and a small touchscreen laptop
+   gets the bigger targets it actually needs.
+
+   44 points is Apple's guidance; WCAG 2.2 asks for 24. Everything below clears
+   both. The one deliberate exception is a link inside a sentence: WCAG exempts
+   those precisely because stretching them to 44 would wreck the prose around
+   them, so they get breathing room instead of a box. */
+@media (pointer:coarse){
+  .btn,.btn.sm{min-height:44px}
+  .tab{min-height:44px}
+  .chip{min-height:44px}
+  .x{min-width:44px;min-height:44px}
+  .monthnav .nav-btn{width:44px;height:44px}
+  .monthnav select{height:44px}
+  .tbd{min-height:44px;display:inline-flex;align-items:center}
+  .seg button,.days button,.catpick button{min-height:44px}
+  .tctl select,.tctl .ampm button{min-height:44px}
+  label.f input,label.f select,table.rev input,table.rev select,
+  .studyrow select,.studyrow input,.blockrow select,.blockrow input,
+  .lifeform input,.lifeform select{min-height:44px}
+  .build{padding:11px 0}
+  .linkish{padding:7px 0}          /* inline in a sentence: air, not a box */
+  .dayrow{min-height:44px}
+  .sug{min-height:44px}
+
+  /* The tick was the smallest thing in the app and the thing people press most.
+     The box stays visually quiet at 20 points; the target around it is 44 tall,
+     and the negative margins keep the row from growing to accommodate it. */
+  .tick{display:inline-flex;align-items:center;justify-content:center;
+    width:44px;height:44px;margin:-11px -10px;cursor:pointer}
+  input[type=checkbox]{width:20px;height:20px}
+
+  /* These four already set their own heights further up the sheet and win on
+     specificity, so they have to be named rather than swept up by .btn. */
+  .acctcard label.f input{min-height:44px}
+  .acctcard .btn.ghost{min-height:44px}
+  .tbd{min-width:44px;justify-content:center}
+  .build{padding:13px 0}
+}
+
+/* ======================= the notch, and the bar below =======================
+   Installed to a home screen the page owns the whole display, including the
+   parts the hardware has opinions about. Without this the top bar tucks under
+   the Dynamic Island and the footer sits beneath the home indicator. */
+.topbar{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+@media (display-mode:standalone){
+  .topbar{padding-top:env(safe-area-inset-top)}
+}
+.foot{padding-bottom:env(safe-area-inset-bottom)}
+.sheet{padding-left:max(24px,env(safe-area-inset-left));
+       padding-right:max(24px,env(safe-area-inset-right))}
+@media(max-width:620px){
+  .sheet-card{padding-bottom:env(safe-area-inset-bottom)}
+}
+.sdtoast{bottom:max(22px,env(safe-area-inset-bottom))}
+@media(max-width:560px){
+  .sdtoast{left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right))}
+}
 .hide{display:none!important}
 </style>
 </head>
@@ -2024,11 +2085,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"3.4",date:"14 September 2026",year:2026};
+var BUILD={v:"3.5",date:"14 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["3.5","Everything you tap is now big enough to tap. The tick box beside each item was fourteen points square \u2014 the smallest thing in the app and the one people press most \u2014 and most other controls were under half the size Apple asks for. On anything you touch, every button, tab, field and tick now has a <b>44-point target</b>, while the box itself stays visually quiet and rows do not grow. Pointing with a mouse or trackpad keeps the tighter spacing. The page also stops assuming the screen is a plain rectangle: installed on an iPhone it now clears the camera notch and the home bar."],
   ["3.4","iPad stops being treated as a big phone. Held in portrait, an iPad was collapsing the fortnight into one column and the calendar into coloured dots, so half the screen went to waste and a month could not be read without tapping every day. From now on any screen wider than 700 points keeps <b>both weeks side by side</b>, keeps the <b>words in the calendar</b> with rows tall enough to hold them, keeps a course\u2019s detail in two columns, and spends two rows on the top bar instead of three."],
   ["3.3","It installs, and it works with no signal. Add it to your home screen and it gets its own icon and its own window &mdash; and from now on it <b>opens offline</b>, with your whole term, the calendar, the countdowns and the exports all working. Only reading a brand-new outline and signing in still need a connection. On Android and desktop the install is now one tap instead of a menu hunt, the top bar says <b>Offline</b> when you are, and a link can point straight at a tab."],
   ["3.2","A proper legal notice, and two smaller promises kept. <b>Legal &amp; privacy</b> now holds a real privacy policy, terms of use, an accuracy statement and an accessibility statement, with an effective date, how long anything is kept, and one address for questions. You can now <b>delete your account</b> yourself — email address and all — instead of asking anyone. Two claims that were not true are fixed: this website never sends your outline to Claude, and the two outside libraries are fetched rather than carried. Those libraries now load only when you actually open a PDF or a Word file, and each is checked against a published fingerprint before your browser will run it, so opening the page no longer tells a content network you were here."],
@@ -2411,7 +2473,7 @@ function itemHTML(ev,tick){
   var done=!!S.done[ev.id];
   return '<div class="it'+(done?" done":"")+'">'
    +'<span class="rail" style="background:'+col+'"></span>'
-   +(tick&&ev.kind!=="off"?'<span class="tick"><input type="checkbox" data-tick="'+esc(ev.id)+'"'+(done?" checked":"")+' aria-label="mark done"></span>':'')
+   +(tick&&ev.kind!=="off"?'<label class="tick"><input type="checkbox" data-tick="'+esc(ev.id)+'"'+(done?" checked":"")+' aria-label="mark done"></label>':'')
    +'<span class="body"><span class="name"'+(ev.kind==="off"?' style="color:var(--ink-3)"':'')+'>'
    +(ev.kind==="life"
       ? '<span class="ck" style="color:'+textColorOf(ev.c)+'">'+icon(ev.cat)+'</span> '
