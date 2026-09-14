@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v4.1  (14 September 2026)
+  Syllabus Desk  v4.2  (14 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -947,6 +947,31 @@ table.assess td.mkc{text-align:right;white-space:nowrap;width:86px;padding-right
 .termnow{border-left:var(--accent-bar) solid var(--accent)}
 .termname{width:100%;max-width:280px;border:1px solid var(--line-soft);border-radius:2px;
   background:var(--surface);color:var(--ink);font-family:var(--font-body);font-size:.9rem;padding:8px 10px}
+/* ========================= the outline checker ========================= */
+.chk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;
+  border:1px solid var(--line);border-right:0;border-bottom:0;margin-bottom:22px}
+.chk-grid .s{border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
+  padding:15px 17px;background:var(--surface)}
+.chk-grid .s b{display:block;font-family:var(--font-display);font-size:1.9rem;font-weight:600;
+  letter-spacing:-.04em;line-height:1;color:var(--ink)}
+.chk-grid .s.bad b{color:var(--bad-deep)}
+.chk-grid .s.warn b{color:var(--warn)}
+.chk-grid .s span{display:block;font-family:var(--font-mono);font-size:.58rem;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);margin-top:7px}
+.finding{display:flex;gap:12px;padding:13px 15px;border-bottom:1px solid var(--line-soft);
+  background:var(--surface);align-items:flex-start}
+.finding:last-child{border-bottom:0}
+.findings{border:1px solid var(--line-soft);margin-bottom:22px}
+.finding .tag{flex:0 0 auto;font-family:var(--font-mono);font-size:.56rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:3px 7px;border-radius:2px;margin-top:2px;white-space:nowrap}
+.finding .tag.stop{background:var(--bad);color:var(--bad-ink)}
+.finding .tag.look{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.finding .tag.note{background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line-soft)}
+.finding .b{min-width:0}
+.finding .nm{display:block;font-weight:500;font-size:.9rem;margin-bottom:3px}
+.finding .ds{display:block;font-size:.84rem;color:var(--ink-2);line-height:1.5}
+.chk-ok{border:1px solid var(--line-soft);border-left:var(--accent-bar) solid var(--ok);
+  background:var(--ok-soft);padding:15px 17px;margin-bottom:22px;font-size:.9rem;color:var(--ink-2)}
 .hide{display:none!important}
 </style>
 </head>
@@ -1883,6 +1908,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           can import on another browser.</p>
           <button class="btn" id="set-goexport">Open Export</button>
         </div>
+        <div class="excard">
+          <h4>Writing an outline?</h4>
+          <p>Paste a draft and see exactly what a student&rsquo;s reader finds in it &mdash; and which dates
+          land on a holiday, a weekend, or on top of each other. Runs on this device; nothing is uploaded.</p>
+          <button class="btn" id="set-check">Check an outline</button>
+        </div>
         <div class="excard" style="grid-column:1/-1">
           <h4>Terms</h4>
           <p>One term is open at a time. When this one ends, start the next &mdash; the old one is put away,
@@ -1966,6 +1997,27 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         <p class="small">To change the credentials: compute <span class="mono">sha256("username:password")</span>, replace <span class="mono">OWNER_HASH</span> in <span class="mono">src/body.html</span>, rebuild and republish.</p>
         <p>If you want a schedule that is genuinely private, keep it out of the build and bring it in through <b>Import</b> on the Export tab from a JSON file you hold yourself.</p>
       </div>
+    </section>
+  </div>
+
+  <div class="panel" id="p-check">
+    <section>
+      <div class="sec-head"><h2>Check an outline</h2><span class="note">for whoever writes it</span></div>
+      <div class="callout" style="margin-bottom:22px">
+        <h4>What this is</h4>
+        <p style="margin:0 0 8px">Paste a course outline and this runs <b>the same reader your students
+        run</b> over it, then tells you what it could and could not find, and which dates are going to
+        cause trouble once term starts. It is a proof-reader for the schedule, not a marking tool.</p>
+        <p style="margin:0">It works entirely on this device. Nothing is uploaded, nothing is stored, and
+        closing the tab is all the cleaning up there is.</p>
+      </div>
+      <textarea class="paste" id="chk-text" placeholder="Paste the outline here &mdash; the schedule table and the grading breakdown are the parts that matter&hellip;"></textarea>
+      <div class="row" style="margin-top:14px">
+        <button class="btn primary" id="chk-go">Check it <span class="arw">&rarr;</span></button>
+        <button class="btn ghost" id="chk-clear">Clear</button>
+        <span class="hint" id="chk-count"></span>
+      </div>
+      <div id="chk-out" style="margin-top:26px"></div>
     </section>
   </div>
 
@@ -2289,11 +2341,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"4.1",date:"14 September 2026",year:2026};
+var BUILD={v:"4.2",date:"14 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["4.2","<b>Something for whoever writes the outline.</b> Paste a draft into <b>Settings \u203a Check an outline</b> and it runs the same reader your students run, then says what it found and what it could not: graded items with no date anywhere in the schedule, a weights column that adds to 95, a deadline on Thanksgiving or Remembrance Day, two things due the same day, three in one week. It is a proof-reader for the schedule, it runs entirely on your own device, and it uploads and stores nothing."],
   ["4.1","<b>More than one term.</b> When this one ends, <b>Settings \u203a Terms \u203a Start a new term</b> puts it away and hands you an empty one \u2014 it is not deleted, and you can open it again whenever you want, which swaps it with whatever is live rather than overwriting anything. Name a term yourself or let it work out \u201cFall 2026\u201d from the dates in it. Past terms travel with your account if you have one, and with the data export if you do not."],
   ["4.0","<b>Plan time for this.</b> Open any deadline and the page works backwards from it: how many ninety-minute sessions the weight deserves, spaced every other day rather than stacked the night before, and dropped only into hours you are genuinely free \u2014 around your classes, your shifts, your practices and the study blocks you already keep. If the days before a deadline are full it tells you how many sessions would not fit instead of quietly dropping them, which is worth knowing in advance rather than on the night. Accepted sessions join your fortnight, your calendar and your exports."],
   ["3.9","<b>What am I actually sitting at?</b> Each graded item now has a <b>Mark</b> box on the Courses tab \u2014 type \u201c17/20\u201d, \u201c85\u201d or \u201c85%\u201d, whichever you have \u2014 and the course shows your standing on the work that has come back, plus what you need on the rest to finish where you are aiming. It never pretends 92% of the 10% marked so far is a 92: it says how much has actually been graded. <b>Marks stay on this device.</b> They are not sent to the server, not part of your account, and not visible to whoever runs this site \u2014 the code that syncs names the fields it sends and marks are not among them."],
@@ -3074,6 +3127,255 @@ function renderAll(){
 
 
 
+
+/* ===================== checking an outline =====================
+   The point of running the students' own reader here is that the instructor
+   sees the actual result, not a second opinion. If the reader cannot find the
+   midterm date, that is the finding — and it is a finding about the outline as
+   much as about the reader.
+
+   The calendar checks are the other half, and they are the ones nobody catches
+   while writing: a deadline on Thanksgiving, three things in one week, a
+   weights column that adds to 95. */
+function easterISO(y){
+  /* Anonymous Gregorian computus — needed because Good Friday moves */
+  var a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,
+      f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,
+      i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),
+      mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;
+  return ISO(new Date(y,mo-1,da));
+}
+function nthDow(y,month,dow,n){
+  var d=new Date(y,month,1),count=0;
+  while(d.getMonth()===month){
+    if(d.getDay()===dow&&++count===n)return ISO(d);
+    d=new Date(d.getTime()+864e5);
+  }
+  return null;
+}
+function mondayBefore(y,month,day){
+  /* "immediately preceding" excludes the day itself, which matters exactly when
+     the 25th of May is a Monday — 2026 is one of those years, and starting the
+     walk on the day would have put Victoria Day a week late. */
+  var d=new Date(y,month,day-1);
+  while(d.getDay()!==1)d=new Date(d.getTime()-864e5);
+  return ISO(d);
+}
+/* British Columbia statutory holidays. Institution-specific closures — reading
+   week, a campus-wide day off — are not in here, because this page has no way
+   to know them and guessing would be worse than saying nothing. */
+function bcHolidays(y){
+  var h={};
+  h[ISO(new Date(y,0,1))]="New Year’s Day";
+  h[nthDow(y,1,1,3)]="Family Day";
+  var easter=easterISO(y);
+  h[ISO(new Date(P(easter).getTime()-2*864e5))]="Good Friday";
+  h[mondayBefore(y,4,25)]="Victoria Day";
+  h[ISO(new Date(y,6,1))]="Canada Day";
+  h[nthDow(y,7,1,1)]="B.C. Day";
+  h[nthDow(y,8,1,1)]="Labour Day";
+  h[ISO(new Date(y,8,30))]="National Day for Truth and Reconciliation";
+  h[nthDow(y,9,1,2)]="Thanksgiving";
+  h[ISO(new Date(y,10,11))]="Remembrance Day";
+  h[ISO(new Date(y,11,25))]="Christmas Day";
+  return h;
+}
+function checkOutline(text){
+  var d=SDParse.parse(text||"");
+  var items=(d.items||[]),classes=(d.classes||[]).filter(function(r){return r&&isISO(r.date);});
+  var dated=items.filter(function(i){return i.date;});
+  var undated=items.filter(function(i){return !i.date;});
+  var find=[];
+
+  function add(sev,name,desc){find.push({sev:sev,name:name,desc:desc});}
+
+  if(!items.length&&!classes.length){
+    add("stop","Nothing came out of this at all",
+      "A student pasting this gets an empty screen. The two things the reader looks for are a "
+      +"schedule table with dates in it and a grading breakdown with percentages. If both are images, "
+      +"or the dates are written only as “Week 4”, there is nothing for it to read.");
+  }
+  if(undated.length){
+    add("look",undated.length+" graded item"+(undated.length===1?" has":"s have")+" no date",
+      "The reader found "+(undated.length===1?"it":"them")+" in the grading breakdown but nowhere in "
+      +"the schedule: "+undated.map(function(i){return i.title;}).slice(0,6).join(", ")
+      +". Students will see "+(undated.length===1?"it":"them")+" flagged as undated, and will be asking "
+      +"you for the date.");
+  }
+  /* weights */
+  var ws=(d.weights||[]);
+  var tot=ws.reduce(function(a,w){return a+(+w[1]||0);},0);
+  if(ws.length&&Math.abs(tot-100)>0.5){
+    add("look","The grading breakdown adds to "+Math.round(tot)+"%",
+      "Not 100. Either something is missing from the list the reader found ("
+      +ws.map(function(w){return w[0]+" "+w[1]+"%";}).join(", ")+"), or the outline itself does not add up.");
+  }
+  if(!ws.length){
+    add("look","No grading breakdown found",
+      "Without percentages the reader cannot tell a 2% quiz from a 40% final, so students lose the "
+      +"weighting, the workload forecast and any sense of what matters. A simple list — "
+      +"“Midterm 25%” on its own line — is enough.");
+  }
+  /* calendar sanity */
+  var years={};
+  dated.forEach(function(i){years[P(i.date).getFullYear()]=1;});
+  classes.forEach(function(r){years[P(r.date).getFullYear()]=1;});
+  var hol={};Object.keys(years).forEach(function(y){
+    var hh=bcHolidays(+y);Object.keys(hh).forEach(function(k){hol[k]=hh[k];});
+  });
+  var byDay={},byWeek={};
+  dated.forEach(function(i){
+    (byDay[i.date]=byDay[i.date]||[]).push(i);
+    var wk=mondayOf(i.date);(byWeek[wk]=byWeek[wk]||[]).push(i);
+    var dw=P(i.date).getDay();
+    if(dw===0||dw===6)
+      add("note","“"+i.title+"” falls on a "+DOWN[dw],
+        esc0(fmtDay(P(i.date)))+". Fine if it is an online submission, worth a second look if anyone has "
+        +"to hand it in or sit it somewhere.");
+    if(hol[i.date])
+      add("look","“"+i.title+"” is on "+hol[i.date],
+        esc0(fmtDay(P(i.date)))+" is a statutory holiday in British Columbia. Campus services and "
+        +"support are usually closed, and some students will be away.");
+  });
+  Object.keys(byDay).forEach(function(k){
+    if(byDay[k].length>1)
+      add("note",byDay[k].length+" things due the same day",
+        esc0(fmtDay(P(k)))+": "+byDay[k].map(function(i){return i.title;}).join(", ")
+        +". Inside one course that is a heavy day.");
+  });
+  Object.keys(byWeek).forEach(function(k){
+    if(byWeek[k].length>=3)
+      add("note",byWeek[k].length+" things in the week of "+esc0(fmtDay(P(k))),
+        byWeek[k].map(function(i){return i.title;}).join(", ")+". Students are carrying four or five "
+        +"other courses that week too.");
+  });
+  /* The schedule rows carry dates as well, and a row that says "term paper due"
+     on Remembrance Day is exactly the thing worth catching — whether or not the
+     reader managed to tie that row to a line in the grading table. */
+  var seen={};
+  dated.forEach(function(i){seen[i.date]=1;});
+  classes.forEach(function(r){
+    if(r.off||seen[r.date])return;
+    var topic=String(r.topic||"");
+    if(!/\b(due|exam|midterm|quiz|test|assignment|paper|report|presentation|submission)\b/i.test(topic))return;
+    var dw=P(r.date).getDay();
+    if(hol[r.date])
+      add("look","\u201c"+topic+"\u201d is on "+hol[r.date],
+        fmtDay(P(r.date))+" is a statutory holiday in British Columbia. It is in your schedule rather "
+        +"than your grading table, so the reader could not weight it \u2014 but students will still see "
+        +"the date.");
+    else if(dw===0||dw===6)
+      add("note","\u201c"+topic+"\u201d falls on a "+DOWN[dw],
+        fmtDay(P(r.date))+", from the schedule table.");
+  });
+
+  /* A schedule row whose topic is a section heading means the reader lost its
+     footing — usually the last row before "Grading" or "Policies", where the
+     date came from one line and the words from the next. The instructor cannot
+     see that from their own document, and it is the single most useful thing
+     this page can tell them about how their table is being read. */
+  var HEADINGS=/^(grading|assessment|assessments|evaluation|policies|policy|grades|marking|course policies|important dates|notes?)\s*:?$/i;
+  classes.forEach(function(r){
+    if(HEADINGS.test(String(r.topic||"").trim()))
+      add("look","One schedule row did not read cleanly",
+        "The row dated "+fmtDay(P(r.date))+" came out as \u201c"+r.topic+"\u201d, which is a heading "
+        +"rather than a topic \u2014 the reader took the date from one line and the words from the next. "
+        +"That usually means the last row of your schedule table runs straight into the next section. "
+        +"A blank line between them, or a real table, fixes it, and whatever was genuinely on that date "
+        +"is currently being lost.");
+  });
+
+  /* a date that sits outside the class schedule the outline itself gives */
+  if(classes.length){
+    var cds=classes.map(function(r){return r.date;}).sort();
+    var first=cds[0],last=cds[cds.length-1];
+    dated.forEach(function(i){
+      if(i.date<first||i.date>last)
+        add("note","“"+i.title+"” sits outside the class schedule",
+          esc0(fmtDay(P(i.date)))+" is "+(i.date<first?"before the first":"after the last")
+          +" class this outline lists. Often correct for a final, worth checking otherwise.");
+    });
+  }
+  return {parsed:d,items:items,dated:dated,undated:undated,classes:classes,
+          weights:ws,total:tot,findings:find};
+}
+function esc0(x){return String(x);}
+function renderCheck(res){
+  var host=document.getElementById("chk-out");if(!host)return;
+  var d=res.parsed;
+  var stops=res.findings.filter(function(f){return f.sev==="stop";}).length;
+  var looks=res.findings.filter(function(f){return f.sev==="look";}).length;
+
+  var h='<div class="chk-grid">'
+    +'<div class="s"><b>'+res.dated.length+'</b><span>Dated items found</span></div>'
+    +'<div class="s'+(res.undated.length?" warn":"")+'"><b>'+res.undated.length+'</b><span>Weighted but undated</span></div>'
+    +'<div class="s"><b>'+res.classes.length+'</b><span>Class meetings read</span></div>'
+    +'<div class="s'+(res.weights.length&&Math.abs(res.total-100)>0.5?" warn":"")+'"><b>'
+      +(res.weights.length?Math.round(res.total)+"%":"—")+'</b><span>Weights add to</span></div>'
+    +'<div class="s'+(stops?" bad":(looks?" warn":""))+'"><b>'+res.findings.length+'</b><span>Findings</span></div>'
+    +'</div>';
+
+  h+='<div class="prose" style="max-width:none"><h3>What a student gets from this</h3></div>';
+  h+='<div style="overflow-x:auto"><table class="assess"><tbody>'
+    +'<tr><td style="width:30%"><span class="name">Course</span></td><td>'
+      +(d.code?esc(d.code):'<span style="color:var(--bad-deep)">not found</span>')
+      +(d.title?' — '+esc(d.title):"")+'</td></tr>'
+    +'<tr><td><span class="name">Instructor</span></td><td>'
+      +(d.instructor?esc(d.instructor):'<span style="color:var(--ink-3)">not found</span>')+'</td></tr>'
+    +'<tr><td><span class="name">Meets</span></td><td>'
+      +(d.meets?esc(d.meets)+(d.time?", "+esc(d.time):""):'<span style="color:var(--ink-3)">not found</span>')+'</td></tr>'
+    +'<tr><td><span class="name">Room</span></td><td>'
+      +(d.room?esc(d.room):'<span style="color:var(--ink-3)">not found</span>')+'</td></tr>'
+    +'</tbody></table></div>';
+
+  if(res.items.length){
+    h+='<div class="prose" style="max-width:none"><h3>Every item it found</h3></div>'
+      +'<div style="overflow-x:auto"><table class="assess"><thead><tr><th>What</th><th>Date</th>'
+      +'<th style="text-align:right">Weight</th></tr></thead><tbody>'
+      +res.items.map(function(i){
+        return '<tr><td style="width:100%"><span class="name">'+esc(i.title)+'</span>'
+          +(i.note?'<div class="sub">'+esc(i.note)+'</div>':'')+'</td>'
+          +'<td class="dt">'+(i.date?esc(fmtDay(P(i.date))):'<span class="flag">no date</span>')+'</td>'
+          +'<td class="wt">'+esc(i.weight||"—")+'</td></tr>';
+      }).join("")+'</tbody></table></div>';
+  }
+
+  h+='<div class="prose" style="max-width:none"><h3>Findings</h3></div>';
+  if(!res.findings.length){
+    h+='<div class="chk-ok"><b>Nothing to flag.</b> Every graded item has a date, the weights add up, '
+      +'and no deadline lands on a weekend, a statutory holiday, or on top of another one. A student '
+      +'pasting this gets a complete term.</div>';
+  }else{
+    var order={stop:0,look:1,note:2};
+    h+='<div class="findings">'+res.findings.slice().sort(function(a,b){
+      return order[a.sev]-order[b.sev];
+    }).map(function(f){
+      var label=f.sev==="stop"?"Blocking":(f.sev==="look"?"Worth fixing":"Have a look");
+      return '<div class="finding"><span class="tag '+f.sev+'">'+label+'</span>'
+        +'<span class="b"><span class="nm">'+esc(f.name)+'</span>'
+        +'<span class="ds">'+esc(f.desc)+'</span></span></div>';
+    }).join("")+'</div>';
+  }
+  h+='<p class="hint">Checked on this device with the same reader your students use. '
+    +'Nothing here was uploaded or saved.</p>';
+  host.innerHTML=h;
+}
+function runCheck(){
+  var ta=document.getElementById("chk-text");
+  if(!ta)return;
+  var txt=ta.value||"";
+  var host=document.getElementById("chk-out");
+  if(!txt.trim()){
+    host.innerHTML='<div class="err"><b>Nothing to check.</b> Paste the outline above first — '
+      +'the schedule table and the grading breakdown are the parts that carry the dates.</div>';
+    return;
+  }
+  host.innerHTML='<div class="working"><span class="spin"></span><span>Reading it the way a student would…</span></div>';
+  setTimeout(function(){
+    try{renderCheck(checkOutline(txt));}
+    catch(e){host.innerHTML='<div class="err"><b>That could not be read.</b> '+esc(e.message||"")+'</div>';}
+  },40);
+}
 
 /* ===================== one term open, the rest kept =====================
    The live term stays exactly what it has always been: S, under the same key,
@@ -3966,7 +4268,7 @@ function doInstall(){
 /* ---------- a link can point at a tab ----------
    So a shortcut on a home screen, or an instructor writing "add your outline
    here", can land on the right screen instead of the front page. */
-var HASHPANEL={weeks:"p-weeks",home:"p-weeks",today:"p-weeks",calendar:"p-cal",cal:"p-cal",
+var HASHPANEL={check:"p-check",instructors:"p-check",outline:"p-check",weeks:"p-weeks",home:"p-weeks",today:"p-weeks",calendar:"p-cal",cal:"p-cal",
   courses:"p-courses",life:"p-life",export:"p-export",add:"p-add",account:"p-account",
   login:"p-account",settings:"p-settings",legal:"p-rights",rights:"p-rights",privacy:"p-rights"};
 function panelFromHash(){
@@ -4713,6 +5015,12 @@ document.addEventListener("click",function(e){
     });
     return;
   }
+  if(t.closest("#chk-go")){runCheck();return;}
+  if(t.closest("#chk-clear")){
+    var ta=document.getElementById("chk-text");if(ta)ta.value="";
+    var co=document.getElementById("chk-out");if(co)co.innerHTML="";
+    var cc=document.getElementById("chk-count");if(cc)cc.textContent="";return;}
+  if(t.closest("#set-check")){showPanel("p-check");window.scrollTo({top:0,behavior:"smooth"});return;}
   if(t.closest("#term-new")){
     if(!confirm("Start a new term?\n\nThis one is put away under \""+termName()+"\" and you can open it "
       +"again from Settings. Nothing is deleted."))return;
