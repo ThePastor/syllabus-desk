@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v4.0  (14 September 2026)
+  Syllabus Desk  v4.1  (14 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -935,6 +935,18 @@ table.assess td.mkc{text-align:right;white-space:nowrap;width:86px;padding-right
 .targetrow select{border:1px solid var(--line-soft);border-radius:2px;background:var(--surface);
   color:var(--ink);font-family:var(--font-mono);font-size:.76rem;padding:6px 8px}
 @media print{.mk,.standing{display:none}}
+/* ============================== terms ============================== */
+.termrow{display:flex;align-items:center;gap:11px;padding:11px 12px;background:var(--surface);
+  border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.termrow:last-child{border-bottom:0}
+.termlist{border:1px solid var(--line-soft);margin:10px 0}
+.termrow .b{min-width:0;flex:1}
+.termrow .nm{display:block;font-weight:500;font-size:.92rem}
+.termrow .sb{display:block;font-family:var(--font-mono);font-size:.62rem;color:var(--ink-2);margin-top:3px}
+.termrow .acts{display:flex;gap:6px;flex-wrap:wrap}
+.termnow{border-left:var(--accent-bar) solid var(--accent)}
+.termname{width:100%;max-width:280px;border:1px solid var(--line-soft);border-radius:2px;
+  background:var(--surface);color:var(--ink);font-family:var(--font-body);font-size:.9rem;padding:8px 10px}
 .hide{display:none!important}
 </style>
 </head>
@@ -1871,6 +1883,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           can import on another browser.</p>
           <button class="btn" id="set-goexport">Open Export</button>
         </div>
+        <div class="excard" style="grid-column:1/-1">
+          <h4>Terms</h4>
+          <p>One term is open at a time. When this one ends, start the next &mdash; the old one is put away,
+          not thrown away, and you can open it again whenever you like.</p>
+          <div id="termsbox"></div>
+        </div>
         <div class="excard">
           <h4>Start over</h4>
           <p>Removes every course, date, tick, study block and personal entry <b>from this browser</b>.
@@ -2271,11 +2289,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"4.0",date:"14 September 2026",year:2026};
+var BUILD={v:"4.1",date:"14 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["4.1","<b>More than one term.</b> When this one ends, <b>Settings \u203a Terms \u203a Start a new term</b> puts it away and hands you an empty one \u2014 it is not deleted, and you can open it again whenever you want, which swaps it with whatever is live rather than overwriting anything. Name a term yourself or let it work out \u201cFall 2026\u201d from the dates in it. Past terms travel with your account if you have one, and with the data export if you do not."],
   ["4.0","<b>Plan time for this.</b> Open any deadline and the page works backwards from it: how many ninety-minute sessions the weight deserves, spaced every other day rather than stacked the night before, and dropped only into hours you are genuinely free \u2014 around your classes, your shifts, your practices and the study blocks you already keep. If the days before a deadline are full it tells you how many sessions would not fit instead of quietly dropping them, which is worth knowing in advance rather than on the night. Accepted sessions join your fortnight, your calendar and your exports."],
   ["3.9","<b>What am I actually sitting at?</b> Each graded item now has a <b>Mark</b> box on the Courses tab \u2014 type \u201c17/20\u201d, \u201c85\u201d or \u201c85%\u201d, whichever you have \u2014 and the course shows your standing on the work that has come back, plus what you need on the rest to finish where you are aiming. It never pretends 92% of the 10% marked so far is a 92: it says how much has actually been graded. <b>Marks stay on this device.</b> They are not sent to the server, not part of your account, and not visible to whoever runs this site \u2014 the code that syncs names the fields it sends and marks are not among them."],
   ["3.8","<b>Where the term gets heavy.</b> The page already knew every date and every weight; putting them together shows you the week that carries a third of your marks, months before it arrives. One bar per week for the rest of term, the worst few spelled out in words, and a straight answer to how much of the term is still ahead of you. Two things it refuses to fake: percentages from different courses are only comparable if you treat the courses as equal, so it says so; and a forecast can only count work that has a date, so it also tells you how much of each course still has none."],
@@ -3055,6 +3074,108 @@ function renderAll(){
 
 
 
+
+/* ===================== one term open, the rest kept =====================
+   The live term stays exactly what it has always been: S, under the same key,
+   down the same sync path. Everything here sits beside that rather than
+   underneath it, which is why none of the last eleven releases had to be
+   reopened to make this work.
+
+   An archived term is a frozen copy of what S looked like — courses, items,
+   ticks, life, plan — plus a name and the day it was put away. Opening one
+   swaps it with whatever is live, so there is never a moment where the term you
+   were using has been thrown away in favour of the one you asked for. */
+var TERMS_KEY="sd.terms", ARCHIVE=[];
+function loadArchive(){
+  try{var raw=localStorage.getItem(TERMS_KEY);ARCHIVE=raw?(JSON.parse(raw)||[]):[];}
+  catch(e){ARCHIVE=[];}
+  if(!Array.isArray(ARCHIVE))ARCHIVE=[];
+}
+function saveArchive(){
+  try{localStorage.setItem(TERMS_KEY,JSON.stringify(ARCHIVE));}catch(e){}
+}
+/* Sep-Dec is Fall, Jan-Apr Winter, May-Aug Summer. Guessed from the work in the
+   term rather than from today, so opening an old term does not rename it. */
+function guessTermName(st){
+  st=st||S;
+  var ds=[];
+  (st.items||[]).forEach(function(i){if(i.d)ds.push(i.d);});
+  (st.courses||[]).forEach(function(c){(c.classes||[]).forEach(function(r){ds.push(r.date);});});
+  if(!ds.length)return "Untitled term";
+  ds.sort();
+  var d=P(ds[Math.floor(ds.length/2)]),m=d.getMonth();
+  var season=m>=8?"Fall":(m<=3?"Winter":"Summer");
+  return season+" "+d.getFullYear();
+}
+function termName(st){
+  st=st||S;
+  return (st.name&&String(st.name).trim())||guessTermName(st);
+}
+function snapshotTerm(){
+  return {courses:S.courses||[],items:S.items||[],done:S.done||{},life:lifeList(),
+          plan:planList(),name:termName(),version:S.version||1};
+}
+function blankTerm(name){
+  return {courses:[],items:[],done:{},life:[],plan:[],name:name||"",version:1};
+}
+function archiveCurrent(){
+  if(!(S.courses||[]).length&&!lifeList().length)return null;   /* nothing worth keeping */
+  var snap=snapshotTerm();
+  var rec={id:"tm-"+Date.now()+"-"+Math.random().toString(36).slice(2,6),
+           name:snap.name,saved:ISO(new Date()),payload:snap};
+  ARCHIVE.unshift(rec);saveArchive();
+  return rec;
+}
+function startNewTerm(){
+  if(S.demo){S=blankTerm("");save();renderAll();paintSettings();return;}
+  archiveCurrent();
+  S=blankTerm("");
+  save();renderAll();paintSettings();
+  showPanel("p-weeks");window.scrollTo({top:0,behavior:"smooth"});
+}
+function openArchived(id){
+  var ix=-1;
+  ARCHIVE.forEach(function(r,i){if(r.id===id)ix=i;});
+  if(ix<0)return;
+  var want=ARCHIVE[ix];
+  ARCHIVE.splice(ix,1);
+  /* put the live one away first, so nothing is ever discarded to make room */
+  if(!S.demo)archiveCurrent();
+  var p=want.payload||{};
+  S={courses:p.courses||[],items:p.items||[],done:p.done||{},life:p.life||[],
+     plan:p.plan||[],name:p.name||want.name||"",version:p.version||1};
+  saveArchive();save();resetPalette();renderAll();paintSettings();
+  showPanel("p-weeks");window.scrollTo({top:0,behavior:"smooth"});
+}
+function deleteArchived(id){
+  ARCHIVE=ARCHIVE.filter(function(r){return r.id!==id;});
+  saveArchive();paintSettings();
+}
+function renameTerm(v){
+  S.name=String(v||"").slice(0,60);
+  save();paintSettings();
+}
+function termsHTML(){
+  var rows='<div class="termrow termnow"><span class="b">'
+    +'<span class="nm">'+esc(termName())+'</span>'
+    +'<span class="sb">open now · '+((S.courses||[]).length)+' course'
+    +((S.courses||[]).length===1?"":"s")+' · '+((S.items||[]).length)+' items</span></span>'
+    +'<span class="acts"><button class="btn sm" id="term-new">Start a new term</button></span></div>';
+  rows+=ARCHIVE.map(function(r){
+    var p=r.payload||{};
+    return '<div class="termrow"><span class="b"><span class="nm">'+esc(r.name||"Untitled term")+'</span>'
+      +'<span class="sb">put away '+esc(r.saved||"")+' · '+((p.courses||[]).length)+' courses · '
+      +((p.items||[]).length)+' items</span></span>'
+      +'<span class="acts"><button class="btn sm" data-termopen="'+esc(r.id)+'">Open</button>'
+      +'<button class="btn sm danger" data-termdel="'+esc(r.id)+'">Delete</button></span></div>';
+  }).join("");
+  return '<label class="f" style="margin-bottom:10px"><span>Name this term</span>'
+    +'<input class="termname" id="term-name" value="'+esc(S.name||"")+'" '
+    +'placeholder="'+esc(guessTermName())+'" maxlength="60"></label>'
+    +'<div class="termlist">'+rows+'</div>'
+    +'<p class="hint" style="margin:0">Starting a new term puts this one away rather than deleting it. '
+    +'Past terms travel with your account if you have one, and with the data export if you do not.</p>';
+}
 
 /* ===================== planning backwards =====================
    A block is a rhythm; a plan is an answer to "when am I doing this one thing".
@@ -4592,6 +4713,17 @@ document.addEventListener("click",function(e){
     });
     return;
   }
+  if(t.closest("#term-new")){
+    if(!confirm("Start a new term?\n\nThis one is put away under \""+termName()+"\" and you can open it "
+      +"again from Settings. Nothing is deleted."))return;
+    startNewTerm();sdToast("New term started. The old one is under Settings \u203a Terms.");return;}
+  if((x=t.closest("[data-termopen]"))){openArchived(x.dataset.termopen);
+    sdToast("Opened. The term you were on has been put away.");return;}
+  if((x=t.closest("[data-termdel]"))){
+    var rec=ARCHIVE.filter(function(r){return r.id===x.dataset.termdel;})[0];
+    if(!rec)return;
+    if(!confirm("Delete \""+(rec.name||"this term")+"\" for good?\n\nThis cannot be undone."))return;
+    deleteArchived(x.dataset.termdel);sdToast("Deleted.");return;}
   if((x=t.closest("[data-plan]"))){sheetPlan(x.dataset.plan);return;}
   if((x=t.closest("[data-planok]"))){
     var it=(S.items||[]).filter(function(i){return i.id===x.dataset.planok;})[0];
@@ -4609,7 +4741,7 @@ document.addEventListener("click",function(e){
     /* the file is the student's own, on their own disk, so it carries the marks
        too — otherwise switching browsers silently loses them. The server copy
        still never does. */
-    var bundle=Object.assign({},S,{marks:MARKS});
+    var bundle=Object.assign({},S,{marks:MARKS,archive:ARCHIVE});
     offer("syllabus-desk-data.json",JSON.stringify(bundle,null,2),
       "Saved. Keep this if you switch browsers — it includes your marks, which never leave this device any other way.");return;}
   if(t.closest("#imp-json")){
@@ -4618,6 +4750,7 @@ document.addEventListener("click",function(e){
     try{var p=JSON.parse(raw);if(!p.courses)throw 0;
       /* marks must not ride into S — S is what syncs */
       if(p.marks){setMarks(p.marks);delete p.marks;}
+      if(Array.isArray(p.archive)){ARCHIVE=p.archive;saveArchive();delete p.archive;}
       S=p;save();renderAll();alert("Imported.");}catch(err){alert("That did not parse as Syllabus Desk data.");}
     return;
   }
@@ -4696,6 +4829,7 @@ document.addEventListener("change",function(e){
   if((x=t.closest("[data-target]"))){
     MARKS["target:"+x.dataset.target]=x.value;saveMarks();renderCourses();return;
   }
+  if(t.id==="term-name"){renameTerm(t.value);return;}
   if(t.id==="m-jump"){goMonth(t.value);return;}
   if(t.id==="lf-rep"){LF.rep=t.value;renderLife();return;}
   if((x=t.closest("[data-tick]"))){
@@ -4897,7 +5031,7 @@ function termPayload(){
      be added to it: this function is the only thing that reaches the server, so
      it is also the only place that could ever leak them. */
   return {courses:S.courses||[],items:S.items||[],done:S.done||{},life:lifeList(),
-          plan:planList(),version:S.version||1,
+          plan:planList(),name:S.name||"",archive:ARCHIVE,version:S.version||1,
           theme:(document.documentElement.getAttribute("data-theme")||"light")};
 }
 function realCourses(st){
@@ -4931,7 +5065,9 @@ function pullTerm(){
 function adoptCloud(row){
   SYNC.applying=true;
   var p=row.payload||{};
-  S={courses:p.courses||[],items:p.items||[],done:p.done||{},life:p.life||[],version:p.version||1};
+  S={courses:p.courses||[],items:p.items||[],done:p.done||{},life:p.life||[],
+     plan:p.plan||[],name:p.name||"",version:p.version||1};
+  if(Array.isArray(p.archive)){ARCHIVE=p.archive;saveArchive();}
   try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
   if(p.theme==="dark"||p.theme==="light"){
     document.documentElement.setAttribute("data-theme",p.theme);
@@ -4973,6 +5109,8 @@ var MERGE_ROW=null;
 
 /* ===================== accounts: painting ===================== */
 function paintSettings(){
+  var tb=document.getElementById("termsbox");
+  if(tb)tb.innerHTML=termsHTML();
   var th=document.documentElement.getAttribute("data-theme")==="dark"?"dark":"light";
   Array.prototype.forEach.call(document.querySelectorAll("[data-theme-set]"),function(b){
     b.setAttribute("aria-pressed",b.dataset.themeSet===th?"true":"false");
@@ -5519,7 +5657,7 @@ _bs.title="What changed in this version";
    build — one missing span must never take the rest of the boot with it */
 var _ry=document.getElementById("r-year");if(_ry)_ry.textContent=BUILD.year;
 Array.prototype.forEach.call(document.querySelectorAll(".r-year"),function(el){el.textContent=BUILD.year;});
-load();loadMarks();restoreSession();paintOwner();
+load();loadMarks();loadArchive();restoreSession();paintOwner();
 if(!S.courses.length){ loadSample(true); }   /* first visit: show a worked example, not an empty shell */
 renderAll();sizeTopbar();scheduleUpdateChecks();noteUpdated();
 wirePWA();wireKeys();applyHash();
