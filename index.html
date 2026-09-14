@@ -132,7 +132,10 @@ a{color:var(--accent-deep)}
 .brand .wm{font-family:var(--font-display);font-size:1.05rem;font-weight:800;letter-spacing:-.04em;white-space:nowrap;color:var(--ink)}
 .sd-mark{width:26px;height:26px;display:block;flex:0 0 auto}
 .home-hero .sd-mark{width:64px;height:64px;margin-bottom:14px}
-.tabs{display:flex;align-items:stretch;overflow-x:auto;flex:1;scrollbar-width:none}
+/* wrap, always. The narrow-screen rule below used to be the only place tabs
+   wrapped, which meant that at 200% text on a wide screen the last tab went
+   off the edge with nothing to scroll — WCAG 1.4.4 fails quietly that way. */
+.tabs{display:flex;align-items:stretch;flex-wrap:wrap;overflow-x:auto;flex:1;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{border:0;border-bottom:var(--accent-bar) solid transparent;background:transparent;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding:0 15px;cursor:pointer;white-space:nowrap}
 .tab:hover{color:var(--ink);background:var(--surface-2)}
