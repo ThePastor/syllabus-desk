@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v3.7  (14 September 2026)
+  Syllabus Desk  v3.8  (14 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -869,6 +869,48 @@ table.users td.n{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-2
 .keyrow .k{flex:0 0 96px}
 @media(max-width:560px){.find{padding:0}.find-card{max-height:100%;height:100%;border:0}}
 @media print{.find{display:none!important}}
+/* =========================== where it gets heavy ===========================
+   A bar per week for the rest of the term, and the worst few spelled out in
+   words. The bar is not decoration: its height is the share of the term's
+   marks landing that week, so the shape of the term is the shape of the strip. */
+.load{border:1px solid var(--line);background:var(--surface)}
+.load-strip{display:flex;align-items:flex-end;gap:3px;padding:18px var(--gut-in) 0;
+  height:132px;overflow-x:auto;scrollbar-width:thin}
+.lw{flex:1 1 0;min-width:16px;display:flex;flex-direction:column;justify-content:flex-end;
+  align-items:stretch;height:100%;border:0;background:transparent;padding:0;cursor:pointer;
+  position:relative}
+.lw .bar{background:var(--accent-soft);border:1px solid var(--accent);border-bottom:0;
+  min-height:2px;transition:background .12s}
+/* the deep tone, not the soft one: --coral is a fill colour and fails both
+   the 3:1 a meaningful border needs and the 3:1 large text needs */
+.lw.hot .bar{background:var(--coral-soft);border-color:var(--bad-deep)}
+.lw.now .bar{background:var(--mint);border-color:var(--mint-deep)}
+.lw:hover .bar,.lw.on .bar{background:var(--accent);border-color:var(--accent-deep)}
+.lw .pc{font-family:var(--font-mono);font-size:.56rem;color:var(--ink-2);text-align:center;
+  padding-bottom:3px;white-space:nowrap}
+.load-axis{display:flex;gap:3px;padding:6px var(--gut-in) 14px;border-bottom:1px solid var(--line-soft)}
+.load-axis span{flex:1 1 0;min-width:16px;text-align:center;font-family:var(--font-mono);
+  font-size:.54rem;letter-spacing:.02em;color:var(--ink-3);white-space:nowrap;overflow:hidden}
+.load-axis.dense span.alt{visibility:hidden}
+@media(max-width:820px){.load-axis span.alt{visibility:hidden}}
+@media(max-width:480px){.load-axis span{font-size:.5rem}}
+.load-calls{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0}
+.load-call{padding:16px var(--gut-in);border-right:1px solid var(--line-soft)}
+.load-call:last-child{border-right:0}
+.load-call .d{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3)}
+.load-call .big{font-family:var(--font-display);font-size:1.6rem;font-weight:600;
+  letter-spacing:-.03em;margin:5px 0 3px;line-height:1.1}
+.load-call .m{font-size:.82rem;color:var(--ink-2)}
+.load-call.peak .big{color:var(--bad-deep)}
+.load-foot{padding:13px var(--gut-in);border-top:1px solid var(--line-soft);background:var(--surface-2);
+  font-size:.78rem;color:var(--ink-3);line-height:1.5}
+.cover{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.covchip{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.05em;padding:4px 8px;
+  border:1px solid var(--line-soft);border-left:3px solid var(--cc,var(--ink-3));color:var(--ink-2);
+  background:var(--surface)}
+.covchip b{color:var(--ink)}
+@media print{.load{display:none}}
 .hide{display:none!important}
 </style>
 </head>
@@ -1430,6 +1472,10 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
       <section>
         <div class="sec-head"><h2>On the horizon</h2><span class="note" id="hz-note"></span></div>
         <div class="horizon" id="horizon"></div>
+      </section>
+      <section id="load-sec">
+        <div class="sec-head"><h2>Where the term gets heavy</h2><span class="note" id="load-note"></span></div>
+        <div class="load" id="load"></div>
       </section>
     </div>
 
@@ -2200,11 +2246,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"3.7",date:"14 September 2026",year:2026};
+var BUILD={v:"3.8",date:"14 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["3.8","<b>Where the term gets heavy.</b> The page already knew every date and every weight; putting them together shows you the week that carries a third of your marks, months before it arrives. One bar per week for the rest of term, the worst few spelled out in words, and a straight answer to how much of the term is still ahead of you. Two things it refuses to fake: percentages from different courses are only comparable if you treat the courses as equal, so it says so; and a forecast can only count work that has a date, so it also tells you how much of each course still has none."],
   ["3.7","You can find things now. <b>Find</b> in the top bar \u2014 or just press <b>/</b> \u2014 searches every course, deadline, study block and personal entry at once, in any order: type \u201cecon quiz\u201d or \u201cquiz econ\u201d and you get the same answer. Picking a deadline takes you to it in the calendar and opens it. On a computer there are shortcuts for the places you go most \u2014 <b>T</b>, <b>C</b>, <b>O</b>, <b>N</b>, <b>E</b>, <b>P</b>, and <b>?</b> for the list \u2014 and they stay quiet while you are typing. Nothing searched ever leaves the device."],
   ["3.6","Your term, on one sheet of paper. <b>Export \u203a Print the term</b> lays out every dated item month by month with its course and its weight, the courses behind the codes, and the things an outline weighted but never dated \u2014 then your browser\u2019s print dialog will save it as a PDF if you would rather. Printing any other screen used to give you the tab bar and the footer; it now gives you the page. The sheet carries its own reminder that your outline and your instructor are still the authority on every date, because paper outlives the screen it came from."],
   ["3.5","Everything you tap is now big enough to tap. The tick box beside each item was fourteen points square \u2014 the smallest thing in the app and the one people press most \u2014 and most other controls were under half the size Apple asks for. On anything you touch, every button, tab, field and tick now has a <b>44-point target</b>, while the box itself stays visually quiet and rows do not grow. Pointing with a mouse or trackpad keeps the tighter spacing. The page also stops assuming the screen is a plain rectangle: installed on an iPhone it now clears the camera notch and the home bar."],
@@ -2972,13 +3019,155 @@ function renderAll(){
   var has=S.courses.length>0||lifeList().length>0;
   document.getElementById("empty-state").classList.toggle("hide",has);
   document.getElementById("loaded-state").classList.toggle("hide",!has);
-  if(has){renderWeeks();renderHorizon();}
+  if(has){renderWeeks();renderHorizon();renderLoad();}
   var db=document.getElementById("demobar"); if(db)db.classList.toggle("hide",!(has&&S.demo));
   renderFilters();renderMonths();renderCourses();renderLife();paintSettings();
 }
 
 
 
+
+/* ===================== where the term gets heavy =====================
+   Two things this has to get right or it is worse than nothing.
+
+   Percentages from different courses are different units. 20% of ECON and 30%
+   of PSYC are not 50% of anything. They become a share of the term by dividing
+   each by the number of courses, which assumes every course is worth the same
+   — an assumption the footer states out loud rather than burying.
+
+   And a forecast built only on dated items understates every week when half a
+   course has no date in its outline. So coverage is reported beside it: how
+   much of each course's grade actually has a date attached. A student looking
+   at "ECON 40% dated" knows the other 60% is still coming. */
+function pctOf(w){
+  var m=String(w||"").match(/(\d{1,3}(?:\.\d+)?)\s*%/);
+  return m?parseFloat(m[1]):0;
+}
+function mondayOf(iso){
+  var d=P(iso),day=(d.getDay()+6)%7;      /* Monday = 0 */
+  d.setDate(d.getDate()-day);
+  return ISO(d);
+}
+function courseCoverage(){
+  var out=[];
+  (S.courses||[]).forEach(function(c){
+    var dated=0,undated=0;
+    (S.items||[]).forEach(function(i){
+      if(i.c!==c.key)return;
+      var p=pctOf(i.w); if(!p)return;
+      if(i.d)dated+=p;else undated+=p;
+    });
+    out.push({key:c.key,code:c.code||c.key,dated:dated,undated:undated,
+              known:dated+undated,col:colorOf(c.key)});
+  });
+  return out;
+}
+function loadForecast(){
+  var n=(S.courses||[]).length;
+  if(!n)return null;
+  var today=ISO(new Date()),start=mondayOf(today);
+  var weeks={},order=[];
+  (S.items||[]).forEach(function(i){
+    if(!i.d||i.d<start)return;
+    var wk=mondayOf(i.d);
+    if(!weeks[wk]){weeks[wk]={wk:wk,share:0,graded:0,ungraded:0,by:{},items:[]};order.push(wk);}
+    var w=weeks[wk],p=pctOf(i.w);
+    w.items.push(i);
+    if(p){w.graded++;w.share+=p/n;w.by[i.c]=(w.by[i.c]||0)+p;}
+    else w.ungraded++;
+  });
+  order.sort();
+  if(!order.length)return null;
+  /* fill the gaps so a quiet fortnight reads as quiet rather than as missing */
+  var full=[],cur=order[0],last=order[order.length-1],guard=0;
+  while(cur<=last&&guard++<60){
+    full.push(weeks[cur]||{wk:cur,share:0,graded:0,ungraded:0,by:{},items:[]});
+    var d=P(cur);d.setDate(d.getDate()+7);cur=ISO(d);
+  }
+  return full;
+}
+function wkLabel(iso){
+  var d=P(iso);
+  return MON[d.getMonth()].slice(0,3)+" "+d.getDate();
+}
+function renderLoad(){
+  var host=document.getElementById("load"),sec=document.getElementById("load-sec");
+  if(!host||!sec)return;
+  var f=loadForecast();
+  if(!f||!f.some(function(w){return w.graded;})){
+    sec.classList.add("hide");
+    return;
+  }
+  sec.classList.remove("hide");
+  var max=Math.max.apply(null,f.map(function(w){return w.share;}))||1;
+  var thisWk=mondayOf(ISO(new Date()));
+  var sorted=f.slice().sort(function(a,b){return b.share-a.share;});
+  var peak=sorted[0];
+  var hot=peak.share>0?peak.share*0.72:999;
+
+  var strip=f.map(function(w,ix){
+    var h=Math.max(2,Math.round(w.share/max*86));
+    var cls="lw"+(w.share>=hot&&w.share>0?" hot":"")+(w.wk===thisWk?" now":"");
+    return '<button type="button" class="'+cls+'" data-lw="'+ix+'" '
+      +'title="'+esc(wkLabel(w.wk)+" · "+Math.round(w.share)+"% of the term · "
+        +w.graded+" graded")+'">'
+      +'<span class="pc">'+(w.share>=1?Math.round(w.share)+"%":"")+'</span>'
+      +'<span class="bar" style="height:'+h+'px"></span></button>';
+  }).join("");
+  /* Every label is emitted; which ones are visible is a question about the
+     width available, so CSS answers it. On a phone ten dates in 350 points
+     overlap into mush, and mush reads as a bug rather than as a chart. */
+  var axis=f.map(function(w,ix){
+    return '<span'+(ix%2?' class="alt"':'')+'>'+esc(wkLabel(w.wk))+'</span>';
+  }).join("");
+
+  var byCourse=Object.keys(peak.by).map(function(k){
+    return k+" "+Math.round(peak.by[k])+"%";
+  }).join("  ·  ");
+  var second=sorted[1]&&sorted[1].share>0?sorted[1]:null;
+  var remaining=f.reduce(function(a,w){return a+w.share;},0);
+
+  var calls=
+    '<div class="load-call peak"><div class="d">Heaviest week ahead</div>'
+     +'<div class="big">'+esc(wkLabel(peak.wk))+'</div>'
+     +'<div class="m">'+Math.round(peak.share)+'% of the whole term’s marks, across '
+     +peak.graded+' graded thing'+(peak.graded===1?"":"s")
+     +(byCourse?' — '+esc(byCourse):"")+'.</div></div>'
+    +(second?'<div class="load-call"><div class="d">Then</div>'
+     +'<div class="big">'+esc(wkLabel(second.wk))+'</div>'
+     +'<div class="m">'+Math.round(second.share)+'% of the term, '+second.graded
+     +' graded thing'+(second.graded===1?"":"s")+'.</div></div>':"")
+    +'<div class="load-call"><div class="d">Still to come</div>'
+     +'<div class="big">'+Math.round(remaining)+'%</div>'
+     +'<div class="m">of the term’s marks have a date and are still ahead of you.</div></div>';
+
+  var cov=courseCoverage().filter(function(c){return c.known>0;});
+  var covHTML=cov.length?'<div class="cover">'+cov.map(function(c){
+      return '<span class="covchip" style="--cc:'+c.col+'"><b>'+esc(c.key)+'</b> '
+        +Math.round(c.dated)+'% dated'+(c.undated?" · "+Math.round(c.undated)+"% not":"")+'</span>';
+    }).join("")+'</div>':"";
+
+  host.innerHTML='<div class="load-strip">'+strip+'</div>'
+    +'<div class="load-axis'+(f.length>14?" dense":"")+'">'+axis+'</div>'
+    +'<div class="load-calls">'+calls+'</div>'
+    +'<div class="load-foot">Each bar is one week, and its height is the share of the '
+    +'<b>whole term’s</b> marks falling in it — which means treating your courses as worth the '
+    +'same as each other. Only work that has a date can be counted, so the chips below say how much of '
+    +'each course actually has one. Tap a bar to see that week.'+covHTML+'</div>';
+
+  var note=document.getElementById("load-note");
+  if(note)note.textContent=f.length+" weeks ahead";
+}
+function loadGo(ix){
+  var f=loadForecast();if(!f||!f[ix])return;
+  var w=f[ix];
+  if(!w.items.length)return;
+  showPanel("p-cal");
+  setTimeout(function(){
+    try{goMonth(w.wk.slice(0,7),true);}catch(e){}
+    setTimeout(function(){try{sheetDay(w.items[0].d);}catch(e){}},220);
+  },60);
+}
 
 /* ===================== find anything =====================
    One index over everything the term holds, rebuilt on each keystroke. That is
@@ -4077,6 +4266,7 @@ document.addEventListener("click",function(e){
     });
     return;
   }
+  if((x=t.closest("[data-lw]"))){loadGo(+x.dataset.lw);return;}
   if(t.closest("#findbtn")){openFind();return;}
   if(t.closest("[data-findclose]")){closeFind();return;}
   if((x=t.closest("[data-find]"))){findGo(+x.dataset.find);return;}
