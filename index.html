@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v3.3  (14 September 2026)
+  Syllabus Desk  v3.4  (14 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -128,6 +128,9 @@ h1,h2,h3,h4{margin:0;font-family:var(--font-display);font-weight:600;text-wrap:b
 a{color:var(--accent-deep)}
 .wrap{max-width:1220px;margin:0 auto;padding:0 var(--gut)}
 @media(max-width:700px){:root{--gut:18px}}
+/* Between a phone and a laptop the page wants a little more air at the edges
+   than a phone and a little less than a desktop. */
+@media(min-width:701px) and (max-width:1180px){:root{--gut:24px}}
 .mono{font-family:var(--font-mono)}
 .lab{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
 
@@ -162,13 +165,18 @@ a{color:var(--accent-deep)}
   .topbar-in{flex-wrap:wrap;align-items:center;padding-top:9px;padding-bottom:9px;min-height:0}
   .brand{border-right:0;margin-right:0;padding-right:0;flex:1 1 auto;min-width:0}
   .brand .wm{font-size:1rem;overflow:hidden;text-overflow:ellipsis}
-  .topacts{order:2;border-left:0;margin-left:0;padding-left:0;flex:1 1 100%;gap:6px;
-    flex-wrap:wrap;justify-content:flex-start;margin-top:8px}
+  .topacts{order:2;border-left:0;margin-left:auto;padding-left:0;gap:6px;
+    flex-wrap:wrap;justify-content:flex-end}
   .topacts .btn{padding:7px 10px;font-size:.6rem}
   .tabs{order:3;flex:1 0 100%;margin-top:9px;border-top:1px solid var(--line-soft);
     -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
   .tab{padding:11px 13px;border-bottom-width:2px}
   .tab:first-child{padding-left:0}
+}
+@media(max-width:620px){
+  /* On a phone the actions need the whole width; on a tablet there is room for
+     them to sit at the end of the brand row, which saves a whole row of screen. */
+  .topacts{flex:1 1 100%;justify-content:flex-start;margin-top:8px;margin-left:0}
 }
 @media(max-width:560px){
   /* Seven tabs no longer fit on one line of a phone. A strip that scrolls
@@ -227,7 +235,10 @@ section{margin-bottom:var(--band-lg)}
 /* ---- weeks ---- */
 .weeks{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line)}
 .weeks>div+div{border-left:1px solid var(--line-soft)}
-@media(max-width:880px){.weeks{grid-template-columns:1fr}.weeks>div+div{border-left:0;border-top:1px solid var(--line)}}
+/* Two weeks side by side is the whole idea, so it is the last thing to give
+   way: it holds both columns down to 700px, which keeps every tablet — and a
+   half-screen window on a laptop — showing the fortnight rather than a list. */
+@media(max-width:700px){.weeks{grid-template-columns:1fr}.weeks>div+div{border-left:0;border-top:1px solid var(--line)}}
 .wcol{background:var(--surface)}
 .wcol-head{padding:13px var(--gut-in);border-bottom:1px solid var(--line-soft);display:flex;align-items:baseline;gap:10px}
 .wcol-head h3{font-size:.95rem;letter-spacing:-.02em}
@@ -313,7 +324,13 @@ input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:po
 .dotsonly{display:none;flex-wrap:wrap;gap:2px;margin-top:auto}
 .dotsonly span{width:5px;height:5px;background:var(--c,var(--ink-3))}
 @media(max-width:1040px){.cell{min-height:96px}.ev{font-size:.62rem}}
-@media(max-width:760px){
+/* A tablet has room for the words. Dots are a phone compromise — on an iPad
+   they turn a month into a puzzle you have to tap your way through. */
+@media(min-width:621px) and (max-width:1040px){
+  .cell{min-height:104px}
+  .ev{font-size:.63rem;padding:2px 3px}
+}
+@media(max-width:620px){
   .cell{min-height:62px;padding:4px 3px;gap:2px}
   .cell .n{font-size:.62rem}
   .cell.today .n{width:17px;height:17px}
@@ -379,7 +396,7 @@ input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:po
 .cmeta{display:flex;flex-wrap:wrap;gap:5px 26px;margin-top:12px;font-size:.8rem;color:var(--ink-3)}
 .cmeta b{color:var(--ink-2);font-weight:500}
 .cbody{padding:18px var(--gut-in) 20px;display:grid;grid-template-columns:1.35fr 1fr;gap:28px}
-@media(max-width:860px){.cbody{grid-template-columns:1fr}}
+@media(max-width:700px){.cbody{grid-template-columns:1fr}}
 .blk h4{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;font-weight:500}
 .blk+.blk{margin-top:24px}
 table.assess{width:100%;border-collapse:collapse;font-size:.86rem}
@@ -2007,11 +2024,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"3.3",date:"14 September 2026",year:2026};
+var BUILD={v:"3.4",date:"14 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["3.4","iPad stops being treated as a big phone. Held in portrait, an iPad was collapsing the fortnight into one column and the calendar into coloured dots, so half the screen went to waste and a month could not be read without tapping every day. From now on any screen wider than 700 points keeps <b>both weeks side by side</b>, keeps the <b>words in the calendar</b> with rows tall enough to hold them, keeps a course\u2019s detail in two columns, and spends two rows on the top bar instead of three."],
   ["3.3","It installs, and it works with no signal. Add it to your home screen and it gets its own icon and its own window &mdash; and from now on it <b>opens offline</b>, with your whole term, the calendar, the countdowns and the exports all working. Only reading a brand-new outline and signing in still need a connection. On Android and desktop the install is now one tap instead of a menu hunt, the top bar says <b>Offline</b> when you are, and a link can point straight at a tab."],
   ["3.2","A proper legal notice, and two smaller promises kept. <b>Legal &amp; privacy</b> now holds a real privacy policy, terms of use, an accuracy statement and an accessibility statement, with an effective date, how long anything is kept, and one address for questions. You can now <b>delete your account</b> yourself — email address and all — instead of asking anyone. Two claims that were not true are fixed: this website never sends your outline to Claude, and the two outside libraries are fetched rather than carried. Those libraries now load only when you actually open a PDF or a Word file, and each is checked against a published fingerprint before your browser will run it, so opening the page no longer tells a content network you were here."],
   ["3.1","The outline reader stops inventing dates. A word that merely began like a month — <b>Mark</b>-recapture, <b>Mar</b>keting, <b>Jun</b>ior, <b>Nov</b>el — was being read as that month, so an outline could show you a deadline that did not exist. It now has to be a real month. It also reads the dates many outlines only state in the grading table (\u201cMidterm \u2014 20% (Thursday, October 15)\u201d), and no longer lets a grading line hand its date to the wrong item."],
