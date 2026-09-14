@@ -719,16 +719,58 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
   var MON3 = MONTHS.map(function (m) { return m.slice(0, 3); });
   var DOW = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
 
+  /* A month has to be spelled like a month.
+
+     This used to compare the first THREE LETTERS of any word against the list,
+     which meant "Mark-recapture" was March, "Marketing" was March, "Junior" was
+     June, "Novel" was November and "Decathlon" was December — and because the
+     surrounding pattern also grabs a nearby number, an outline that merely said
+     "#5 Mark-recapture" produced a confident, wrong 5 March. A student would
+     have seen a deadline that does not exist, which is worse than seeing none.
+
+     Now the word must BE a month: the full name, the standard three-letter
+     abbreviation, or "sept". Nothing else, however it starts. */
+  var MONABBR = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
   function monthIndex(w) {
     w = String(w || "").toLowerCase().replace(/\./g, "");
     var i = MONTHS.indexOf(w); if (i > -1) return i;
-    return MON3.indexOf(w.slice(0, 3));
+    if (w === "sept") return 8;
+    return MONABBR.indexOf(w);
   }
   function pad(n) { return String(n).padStart(2, "0"); }
   function iso(y, m, d) { return y + "-" + pad(m + 1) + "-" + pad(d); }
   function valid(y, m, d) {
     var dt = new Date(y, m, d);
     return dt.getFullYear() === y && dt.getMonth() === m && dt.getDate() === d;
+  }
+
+
+  /* ---------------------------------------------------------------- times */
+  /* Outlines say a deadline out loud far more often than they say a date
+     twice: "due Friday by 11:59 pm", "submit before 5pm", "at noon". Reading
+     it costs one regex and saves the student the guess. Anything ambiguous is
+     left alone — an item with no time is honest; an item with a WRONG time is
+     worse than none, because it looks decided. */
+  function readTime(s) {
+    s = String(s || "").toLowerCase();
+    if (!s || s.length > 300) return "";
+    if (/\bmidnight\b/.test(s)) return "00:00";
+    if (/\b(noon|midday)\b/.test(s)) return "12:00";
+    /* only take a time that is presented AS a deadline, so a room number or a
+       class hour in the same cell cannot be mistaken for one */
+    var m = s.match(/\b(?:due|submit(?:ted)?|deadline|by|before|no later than|at|starts?|opens?|closes?)\b[^0-9]{0,12}(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)/);
+    if (!m) m = s.match(/\b(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)\b(?=[^0-9]{0,14}\b(?:deadline|due|sharp)\b)/);
+    if (!m) {
+      /* a bare 24-hour deadline: "due 23:59", "by 17:00" */
+      var m24 = s.match(/\b(?:due|deadline|by|before|no later than|at)\b[^0-9]{0,12}([01]?\d|2[0-3]):([0-5]\d)\b(?!\s*(?:a\.?m\.?|p\.?m\.?))/);
+      if (m24) return pad(+m24[1]) + ":" + m24[2];
+      return "";
+    }
+    var h = +m[1], mi = m[2] ? +m[2] : 0, ap = (m[3] || "").replace(/[.\s]/g, "");
+    if (h < 1 || h > 12 || mi > 59) return "";
+    if (ap === "pm" && h < 12) h += 12;
+    if (ap === "am" && h === 12) h = 0;
+    return pad(h) + ":" + pad(mi);
   }
 
   /* ---------------------------------------------------------------- dates */
@@ -838,7 +880,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
   /* ------------------------------------------------------------- weights */
   function cleanName(s) {
-    return tidy(s).replace(/[*†‡]+/g, "").replace(/[:–\-]+$/, "").replace(/\s{2,}/g, " ").trim();
+    return tidy(s).replace(/[*†‡]+/g, "").replace(/[:—–\-]+$/, "").replace(/\s{2,}/g, " ").trim();
   }
   function plausibleName(c) {
     if (!c) return false;
@@ -857,7 +899,21 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
     var cand = [];
     for (var i = 0; i < cells.length; i++) {
       var c = cells[i], m;
-      if ((m = c.match(/^(.{2,46}?)[\s.…:]*?(\d{1,3})(?:\.\d+)?\s*%$/)) && plausibleName(m[1]))
+      /* "Midterm examination — 20% (Thursday, October 15)" and
+         "Quizzes — 2 x 10% (Labs #1, 2, 4)" are grading lines too. Requiring
+         the line to END at the percent sign threw away every grading table
+         that annotates its rows — and on at least one real outline that meant
+         falling back to a "marks so far by the withdrawal date" block, which
+         sums to 40 and is not the grading scheme at all.
+
+         A trailing note is allowed now, and "2 x 10%" counts as the 20% it is. */
+      var mult = c.match(/^(.{2,46}?)[\s.…:—–-]*?(\d{1,2})\s*[x×]\s*(\d{1,3})(?:\.\d+)?\s*%(?:\s*\(.{0,60}\))?\s*$/);
+      if (mult && plausibleName(mult[1])) {
+        var each = +mult[3], times = +mult[2];
+        if (each >= 1 && each * times <= 100)
+          { cand.push({ i: i, n: cleanName(mult[1]), p: each * times, each: each, times: times }); continue; }
+      }
+      if ((m = c.match(/^(.{2,46}?)[\s.…:]*?(\d{1,3})(?:\.\d+)?\s*%(?:\s*\(.{0,60}\))?\s*$/)) && plausibleName(m[1]))
         { cand.push({ i: i, n: cleanName(m[1]), p: +m[2] }); continue; }
       if ((m = c.match(/^(\d{1,3})(?:\.\d+)?\s*%\s*[-–:]?\s*(.{2,46})$/)) && plausibleName(m[2]))
         { cand.push({ i: i, n: cleanName(m[2]), p: +m[1] }); continue; }
@@ -871,7 +927,10 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
     if (!cand.length) return [];
     var runs = [], cur = [cand[0]];
     for (var j = 1; j < cand.length; j++) {
-      if (cand[j].i - cur[cur.length - 1].i <= 6) cur.push(cand[j]);
+      /* 4, not 6: on a real outline the grading table and a separate
+         "marks received by the withdrawal date" block sat five cells apart and
+         merged into one run summing to 120, which then beat the real scheme. */
+      if (cand[j].i - cur[cur.length - 1].i <= 4) cur.push(cand[j]);
       else { runs.push(cur); cur = [cand[j]]; }
     }
     runs.push(cur);
@@ -885,7 +944,8 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
       if (uniq.length < 2) score -= 20;
       if (score > bestScore) { bestScore = score; best = uniq; }
     });
-    return (best || []).map(function (x) { return [x.n, x.p]; });
+    /* the cell index travels too: a grading line often states its own date */
+    return (best || []).map(function (x) { return [x.n, x.p, x.i, x.times || 1, x.each || x.p]; });
   }
 
   /* --------------------------------------------------------------- header */
@@ -893,8 +953,13 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
     var h = { code: "", title: "", instructor: "", email: "", room: "", meets: "", time: "" };
     /* "MKTG 2430&3430-01" is one cross-listed course: keep the first number and
        the section that trails the whole group. */
-    var m = text.match(/\b([A-Z]{2,5})\s?-?\s?(\d{4})((?:\s*&\s*\d{4})*)\s*[-–]\s*(\d{2,3})\b/);
-    if (m) h.code = m[1] + " " + m[2] + "-" + m[4];
+    /* "BIOL-ERSC-2260H-A" is one course cross-listed between two subjects,
+       with a letter on the number and a letter section. Take the first
+       subject, keep the number as written, keep the section. */
+    var m = text.match(/\b([A-Z]{2,5})(?:-[A-Z]{2,5})+-(\d{3,4}[A-Z]?)-([A-Z0-9]{1,3})\b/);
+    if (m) h.code = m[1] + " " + m[2] + "-" + m[3];
+    if (!h.code) m = text.match(/\b([A-Z]{2,5})\s?-?\s?(\d{4})((?:\s*&\s*\d{4})*)\s*[-–]\s*(\d{2,3})\b/);
+    if (!h.code && m) h.code = m[1] + " " + m[2] + "-" + m[4];
     else {
       m = text.match(/\b([A-Z]{2,5})\s?-?\s?(\d{4})\b/);
       if (m) h.code = m[1] + " " + m[2];
@@ -973,7 +1038,11 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
       var rm = src.match(/\b([A-Z]{2,4}\s?\d{3,4})\b/);
       if (rm) h.room = rm[1];
     }
-    if (h.title) h.title = tidy(h.title.replace(/\bcourse\s*outline\b/i, ""));
+    if (h.title) {
+      /* the title often arrives with the course code still stuck to the front */
+      h.title = tidy(h.title.replace(/\bcourse\s*outline\b/i, "")
+        .replace(/^[A-Z]{2,5}(?:[-\s][A-Z]{2,5})*[-\s]?\d{3,4}[A-Z]?(?:\s*-\s*[A-Z0-9]{1,3})?\s*[:\-–—]?\s*/, ""));
+    }
     return h;
   }
 
@@ -987,6 +1056,16 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
     for (var i = 0; i < cells.length; i++) {
       var d = readDate(cells[i]);
       if (!d) continue;
+      /* A GRADING LINE THAT NAMES ITS OWN DATE keeps it.
+
+         "Midterm examination — 20% (Thursday, October 15)" is not a schedule
+         row. Treating it as one took the date and then reached forward for a
+         topic, landing on the NEXT line — so the midterm's date ended up
+         attached to "Final examination — 40%", an exam that has no date at all.
+         A wrong date on the wrong exam is the worst thing this reader can do,
+         so a cell carrying both a weight and a date is left for readWeights,
+         which knows the date belongs to the item named in that same cell. */
+      if (/\d{1,3}\s*%/.test(cells[i])) continue;
       // the topic is the next cell that is not itself a date and not a bare number
       var topic = "";
       for (var j = i + 1; j < Math.min(i + 4, cells.length); j++) {
@@ -1023,7 +1102,8 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         var key = (topic.toLowerCase() + "|" + date);
         if (!seenItem[key]) {
           seenItem[key] = 1;
-          items.push({ title: topic.slice(0, 140), date: date, kind: k, weight: "", note: "" });
+          items.push({ title: topic.slice(0, 140), date: date, kind: k, weight: "",
+                       time: readTime(topic), note: "" });
         }
       }
     });
@@ -1059,8 +1139,22 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
       }
       var k = kindOf(name);
       if (!k) return;
-      items.push({ title: name, date: null, kind: k, weight: pct + "%",
-                   note: "Weighted in the grading table, but the outline gives no date." });
+      /* "Midterm examination — 20% (Thursday, October 15)" says when it is.
+         Outlines that keep their schedule in a table the reader cannot parse
+         very often still state the important dates here, in the grading
+         breakdown, in plain words. */
+      var own = null, ownCell = cells[w[2]];
+      if (ownCell) {
+        var dd = readDate(ownCell);
+        if (dd) {
+          var yy = dd.y || year;
+          if (valid(yy, dd.m, dd.d)) own = iso(yy, dd.m, dd.d);
+        }
+      }
+      items.push({ title: name, date: own, kind: k, weight: pct + "%",
+                   time: own ? readTime(ownCell) : "",
+                   note: own ? "Date taken from the grading breakdown."
+                             : "Weighted in the grading table, but the outline gives no date." });
     });
 
     var h = readHeader(text, cells);
@@ -1075,7 +1169,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
     };
   }
 
-  root.SDParse = { parse: parse, readDate: readDate, cellsOf: cellsOf };
+  root.SDParse = { parse: parse, readDate: readDate, readTime: readTime, cellsOf: cellsOf };
 })(typeof window !== "undefined" ? window : globalThis);
 </script>
 
