@@ -1,5 +1,5 @@
 /* ============================================================================
-   Syllabus Desk service worker  ·  build 3.5
+   Syllabus Desk service worker  ·  build 3.6
 
    Two jobs, and a rule about each.
 
@@ -13,7 +13,7 @@
    untouched. If the worker ever answered that from cache the app would decide
    it was up to date forever.
    ========================================================================== */
-var VER   = "3.5";
+var VER   = "3.6";
 var SHELL = "sd-shell-" + VER;
 var HOME  = "./index.html";
 var FILES = ["./", HOME, "./manifest.webmanifest", "./icon-192.png", "./icon-512.png",

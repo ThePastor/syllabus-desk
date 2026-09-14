@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v3.5  (14 September 2026)
+  Syllabus Desk  v3.6  (14 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -786,6 +786,48 @@ table.users td.n{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-2
 @media(max-width:560px){
   .sdtoast{left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right))}
 }
+/* ============================== on paper ==============================
+   Printing used to hand you the tab bar and the footer. Paper is a different
+   medium with different rules: no chrome, no colour it cannot keep, headers
+   that repeat when a table runs over a page, and nothing split across a fold.
+
+   The sheet itself is built only when someone asks to print, and it is hidden
+   on screen — it is a rendering of the term, not another tab to maintain. */
+#printsheet{display:none}
+@media print{
+  @page{margin:14mm}
+  html,body{background:#fff !important}
+  .topbar,main,.foot,.sheet,.update-pop,.sdtoast{display:none !important}
+  #printsheet{display:block !important;color:#000;font-family:var(--font-body)}
+  #printsheet *{color:#000 !important;background:transparent !important}
+  #printsheet .ps-head{border-bottom:1.5pt solid #000;padding-bottom:6pt;margin-bottom:12pt;
+    display:flex;align-items:baseline;gap:12pt}
+  #printsheet h1{font-family:var(--font-display);font-size:17pt;letter-spacing:-.02em;margin:0}
+  #printsheet .ps-when{margin-left:auto;font-family:var(--font-mono);font-size:8pt}
+  #printsheet .ps-range{font-family:var(--font-mono);font-size:8.5pt;margin:0 0 14pt}
+  #printsheet h2{font-family:var(--font-mono);font-size:8pt;letter-spacing:.14em;
+    text-transform:uppercase;margin:14pt 0 5pt;border-bottom:.5pt solid #999;padding-bottom:3pt}
+  #printsheet table{width:100%;border-collapse:collapse;font-size:9.5pt}
+  #printsheet thead{display:table-header-group}   /* repeat the header across pages */
+  #printsheet tr{break-inside:avoid;page-break-inside:avoid}
+  #printsheet th{text-align:left;font-family:var(--font-mono);font-size:7.5pt;
+    letter-spacing:.1em;text-transform:uppercase;padding:0 6pt 3pt 0;border-bottom:.5pt solid #000}
+  #printsheet td{padding:3.5pt 6pt 3.5pt 0;border-bottom:.4pt solid #ccc;vertical-align:top}
+  #printsheet td.d{font-family:var(--font-mono);font-size:8.5pt;white-space:nowrap;width:22mm}
+  #printsheet td.k{font-family:var(--font-mono);font-size:8pt;white-space:nowrap;width:16mm}
+  #printsheet td.w{font-family:var(--font-mono);font-size:8.5pt;text-align:right;
+    white-space:nowrap;width:14mm}
+  #printsheet td.c{font-family:var(--font-mono);font-size:8.5pt;white-space:nowrap;width:24mm}
+  /* Months flow into each other. Keeping each month whole sounds tidy and
+     costs a page every time one ends near the top of a sheet — five courses
+     turned two pages into three. Only rows and headings resist breaking. */
+  #printsheet .ps-month{break-inside:auto}
+  #printsheet h2{break-after:avoid;page-break-after:avoid}
+  #printsheet .ps-graded{font-weight:600}
+  #printsheet .ps-foot{margin-top:16pt;padding-top:7pt;border-top:.5pt solid #000;
+    font-size:8pt;line-height:1.45}
+  #printsheet .ps-none{font-size:9pt;font-style:italic}
+}
 .hide{display:none!important}
 </style>
 </head>
@@ -1503,6 +1545,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           <button class="btn" id="exp-ics">Download .ics <span class="arw">&darr;</span></button>
         </div>
         <div class="excard">
+          <h4>On paper</h4>
+          <p>One sheet with every dated item by month, the courses behind them, and nothing else —
+          for above a desk, or for handing out. Your browser's print dialog can save it as a PDF.</p>
+          <button class="btn" id="exp-print">Print the term <span class="arw">&rarr;</span></button>
+        </div>
+        <div class="excard">
           <h4>Your own copy</h4>
           <p>Everything this page knows, as a JSON file — for moving to another browser, or just keeping a backup.</p>
           <div class="row"><button class="btn" id="exp-json">Export data</button><button class="btn ghost" id="imp-json">Import</button></div>
@@ -2070,6 +2118,8 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
   </div>
 </main>
 
+<div id="printsheet" aria-hidden="true"></div>
+
 <footer class="foot"><div class="wrap foot-in">
   <span>Claude proposes the dates and <b style="color:var(--inverse-ink)">you confirm every one</b>. Anything an outline left blank is flagged, not invented. Instructors move dates — your course page stays the final word.<span id="storage-note"></span></span>
   <span class="maker">
@@ -2085,11 +2135,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"3.5",date:"14 September 2026",year:2026};
+var BUILD={v:"3.6",date:"14 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["3.6","Your term, on one sheet of paper. <b>Export \u203a Print the term</b> lays out every dated item month by month with its course and its weight, the courses behind the codes, and the things an outline weighted but never dated \u2014 then your browser\u2019s print dialog will save it as a PDF if you would rather. Printing any other screen used to give you the tab bar and the footer; it now gives you the page. The sheet carries its own reminder that your outline and your instructor are still the authority on every date, because paper outlives the screen it came from."],
   ["3.5","Everything you tap is now big enough to tap. The tick box beside each item was fourteen points square \u2014 the smallest thing in the app and the one people press most \u2014 and most other controls were under half the size Apple asks for. On anything you touch, every button, tab, field and tick now has a <b>44-point target</b>, while the box itself stays visually quiet and rows do not grow. Pointing with a mouse or trackpad keeps the tighter spacing. The page also stops assuming the screen is a plain rectangle: installed on an iPhone it now clears the camera notch and the home bar."],
   ["3.4","iPad stops being treated as a big phone. Held in portrait, an iPad was collapsing the fortnight into one column and the calendar into coloured dots, so half the screen went to waste and a month could not be read without tapping every day. From now on any screen wider than 700 points keeps <b>both weeks side by side</b>, keeps the <b>words in the calendar</b> with rows tall enough to hold them, keeps a course\u2019s detail in two columns, and spends two rows on the top bar instead of three."],
   ["3.3","It installs, and it works with no signal. Add it to your home screen and it gets its own icon and its own window &mdash; and from now on it <b>opens offline</b>, with your whole term, the calendar, the countdowns and the exports all working. Only reading a brand-new outline and signing in still need a connection. On Android and desktop the install is now one tap instead of a menu hunt, the top bar says <b>Offline</b> when you are, and a link can point straight at a tab."],
@@ -2862,6 +2913,106 @@ function renderAll(){
 
 
 
+
+/* ===================== the term, on one sheet =====================
+   Built when it is asked for and thrown away after, because it is a rendering
+   of what is already in S rather than a second copy of it to keep in step.
+
+   What it deliberately leaves out: study blocks and personal entries. This is
+   the sheet somebody pins above a desk or hands to a class, and the useful
+   thing on it is what is due and when. What it deliberately puts in: the line
+   about where a date really comes from. A printed page outlives the screen it
+   came from, so it has to carry its own caveat. */
+var PS_MONTH=["January","February","March","April","May","June","July",
+              "August","September","October","November","December"];
+var PS_DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+var PS_KIND={exam:"Exam",quiz:"Quiz",due:"Due",pres:"Present",lab:"Lab",other:""};
+
+function psDate(iso){
+  var d=P(iso);
+  return PS_DOW[d.getDay()]+" "+d.getDate();
+}
+function psLongDate(d){
+  return d.getDate()+" "+PS_MONTH[d.getMonth()]+" "+d.getFullYear();
+}
+function buildPrintSheet(){
+  var host=document.getElementById("printsheet");
+  if(!host)return;
+  var dated=(S.items||[]).filter(function(i){return i.d;})
+    .sort(function(a,b){return P(a.d)-P(b.d)||String(a.c).localeCompare(String(b.c));});
+  var undated=(S.items||[]).filter(function(i){return !i.d;});
+  var h="";
+
+  h+='<div class="ps-head"><h1>My term</h1>'
+    +'<span class="ps-when">Printed '+esc(psLongDate(new Date()))+'</span></div>';
+
+  var rng=termRange();
+  var span=rng?(fmtDay(rng[0])+" \u2013 "+fmtDay(P(rng[1]))):"";
+  h+='<p class="ps-range">'+(span?esc(span)+"  \u00b7  ":"")
+    +(S.courses||[]).length+" courses  \u00b7  "+dated.length+" dated items</p>";
+
+  /* the courses, so a sheet on a wall says what the codes mean */
+  if((S.courses||[]).length){
+    h+='<h2>Courses</h2><table><tbody>';
+    S.courses.forEach(function(c){
+      var bits=[];
+      if(c.instructor)bits.push(c.instructor);
+      if(c.room)bits.push(c.room);
+      if(c.meets)bits.push(c.meets+(c.time?" "+c.time:""));
+      h+='<tr><td class="c">'+esc(c.key)+'</td><td>'+esc(c.code||"")
+        +(c.title?" — "+esc(c.title):"")+'</td><td>'+esc(bits.join("  ·  "))+'</td></tr>';
+    });
+    h+='</tbody></table>';
+  }
+
+  /* what is due, by month */
+  if(dated.length){
+    var month=null,open=false;
+    dated.forEach(function(i){
+      var d=P(i.d),m=d.getFullYear()+"-"+d.getMonth();
+      if(m!==month){
+        if(open)h+='</tbody></table></div>';
+        month=m;open=true;
+        h+='<div class="ps-month"><h2>'+PS_MONTH[d.getMonth()]+" "+d.getFullYear()+'</h2>'
+          +'<table><thead><tr><th>Date</th><th>Course</th><th>What</th><th>Kind</th>'
+          +'<th style="text-align:right">Weight</th></tr></thead><tbody>';
+      }
+      var graded=!!i.w;
+      h+='<tr'+(graded?' class="ps-graded"':'')+'>'
+        +'<td class="d">'+esc(psDate(i.d))+(i.at?" "+esc(ampm(i.at)):"")+'</td>'
+        +'<td class="c">'+esc(i.c||"")+'</td>'
+        +'<td>'+esc(i.t||"")+'</td>'
+        +'<td class="k">'+esc(PS_KIND[i.k]||"")+'</td>'
+        +'<td class="w">'+esc(i.w||"")+'</td></tr>';
+    });
+    if(open)h+='</tbody></table></div>';
+  } else {
+    h+='<h2>What is due</h2><p class="ps-none">Nothing dated yet.</p>';
+  }
+
+  /* the honest half: what the outline never gave a date to */
+  if(undated.length){
+    h+='<div class="ps-month"><h2>Named in the outline, but never dated</h2>'
+      +'<table><tbody>';
+    undated.forEach(function(i){
+      h+='<tr><td class="c">'+esc(i.c||"")+'</td><td>'+esc(i.t||"")
+        +'</td><td class="w">'+esc(i.w||"")+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+  }
+
+  h+='<div class="ps-foot"><b>Check anything that matters.</b> Every date here was proposed from a '
+    +'course outline and confirmed by the person who printed this. Outlines are revised and dates move in '
+    +'class. Your course page and your instructor remain the authority on every one of them. '
+    +'Made with Syllabus Desk · thepastor.github.io/syllabus-desk</div>';
+
+  host.innerHTML=h;
+}
+function printTerm(){
+  buildPrintSheet();
+  /* let the layout settle before the print dialog takes its snapshot */
+  setTimeout(function(){try{window.print();}catch(e){}},80);
+}
 
 /* ===================== installed, and offline =====================
    Three things, and they are separate on purpose.
@@ -3679,6 +3830,7 @@ document.addEventListener("click",function(e){
     });
     return;
   }
+  if(t.closest("#exp-print")){printTerm();return;}
   if(t.closest("#exp-json")){offer("syllabus-desk-data.json",JSON.stringify(S,null,2),"Saved. Keep this if you switch browsers.");return;}
   if(t.closest("#imp-json")){
     var raw=window.prompt("Paste the contents of your exported JSON file.\n\nThis replaces everything currently on this page.");
