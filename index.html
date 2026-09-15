@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v4.6  (15 September 2026)
+  Syllabus Desk  v4.7  (15 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -1758,7 +1758,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           <h4>Drop your course outline here</h4>
           <p>PDF, Word (.docx) or plain text. The file is read in your browser — it is not uploaded anywhere.</p>
           <p style="margin:0 0 4px">Given a <b>course file</b> by whoever teaches it? Drop that in instead &mdash; it is already written out, so there is nothing to read and nothing to check twice.</p>
-          <input type="file" id="file" accept=".pdf,.docx,.txt,.md,.json,.sdcourse" class="hide">
+          <input type="file" id="file" accept=".pdf,.docx,.txt,.md,.json,.sdcourse,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown,application/json" class="hide">
           <button class="btn" id="pickfile">Choose a file</button>
         </div>
         <p style="margin:20px 0 9px;font-size:.85rem;color:var(--ink-3)">Or paste the outline text. The schedule table and the grading breakdown are the parts that carry the dates.</p>
@@ -1933,6 +1933,8 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           <h4>This build</h4>
           <p id="set-build" class="hint" style="margin:0 0 12px"></p>
           <button class="btn" id="set-whatsnew">What changed</button>
+          <p class="hint" id="set-build-note" style="margin:10px 0 0">When a newer version is published, a
+          <b>Refresh</b> button appears in the top bar. Refreshing keeps everything on this page.</p>
         </div>
       </div>
 
@@ -2398,11 +2400,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"4.6",date:"15 September 2026",year:2026};
+var BUILD={v:"4.7",date:"15 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["4.7","<b>The reader stops trusting file names.</b> It looks at the first bytes of a file, so a Word document whose insides are laid out unusually now opens, an old .doc or any other file that is not text gets a plain explanation instead of 190,000 characters of noise, and a scanned PDF says it is a scan rather than \u201cnothing dated\u201d. The file picker also names the file types the way iPhones want them named. And these release notes are now owner-only: everybody else sees the version, the date and the Refresh button, which is what they need."],
   ["4.6","<b>Import is a file now.</b> Export \u203a <b>Import a data file</b> opens a file picker instead of asking you to paste; a data file dropped on Add a course by mistake is offered for import rather than turned away. And the page itself no longer carries anybody\u2019s timetable: the owner\u2019s own schedule, which sat in the source behind an owner-only button, has been taken out. Nobody\u2019s term belongs in a public page."],
   ["4.5","<b>A first visit is an empty page.</b> The calendar now holds only what you put on it \u2014 an outline you read in, a course file from your instructor, a shift or practice on the Life tab. The worked example no longer loads itself on arrival; it waits behind <b>Load an example term</b>, says what it is when it arrives, and clears with one tap."],
   ["4.4","<b>A whole programme on one timeline.</b> Departments read one outline at a time; students read all of them at once, which is how two faultless outlines end up putting a midterm and a term paper on the same Tuesday. Paste the outlines a cohort takes together \u2014 or drop in the course files from the checker \u2014 and <b>Across a programme</b> shows every day that carries two courses, every week with four or more things in it, and every deadline sitting on a statutory holiday. Like the checker it reads only what you paste, keeps nothing, and sends nothing anywhere."],
@@ -4934,11 +4937,40 @@ function needLib(k){
 }
 
 /* ===================== extraction ===================== */
+/* The name is a hint; the first bytes are the truth. A .docx is a zip (PK), a
+   PDF starts %PDF, an old .doc is an OLE container (D0 CF 11 E0) this page does
+   not read. Anything else is treated as text — and then checked, because a
+   binary file read as text is 190,000 characters of noise in the paste box. */
+function sniff(f){
+  return f.slice(0,8).arrayBuffer().then(function(b){
+    var u=new Uint8Array(b),hex="";
+    for(var i=0;i<u.length;i++)hex+=(u[i]<16?"0":"")+u[i].toString(16);
+    if(hex.indexOf("504b0304")===0)return "zip";
+    if(hex.indexOf("25504446")===0)return "pdf";
+    if(hex.indexOf("d0cf11e0")===0)return "ole";
+    return "text";
+  })["catch"](function(){return "text";});
+}
+function looksBinary(txt){
+  var n=Math.min(txt.length,4000),bad=0;
+  for(var i=0;i<n;i++){var c=txt.charCodeAt(i);
+    if(c===0xFFFD||(c<32&&c!==9&&c!==10&&c!==13))bad++;}
+  return n>0&&bad/n>0.05;
+}
 function readFile(f){
   var n=(f.name||"").toLowerCase();
-  if(n.endsWith(".pdf"))return readPDF(f);
-  if(n.endsWith(".docx"))return readDOCX(f);
-  return f.text();
+  return sniff(f).then(function(kind){
+    if(kind==="pdf"||(kind==="text"&&n.endsWith(".pdf")))return readPDF(f);
+    if(kind==="zip"||n.endsWith(".docx"))return readDOCX(f);
+    if(kind==="ole"||n.endsWith(".doc"))
+      throw new Error("This is an older Word file (.doc), which this page cannot read. In Word, choose "
+        +"File \u203a Save As and pick .docx, or export it as a PDF \u2014 or open it, copy the text, and paste it below.");
+    return f.text().then(function(t){
+      if(looksBinary(t))throw new Error("That file is not text this page can read. It takes PDF, Word (.docx) "
+        +"and plain text \u2014 or open the outline, copy the text, and paste it below.");
+      return t;
+    });
+  });
 }
 function readPDF(f){
   return needLib("pdfjs").then(function(){
@@ -4961,21 +4993,57 @@ function readPDFNow(f){
         return out;
       });
     }));
-  }).then(function(p){return p.join("\n\n");})
-   .catch(function(){throw new Error("Could not read that PDF here. Open it, copy the text, and paste it below instead.");});
+  }).then(function(p){
+     var txt=p.join("\n\n");
+     if(txt.replace(/\s+/g,"").length<40)
+       throw new Error("scanned");
+     return txt;
+   })
+   .catch(function(e){
+     if(e&&e.message==="scanned")
+       throw new Error("That PDF has no selectable text \u2014 it is probably a scan or a photo of the outline. "
+         +"This page reads text, not pictures. Ask for the original file, or type the dates in by hand on the review screen.");
+     throw new Error("Could not read that PDF here. Open it, copy the text, and paste it below instead.");
+   });
 }
 function readDOCX(f){
   return needLib("jszip").then(function(){return readDOCXNow(f);},function(){
     throw new Error("The Word reader could not be loaded. Open the file, copy the text, and paste it below instead.");
   });
 }
+/* The main part is usually word/document.xml, but the package says where it
+   really is in _rels/.rels, and some generators put it at document2.xml. Ask
+   the package first; fall back to the usual name; then to anything that looks
+   like a document part. */
+function docxMainPart(z){
+  var rels=z.file("_rels/.rels");
+  var viaRels=rels?rels.async("string").then(function(xml){
+    var m=xml.match(/<Relationship[^>]*Type="[^"]*\/officeDocument"[^>]*Target="([^"]+)"/i)
+         ||xml.match(/<Relationship[^>]*Target="([^"]+)"[^>]*Type="[^"]*\/officeDocument"/i);
+    if(!m)return null;
+    var t=m[1].replace(/^\//,"");
+    return z.file(t)||null;
+  }):Promise.resolve(null);
+  return viaRels.then(function(x){
+    if(x)return x;
+    x=z.file("word/document.xml");if(x)return x;
+    var any=z.file(/^word\/document\d*\.xml$/i);
+    return any&&any.length?any[0]:null;
+  });
+}
+function docxText(xml){
+  return xml.replace(/<w:tab\/>/g," | ").replace(/<w:br[^>]*\/>/g,"\n").replace(/<w:cr\/>/g,"\n")
+    .replace(/<\/w:p>/g,"\n").replace(/<\/w:tr>/g,"\n").replace(/<\/w:tc>/g," | ")
+    .replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">")
+    .replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#x[0-9a-f]+;/gi," ").replace(/&#\d+;/g," ")
+    .replace(/[ \t]+/g," ").replace(/\n{3,}/g,"\n\n").trim();
+}
 function readDOCXNow(f){
-  return JSZip.loadAsync(f).then(function(z){var x=z.file("word/document.xml");if(!x)throw new Error("x");return x.async("string");})
-   .then(function(xml){
-     return xml.replace(/<w:tab\/>/g," | ").replace(/<\/w:p>/g,"\n").replace(/<\/w:tr>/g,"\n").replace(/<\/w:tc>/g," | ")
-       .replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#\d+;/g," ")
-       .replace(/[ \t]+/g," ").replace(/\n{3,}/g,"\n\n").trim();
-   }).catch(function(){throw new Error("Could not read that Word file. Open it, copy the text, and paste it below instead.");});
+  return JSZip.loadAsync(f).then(docxMainPart).then(function(x){
+    if(!x)throw new Error("nopart");
+    return x.async("string");
+  }).then(docxText)
+   .catch(function(){throw new Error("Could not read that Word file. Open it, copy the text, and paste it below instead.");});
 }
 
 /* ===================== parse ===================== */
@@ -5930,6 +5998,10 @@ function paintSettings(){
   });
   var sb=document.getElementById("set-build");
   if(sb)sb.textContent="Syllabus Desk v"+BUILD.v+", built "+BUILD.date+".";
+  /* the release-by-release list is the owner's tooling; everybody else gets the
+     version, the date, and the refresh button when there is something to refresh to */
+  var wn=document.getElementById("set-whatsnew");if(wn)wn.classList.toggle("hide",!isOwner());
+  var wnn=document.getElementById("set-build-note");if(wnn)wnn.classList.toggle("hide",isOwner());
   var sn=document.getElementById("set-note");
   if(sn)sn.textContent=isOwner()?"owner tools unlocked":"this device";
 }
@@ -6137,7 +6209,8 @@ function noteUpdated(){
   try{from=sessionStorage.getItem("sd:from");sessionStorage.removeItem("sd:from");}catch(e){return;}
   if(!from||from===BUILD.v)return;
   setTimeout(function(){
-    sdToast("Updated to v"+BUILD.v+".","What changed",function(){sheetWhatsNew(from);});
+    if(isOwner())sdToast("Updated to v"+BUILD.v+".","What changed",function(){sheetWhatsNew(from);});
+    else sdToast("Updated to v"+BUILD.v+". Everything on this page is as you left it.");
   },700);
 }
 function sdToast(msg,label,fn){
@@ -6168,6 +6241,7 @@ function whatsNewRows(){
   }).map(function(r){return r.length<3?r:[r[0],r[2]];});
 }
 function sheetWhatsNew(from){
+  if(!isOwner()){showPanel("p-settings");window.scrollTo({top:0,behavior:"smooth"});return;}
   var all=whatsNewRows();
   var rows=from?all.filter(function(r){return newerThan(r[0],from);}):all;
   if(!rows.length)rows=all.slice(0,1);
@@ -6375,6 +6449,8 @@ function paintOwner(){
   var n=document.getElementById("owner-note"); if(n)n.textContent="JohnsonXCorp · v"+BUILD.v;
   var ob=document.getElementById("owner-build"); if(ob)ob.textContent="v"+BUILD.v+" · "+BUILD.date;
   var ou=document.getElementById("owner-who"); if(ou)ou.textContent=on?"signed in":"signed out";
+  var wn=document.getElementById("set-whatsnew");if(wn)wn.classList.toggle("hide",!on);
+  var wnn=document.getElementById("set-build-note");if(wnn)wnn.classList.toggle("hide",on);
   paintOwnerUsers();
 }
 function askOwner(){
@@ -6393,7 +6469,7 @@ function askOwner(){
 /* ===================== boot ===================== */
 var _bs=document.getElementById("buildstamp");
 _bs.textContent="· v"+BUILD.v+" · "+BUILD.date;
-_bs.title="What changed in this version";
+_bs.title=isOwner()?"What changed in this version":"This build";
 /* the year appears in several places and not all of them exist in every
    build — one missing span must never take the rest of the boot with it */
 var _ry=document.getElementById("r-year");if(_ry)_ry.textContent=BUILD.year;
