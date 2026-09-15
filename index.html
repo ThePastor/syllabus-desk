@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v4.5  (15 September 2026)
+  Syllabus Desk  v4.6  (15 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -1267,7 +1267,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
   /* --------------------------------------------------------------- header */
   function readHeader(text, cells) {
     var h = { code: "", title: "", instructor: "", email: "", room: "", meets: "", time: "" };
-    /* "MKTG 2430&3430-01" is one cross-listed course: keep the first number and
+    /* "BUSN 2430&3430-01" is one cross-listed course: keep the first number and
        the section that trails the whole group. */
     /* "BIOL-ERSC-2260H-A" is one course cross-listed between two subjects,
        with a letter on the number and a letter section. Take the first
@@ -1286,7 +1286,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
     var lines = String(text).split(/\r?\n/).map(tidy).filter(Boolean);
 
-    /* "Name: Melanie Reed   Office: IB 2042" is two fields on one line, so a
+    /* "Name: A. Instructor   Office: AB 1234" is two fields on one line, so a
        label's value ends where the next label begins, not at end of line. */
     var LABEL = /\b(instructor|professor|lecturer|taught\s*by|facilitator|name|e-?mail|office\s*hours?|office|class\s*(?:hours?|time|times|meets)|lecture\s*(?:hours?|time)?|classroom|room|location|section|term|semester|phone|telephone|credits?|prereq\w*)\s*:/ig;
     function fields(line) {
@@ -1317,7 +1317,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         if (/^class(hours|time|times|meets)$|^lecture/.test(f.key)) { if (!classTime) classTime = v; }
         if (/^officehours?$/.test(f.key)) { if (!officeTime) officeTime = v; }
       });
-      /* an unlabelled meeting line, e.g. "M/R 1:00 pm – 2:15 pm, OM 1240".
+      /* an unlabelled meeting line, e.g. "M/R 1:00 pm – 2:15 pm, AB 1234".
          Only when the line carries no labels at all — otherwise an office-hours
          line wins the race against the class-hours line below it. */
       if (!classTime && !ff.length && /\d/.test(L) && L.length < 70 &&
@@ -1736,7 +1736,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         <div class="excard">
           <h4>Your own copy</h4>
           <p>Everything this page knows, as a JSON file — for moving to another browser, or just keeping a backup.</p>
-          <div class="row"><button class="btn" id="exp-json">Export data</button><button class="btn ghost" id="imp-json">Import</button></div>
+          <div class="row"><button class="btn" id="exp-json">Export data</button><button class="btn ghost" id="imp-json">Import a data file</button><button class="btn ghost sm" id="imp-paste">Paste instead</button><input type="file" id="impfile" accept=".json,application/json" class="hide"></div>
         </div>
       </div>
       <div style="margin-top:22px" class="callout">
@@ -1991,11 +1991,6 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
       </div>
       
                   <div class="exportgrid" style="margin-bottom:22px">
-        <div class="excard">
-          <h4>My term</h4>
-          <p>Load the real Fall 2026 schedule built from the TRU outlines and Moodle — five courses, every dated item, the study rhythm.</p>
-          <button class="btn primary" id="load-owner-term">Load my schedule <span class="arw">&rarr;</span></button>
-        </div>
         <div class="excard">
           <h4>Back to the demo</h4>
           <p>Load the fictional example term &mdash; the same one a visitor gets from <b>Load an example term</b>. Useful before showing the page to someone.</p>
@@ -2403,11 +2398,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"4.5",date:"15 September 2026",year:2026};
+var BUILD={v:"4.6",date:"15 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["4.6","<b>Import is a file now.</b> Export \u203a <b>Import a data file</b> opens a file picker instead of asking you to paste; a data file dropped on Add a course by mistake is offered for import rather than turned away. And the page itself no longer carries anybody\u2019s timetable: the owner\u2019s own schedule, which sat in the source behind an owner-only button, has been taken out. Nobody\u2019s term belongs in a public page."],
   ["4.5","<b>A first visit is an empty page.</b> The calendar now holds only what you put on it \u2014 an outline you read in, a course file from your instructor, a shift or practice on the Life tab. The worked example no longer loads itself on arrival; it waits behind <b>Load an example term</b>, says what it is when it arrives, and clears with one tap."],
   ["4.4","<b>A whole programme on one timeline.</b> Departments read one outline at a time; students read all of them at once, which is how two faultless outlines end up putting a midterm and a term paper on the same Tuesday. Paste the outlines a cohort takes together \u2014 or drop in the course files from the checker \u2014 and <b>Across a programme</b> shows every day that carries two courses, every week with four or more things in it, and every deadline sitting on a statutory holiday. Like the checker it reads only what you paste, keeps nothing, and sends nothing anywhere."],
   ["4.3","<b>The course file.</b> Whoever writes the outline can now check it and then save a <b>course file</b> \u2014 their schedule, written out by them. A student drops that into <b>Add a course</b> and the whole course is there in one tap: no pasting, no PDF, no reader deciding what \u201cWeek 6\u201d meant, and every date is the one their instructor published rather than one this page worked out. Dates the outline left blank can be filled in on the way out, so a \u201cTBA\u201d gets fixed once for everybody instead of being emailed about forty times. The file holds course information only \u2014 no student data of any kind, nothing that records who opens it, and no link back to whoever made it."],
@@ -3661,6 +3657,38 @@ function cohortGo(){
     +' dated item'+(rec.items.length===1?"":"s")+'.'+(COHORT.length<2
       ? ' Add the next one.' : '')+'</div>';
   renderCohort();
+}
+
+/* ---------- importing a data file ----------
+   The export is the whole of S plus the marks and the archive. Coming back in,
+   the marks and the archive peel off to where they live (neither may ride in S,
+   because S is what syncs) and the rest replaces the term. One function, so the
+   Export tab, the paste fallback and a file dropped on Add-a-course by mistake
+   all do exactly the same thing. */
+function dataBundleIn(txt){
+  try{var p=JSON.parse(String(txt||""));}catch(e){return null;}
+  if(!p||typeof p!=="object"||!Array.isArray(p.courses))return null;
+  if(p.file===SDFILE)return null;                     /* that is a course file, not a backup */
+  return p;
+}
+function importBundle(p,already){
+  var n=(p.courses||[]).length;
+  if(!already&&(S.courses.length||lifeList().length)){
+    if(!confirm("Import this data file?\n\nIt holds "+n+" course"+(n===1?"":"s")+" and replaces everything "
+      +"currently on this page. Export first if you want to keep what is here."))return false;
+  }else if(!already){
+    if(!confirm("Import this data file? It holds "+n+" course"+(n===1?"":"s")+"."))return false;
+  }
+  var q=Object.assign({},p);
+  if(q.marks){setMarks(q.marks);}delete q.marks;
+  if(Array.isArray(q.archive)){ARCHIVE=q.archive;saveArchive();}delete q.archive;
+  delete q.demo;
+  S={courses:q.courses||[],items:q.items||[],done:q.done||{},life:q.life||[],
+     plan:q.plan||[],name:q.name||"",version:q.version||1};
+  save();resetPalette();renderAll();paintSettings();
+  showPanel("p-weeks");window.scrollTo({top:0,behavior:"smooth"});
+  sdToast("Imported: "+n+" course"+(n===1?"":"s")+".");
+  return true;
 }
 
 /* ===================== the course file =====================
@@ -4959,7 +4987,7 @@ var SAMPLE_PROBE=null;
 var SCHEMA_PROMPT=
 'You are reading a university course outline and turning it into structured schedule data.\n'+
 'Return ONLY a JSON object, no prose, in exactly this shape:\n'+
-'{"code":"e.g. MKTG 2430-01","title":"course title","instructor":"","email":"","room":"","meets":"e.g. Mon / Thu","time":"e.g. 1:00 - 2:15 pm",\n'+
+'{"code":"e.g. BUSN 2430-01","title":"course title","instructor":"","email":"","room":"","meets":"e.g. Mon / Thu","time":"e.g. 1:00 - 2:15 pm",\n'+
 ' "weights":[["Component name",25],["Final exam",40]],\n'+
 ' "rules":"one or two sentences on the attendance, late-work or submission rules that actually cost marks",\n'+
 ' "items":[{"title":"Midterm 1","date":"2026-10-07","kind":"exam","weight":"25%","note":"short useful detail"}],\n'+
@@ -5368,7 +5396,6 @@ document.addEventListener("click",function(e){
     parseOutline(txt);return;
   }
   if(t.closest("#loadsample")||t.closest("#load-demo-term")){loadSample();return;}
-  if(t.closest("#load-owner-term")){loadOwnerTerm();return;}
   if(t.closest("#ownerbtn")){askOwner();return;}
   if(t.closest("#owner-signout")){setOwner(false);showPanel("p-settings");window.scrollTo({top:0,behavior:"smooth"});return;}
   if((x=t.closest("[data-f]"))){FILTER[x.dataset.f]=FILTER[x.dataset.f]?0:1;renderFilters();renderMonths();return;}
@@ -5487,14 +5514,13 @@ document.addEventListener("click",function(e){
     var bundle=Object.assign({},S,{marks:MARKS,archive:ARCHIVE});
     offer("syllabus-desk-data.json",JSON.stringify(bundle,null,2),
       "Saved. Keep this if you switch browsers — it includes your marks, which never leave this device any other way.");return;}
-  if(t.closest("#imp-json")){
-    var raw=window.prompt("Paste the contents of your exported JSON file.\n\nThis replaces everything currently on this page.");
+  if(t.closest("#imp-json")){document.getElementById("impfile").click();return;}
+  if(t.closest("#imp-paste")){
+    var raw=window.prompt("Paste the contents of your exported data file.\n\nThis replaces everything currently on this page.");
     if(!raw)return;
-    try{var p=JSON.parse(raw);if(!p.courses)throw 0;
-      /* marks must not ride into S — S is what syncs */
-      if(p.marks){setMarks(p.marks);delete p.marks;}
-      if(Array.isArray(p.archive)){ARCHIVE=p.archive;saveArchive();delete p.archive;}
-      S=p;save();renderAll();alert("Imported.");}catch(err){alert("That did not parse as Syllabus Desk data.");}
+    var pp=dataBundleIn(raw);
+    if(!pp){alert("That did not parse as Syllabus Desk data.");return;}
+    importBundle(pp,true);
     return;
   }
 });
@@ -5579,18 +5605,40 @@ document.addEventListener("change",function(e){
     if(x.checked)S.done[x.dataset.tick]=1;else delete S.done[x.dataset.tick];
     save();var r=x.closest(".it");if(r)r.classList.toggle("done",x.checked);return;
   }
+  if(t.id==="impfile"&&t.files&&t.files[0]){
+    var imf=t.files[0];
+    imf.text().then(function(raw){
+      var pp=dataBundleIn(raw);
+      if(pp){importBundle(pp,false);}
+      else if(courseFileIn(raw)){alert("That is a course file, not a data file. Add it from Add a course instead.");}
+      else alert("That did not parse as Syllabus Desk data.");
+      t.value="";
+    })["catch"](function(){alert("Could not read that file.");});
+    return;
+  }
   if(t.id==="file"&&t.files&&t.files[0]){
     var f=t.files[0];
     document.getElementById("parse-status").innerHTML='<div class="working"><span class="spin"></span><span>Reading '+esc(f.name)+'…</span></div>';
     /* An authored course file skips the reader entirely — there is nothing to read. */
     if(/\.(json|sdcourse)$/i.test(f.name||"")){
       f.text().then(function(raw){
+        t.value="";                 /* so the same file can be dropped again */
         var o=courseFileIn(raw);
         if(o){document.getElementById("parse-status").innerHTML="";takeCourseFile(o,f.name);return;}
+        var bundle=dataBundleIn(raw);
+        if(bundle){
+          /* their own backup, in the wrong slot — offer the right thing rather than a lecture */
+          document.getElementById("parse-status").innerHTML="";
+          if(!importBundle(bundle,false))
+            document.getElementById("parse-status").innerHTML='<div class="hint" style="padding:12px 0">'
+              +'Nothing changed. '+esc(f.name)+' is a Syllabus Desk <b>data file</b> \u2014 a whole term, not '
+              +'one course \u2014 so importing it replaces what is here. You can do that any time from '
+              +'<b>Export \u203a Import a data file</b>.</div>';
+          return;
+        }
         document.getElementById("parse-status").innerHTML='<div class="err"><b>That is not a course '
           +'file.</b> '+esc(f.name)+' is a JSON file, but not one your instructor made with Syllabus '
-          +'Desk. If you meant to restore your own data, use <b>Export &amp; import \u203a Import</b> '
-          +'instead. To add a course, drop the outline itself in here.</div>';
+          +'Desk and not a Syllabus Desk data file either. To add a course, drop the outline itself in here.</div>';
       })["catch"](function(){document.getElementById("parse-status").innerHTML='<div class="err"><b>Could not read that file.</b></div>';});
       return;
     }
@@ -6171,77 +6219,11 @@ drop.addEventListener("drop",function(e){
   inp.dispatchEvent(new Event("change",{bubbles:true}));
 });
 
-/* ===================== terms ===================== */
-function loadOwnerTerm(){
-  if(S.courses.length&&!confirm("Loading your term replaces what is here. Continue?"))return;
-  S={courses:[],items:[],done:{},life:lifeList(),version:1};
-  var C=[
-   {key:"ACCT",code:"ACCT 2210-02",title:"Financial Accounting",instructor:"Tony Bell",email:"",room:"",meets:"Mon / Wed",time:"",color:"--accent",
-    weights:[["Homework & professionalism",10],["Midterm 1",25],["Midterm 2",25],["Final exam",40]],
-    rules:"Handwritten homework due at the start of almost every class, in person. Late work is not accepted and each miss costs a point.",
-    study:{on:true,dow:2,from:"19:00",to:"20:30",label:"Study — ACCT homework"},
-    classes:[{date:"2026-10-07",topic:"Midterm 1 — Chapters 1–4",mark:true},{date:"2026-11-09",topic:"Midterm 2 — Chapters 5–10",mark:true},
-     {date:"2026-09-30",topic:"No class — Truth and Reconciliation",off:true},{date:"2026-10-12",topic:"No class — Thanksgiving",off:true},
-     {date:"2026-11-11",topic:"No class — Remembrance Day",off:true},{date:"2026-12-09",topic:"Ch 14 — Performance measurement"}],
-    items:[{t:"Midterm 1 — Chapters 1–4",d:"2026-10-07",k:"exam",w:"25%",note:"Regular class time."},
-     {t:"Midterm 2 — Chapters 5–10",d:"2026-11-09",k:"exam",w:"25%",note:"Regular class time."},
-     {t:"Final exam — cumulative",d:null,k:"exam",w:"40%",note:"Set centrally in the Dec 10–23 exam period. Must be passed to pass the course."}]},
-   {key:"MKTG",code:"MKTG 2430-01",title:"Introduction to Marketing",instructor:"Dr. Joyce Shang",email:"",room:"OM 1240",meets:"Mon / Thu",time:"1:00 – 2:15 pm",color:"--coral",
-    weights:[["Attendance",5],["Exam 1",15],["Exam 2",15],["Final exam",30],["Report 1",8],["Report 2",8],["Report 3",11],["Presentation",8]],
-    rules:"Miss five classes and you are withdrawn with a DNC. Reports 1 and 2 are graded individually even though the project is a team of four.",
-    study:{on:true,dow:3,from:"19:00",to:"20:30",label:"Study — MKTG reading & project"},
-    classes:[{date:"2026-10-08",topic:"Exam 1",mark:true},{date:"2026-11-16",topic:"Exam 2",mark:true},{date:"2026-12-03",topic:"Group presentations",mark:true},
-     {date:"2026-10-12",topic:"No class — Thanksgiving",off:true},{date:"2026-11-12",topic:"No class — midterm break",off:true}],
-    items:[{t:"Group project topic selection",d:"2026-09-28",k:"due",w:"",note:"In class."},
-     {t:"Exam 1",d:"2026-10-08",k:"exam",w:"15%",note:"Closed book."},
-     {t:"Written Report 1",d:"2026-10-22",k:"due",w:"8%",note:"Individual."},
-     {t:"Exam 2",d:"2026-11-16",k:"exam",w:"15%",note:"Closed book."},
-     {t:"Written Report 2 — STP",d:"2026-11-19",k:"due",w:"8%",note:"Individual."},
-     {t:"Group presentation",d:"2026-12-03",k:"pres",w:"8%",note:"Or Dec 7, depending on your slot."},
-     {t:"Written Report 3",d:"2026-12-10",k:"due",w:"11%",note:"Team grade."},
-     {t:"Final exam",d:null,k:"exam",w:"30%",note:"Set centrally in the exam period."}]},
-   {key:"HRMN",code:"HRMN 2820-01",title:"Human Resource Management",instructor:"Melanie Reed",email:"",room:"IB 1014",meets:"Tuesday",time:"11:30 am – 2:20 pm",color:"--mint-deep",
-    weights:[["Attendance & participation",10],["Group project",15],["Quizzes",15],["Midterm exam",25],["Final exam",35]],
-    rules:"Six to eight unannounced quizzes given at the START of class. Miss the class, miss the quiz — no rewrites. Lowest two are dropped.",
-    study:{on:true,dow:1,from:"18:00",to:"19:00",label:"Study — HRMN chapter & quiz prep"},
-    classes:[{date:"2026-10-20",topic:"MIDTERM EXAM",mark:true},{date:"2026-11-24",topic:"Labour relations + group presentations",mark:true},
-     {date:"2026-09-15",topic:"Online lesson — no face-to-face class",off:true}],
-    items:[{t:"Academic Integrity lesson + quiz",d:"2026-09-11",k:"due",w:"",note:"Must score 100% to unlock Module 1."},
-     {t:"Midterm exam",d:"2026-10-20",k:"exam",w:"25%",note:"Full class block."},
-     {t:"Group project presentation",d:"2026-11-24",k:"pres",w:"15%",note:"Runs Nov 24, Dec 1 and Dec 8 — confirm your slot."},
-     {t:"Final exam — cumulative",d:null,k:"exam",w:"35%",note:"Set centrally in the exam period."}]},
-   {key:"MATH",code:"MATH 1170-01",title:"Calculus for Business & Economics",instructor:"Josh Sorge",email:"",room:"",meets:"Quizzes Wednesdays",time:"",color:"--warn",
-    weights:[],
-    rules:"A quiz almost every Wednesday and a WeBWorK assignment almost every Sunday — the steadiest drumbeat of the term and the easiest to let slide.",
-    study:{on:true,dow:0,from:"16:00",to:"17:30",label:"Study — calculus practice"},
-    classes:[{date:"2026-10-14",topic:"Midterm Test 1",mark:true},{date:"2026-11-18",topic:"Midterm Test 2",mark:true},
-     {date:"2026-11-11",topic:"No classes Nov 11–13 — mid-semester break",off:true}],
-    items:[{t:"Quiz 1",d:"2026-09-16",k:"quiz",w:"",note:"In class."},{t:"Assignment 1 (WeBWorK)",d:"2026-09-20",k:"due",w:"",note:"Due Sunday."},
-     {t:"Quiz 2",d:"2026-09-23",k:"quiz",w:"",note:"In class."},{t:"Assignment 2 (WeBWorK)",d:"2026-09-27",k:"due",w:"",note:"Due Sunday."},
-     {t:"Assignment 3 (WeBWorK)",d:"2026-10-04",k:"due",w:"",note:"Due Sunday."},{t:"Quiz 3",d:"2026-10-07",k:"quiz",w:"",note:"In class."},
-     {t:"Assignment 4 (WeBWorK)",d:"2026-10-11",k:"due",w:"",note:"Due Sunday."},{t:"Midterm Test 1",d:"2026-10-14",k:"exam",w:"",note:"In class."},
-     {t:"Quiz 4",d:"2026-10-21",k:"quiz",w:"",note:"In class."},{t:"Assignment 5 (WeBWorK)",d:"2026-10-25",k:"due",w:"",note:"Due Sunday."},
-     {t:"Quiz 5",d:"2026-10-28",k:"quiz",w:"",note:"In class."},{t:"Assignment 6 (WeBWorK)",d:"2026-11-01",k:"due",w:"",note:"Due Sunday."},
-     {t:"Quiz 6",d:"2026-11-04",k:"quiz",w:"",note:"In class."},{t:"Assignment 7 (WeBWorK)",d:"2026-11-08",k:"due",w:"",note:"Due Sunday."},
-     {t:"Midterm Test 2",d:"2026-11-18",k:"exam",w:"",note:"In class."},{t:"Quiz 7",d:"2026-11-25",k:"quiz",w:"",note:"In class."},
-     {t:"Assignment 8 (WeBWorK)",d:"2026-11-29",k:"due",w:"",note:"Due Sunday — last one."},{t:"Quiz 8",d:"2026-12-02",k:"quiz",w:"",note:"Last quiz."},
-     {t:"Final exam",d:null,k:"exam",w:"",note:"Set centrally in the exam period."}]},
-   {key:"ECON",code:"ECON 2320-03",title:"Economics & Business Statistics 1",instructor:"",email:"",room:"",meets:"",time:"",color:"--ink-2",
-    weights:[],
-    rules:"The Important Dates block was published empty — midterm, Report 2 and final are all unset. A good example of what this page flags rather than guesses.",
-    study:{on:true,dow:4,from:"18:00",to:"19:30",label:"Study — ECON problem set"},
-    classes:[{date:"2026-09-30",topic:"No class",off:true},{date:"2026-10-12",topic:"No class",off:true},{date:"2026-11-11",topic:"No class",off:true}],
-    items:[{t:"Midterm exam",d:null,k:"exam",w:"",note:"Not posted by the instructor."},
-     {t:"Report 2 deadline",d:null,k:"due",w:"",note:"Not posted by the instructor."},
-     {t:"Final exam",d:null,k:"exam",w:"",note:"Not posted by the instructor."}]}
-  ];
-  C.forEach(function(c){
-    var items=c.items;delete c.items;S.courses.push(c);
-    items.forEach(function(i){S.items.push({id:uid(),c:c.key,t:i.t,d:i.d,at:i.at||"",k:i.k,w:i.w,note:i.note});});
-  });
-  save();renderAll();showPanel("p-weeks");
-}
-
+/* ===================== terms =====================
+   The owner's own schedule used to be compiled in here behind an owner-only
+   button. It is not any more: nobody's timetable belongs in a public page,
+   the owner's included. It lives in his account and in a data file he imports
+   once, like anybody else's. */
 
 /* ---------- demo term: invented courses, dates generated around today ----------
    Regenerated relative to the current week, so the landing view always has something
