@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+  Syllabus Desk
+  The page GitHub Pages serves when the address does not match a file in this repository.
+
+  It exists for one reason: a link that has been shared - on a poster, in a message, in a course
+  announcement - gets cut short, retyped, or copied with a stray character on the end. Without this
+  file the person who followed it lands on GitHub's own black "there isn't a site here" page, which
+  gives them no way back. With it they land here, and one button takes them to the app.
+
+  What it CANNOT do: cover the half-minute after a new build is uploaded. During that window GitHub
+  serves its own 404 for the whole site, this file included. The service worker is what covers that
+  - it keeps the last good copy and refuses to hand back a 404 in its place.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not this address &middot; Syllabus Desk</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F2F8F9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F131B" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #F2F8F9; --su: #FFFFFF; --ink: #0E2A3A; --ink2: #3F5A67;
+    --line: #C9DCE3; --ac: #0E7C86; --acink: #FFFFFF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0F131B; --su: #161C26; --ink: #E3E8F0; --ink2: #A3ADBE;
+      --line: #2F3949; --ac: #5FD3DC; --acink: #0A1015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px;
+  }
+  .box {
+    background: var(--su); border: 1px solid var(--line); border-radius: 18px;
+    max-width: 480px; width: 100%; padding: 34px 28px;
+  }
+  .lbl {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink2);
+  }
+  h1 { font-size: 1.7rem; letter-spacing: -.02em; line-height: 1.2; margin: 12px 0 12px; }
+  h1 .mark { color: var(--ac); }
+  p { color: var(--ink2); margin: 0 0 22px; font-size: .95rem; }
+  a.go {
+    display: inline-flex; align-items: center; gap: 10px; text-decoration: none;
+    background: var(--ac); color: var(--acink); border: 0; border-radius: 999px;
+    padding: 14px 22px; min-height: 48px; font-weight: 700; font-size: .95rem;
+  }
+  a.go:hover { filter: brightness(1.06); }
+  .addr {
+    margin: 18px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .72rem; color: var(--ink2); word-break: break-all;
+  }
+  @media (max-width: 380px) { .box { padding: 26px 20px; } h1 { font-size: 1.45rem; } }
+</style>
+</head>
+<body>
+  <div class="box">
+    <span class="lbl">404 &middot; nothing at this address</span>
+    <h1>That page isn't here, but <span class="mark">Syllabus Desk</span> is</h1>
+    <p>The link was probably cut short or mistyped. The whole app lives at one address &mdash; this button goes there, and any term you have saved on this device is still waiting.</p>
+    <a class="go" href="https://thepastor.github.io/syllabus-desk/">Open Syllabus Desk <span aria-hidden="true">&rarr;</span></a>
+    <p class="addr">https://thepastor.github.io/syllabus-desk/</p>
+  </div>
+</body>
+</html>
