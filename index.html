@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v4.9  (23 September 2026)
+  Syllabus Desk  v5.0  (23 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -278,6 +278,7 @@ section{margin-bottom:var(--band-lg)}
 .b-due{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
 .b-quiz{background:var(--tint-2);color:var(--ink);border:1px solid var(--mint-deep)}
 .b-study{background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line-soft)}
+.b-class{background:transparent;color:var(--ink-2);border:1px solid var(--line-soft)}
 .b-off{background:transparent;color:var(--ink-3);border:1px dashed var(--line-soft)}
 input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
 .horizon{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:0;border:1px solid var(--line);border-right:0;border-bottom:0}
@@ -763,6 +764,7 @@ table.users td.n{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-2
   .lifeform input,.lifeform select{min-height:44px}
   .build{padding:11px 0}
   .linkish{padding:7px 0}          /* inline in a sentence: air, not a box */
+  .cmeta .linkish{padding:7px 11px;margin:0 -7px}   /* "hide" / "edit" in the course header: a thumb-sized target, four pixels wider on screen */
   .dayrow{min-height:44px}
   .sug{min-height:44px}
 
@@ -2012,6 +2014,16 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
           </div>
         </div>
         <div class="excard">
+          <h4>Class meetings</h4>
+          <p>Every course with meeting days and a time puts its classes on the calendar, skipping
+          holidays and the days the outline marks off. Hide them here if you would rather see only
+          what is due.</p>
+          <div class="seg" role="group" aria-label="Class meetings">
+            <button type="button" data-meet-set="1">Show classes</button>
+            <button type="button" data-meet-set="0">Hide classes</button>
+          </div>
+        </div>
+        <div class="excard">
           <h4>Deadlines with no time</h4>
           <p>Most outlines give a date and no hour. Off, those count down in whole days.
           On, they count down to <b>11:59 pm</b> and say so — an assumption, labelled as one.</p>
@@ -2497,11 +2509,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"4.9",date:"23 September 2026",year:2026};
+var BUILD={v:"5.0",date:"23 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["5.0","<b>Your classes are on the calendar.</b> A course that says when it meets \u2014 \u201cMon / Thu 1:00 \u2013 2:15 pm\u201d \u2014 now puts every meeting on your fortnight, your calendar, the day sheet and your exports, from the week of the first dated thing in the term to the last, skipping statutory holidays and the days the outline marks off. A dated row in the outline always wins over a generated one. A <b>Classes</b> chip hides them on the calendar, Settings hides them everywhere, a course whose line is wrong can hide or edit its own, and a course with no time can be given one on the Courses tab."],
   ["4.9","<b>Four things the code audit found.</b> The reader no longer drops the last row of a schedule table or misses dates written as \u201cWeek 3 \u2014 September 21\u201d. Removing a course now removes its planned study sessions, ticks and marks too \u2014 and offers <b>Undo</b> for twenty seconds instead of asking whether you are sure. A tab left open overnight wakes up on the right day. And anything that arrives from outside \u2014 a data file, a course file, an account copy \u2014 is checked against what the page itself would have made before it is shown."],
   ["4.8","<b>Readable on a phone.</b> A sweep of every screen on iPhones, iPads and computers: the small labels \u2014 tabs, table headings, form captions \u2014 come up to eleven pixels; text fields are sixteen on phones so tapping one no longer zooms the page and leaves it there; the check-before-you-save table turns into cards on a narrow screen instead of running off its right edge; and every button and box is big enough to hit on a touch screen."],
   ["4.7","<b>The reader stops trusting file names.</b> It looks at the first bytes of a file, so a Word document whose insides are laid out unusually now opens, an old .doc or any other file that is not text gets a plain explanation instead of 190,000 characters of noise, and a scanned PDF says it is a scan rather than \u201cnothing dated\u201d. The file picker also names the file types the way iPhones want them named. And these release notes are now owner-only: everybody else sees the version, the date and the Refresh button, which is what they need."],
@@ -2707,7 +2720,7 @@ function cleanTerm(t){
     keyMap[key]=c;
     return {key:key,code:cleanStr(c.code,60),title:cleanStr(c.title,120),instructor:cleanStr(c.instructor,80),
       email:cleanStr(c.email,120),room:cleanStr(c.room,40),meets:cleanStr(c.meets,60),time:cleanStr(c.time,40),
-      color:cleanColor(c.color,ix),rules:cleanStr(c.rules,600),
+      color:cleanColor(c.color,ix),rules:cleanStr(c.rules,600),meetOff:!!c.meetOff,
       weights:(Array.isArray(c.weights)?c.weights:[]).filter(function(w){return w&&w.length>1;})
         .map(function(w){return [cleanStr(w[0],60),+w[1]||0];}).slice(0,40),
       classes:(Array.isArray(c.classes)?c.classes:[]).filter(function(r){return r&&isISO(r.date);})
@@ -2904,18 +2917,20 @@ function courseDows(c){
   var once=Object.keys(h).map(Number);
   return once.length?once.sort():dowsFromText(c.meets);
 }
+/* the days a course meets: the outline's own line first, its dated schedule second */
+function meetDows(c){var d=dowsFromText(c.meets);return d.length?d:courseDows(c);}
 function busyOn(dow){
   var out=[];
   S.courses.forEach(function(c){
     (c.blocks||[]).forEach(function(b){if(b.dow===dow)out.push([b.from,b.to]);});
     var ct=parseTimeRange(c.time);
-    if(ct&&courseDows(c).indexOf(dow)>-1)out.push([ct.from,ct.to]);
+    if(ct&&meetDows(c).indexOf(dow)>-1)out.push([ct.from,ct.to]);
   });
   return out;
 }
 var SLOT_TIMES=["19:00","17:30","20:45","16:00","13:00"];
 function suggestBlocks(key){
-  var c=courseOf(key),dows=courseDows(c),out=[],taken={};
+  var c=courseOf(key),dows=meetDows(c),out=[],taken={};
   (c.blocks||[]).forEach(function(b){taken[b.dow]=1;});
   function tryDay(dow,why){
     if(out.length>=3||taken[dow])return;
@@ -2947,6 +2962,7 @@ function eventsOn(iso){
   S.courses.forEach(function(c){(c.classes||[]).forEach(function(r){
     if(r.date===iso)out.push({kind:r.off?"off":"class",c:c.key,t:r.topic,id:"cl-"+c.key+"-"+iso,ord:r.off?4:2,time:c.time&&c.time.indexOf(":")>-1?c.time:""});
   });});
+  MEET.forEach(function(m){if(m.d===iso)out.push({kind:"class",c:m.c,t:m.t,id:m.id,from:m.from,to:m.to,room:m.room,meeting:true,ord:2});});
   STUDY.forEach(function(s){if(s.d===iso)out.push({kind:"study",c:s.c,t:s.t,id:s.id,from:s.from,to:s.to,ord:3});});
   LIFE.forEach(function(e){if(e.d===iso)out.push({kind:"life",c:"__life",t:e.t,id:e.id,cat:e.cat,
     from:e.from,to:e.to,note:e.note,ord:2.5});});
@@ -2969,6 +2985,7 @@ function itemHTML(ev,tick){
   else if(ev.kind==="study")badge='<span class="badge b-study">study</span>';
   else if(ev.kind==="life")badge='<span class="badge b-life">'+esc(catOf(ev.cat)[1].toLowerCase())+'</span>';
   else if(ev.kind==="off")badge='<span class="badge b-off">no class</span>';
+  else if(ev.kind==="class"&&ev.meeting)badge='<span class="badge b-class">class'+(ev.room?" \u00b7 "+esc(ev.room):"")+'</span>';
   if(ev.from)when=t12(ev.from)+"–"+t12(ev.to);
   else if(ev.kind==="class"&&ev.time)when=ev.time;
   else if(ev.at)when=t12(ev.at);
@@ -3095,6 +3112,8 @@ function renderFilters(){
     if(!(c.key in FILTER))FILTER[c.key]=1;
     return '<button class="chip" data-f="'+esc(c.key)+'" aria-pressed="'+(FILTER[c.key]?"true":"false")+'" style="color:'+(FILTER[c.key]?textColorOf(c.key):"var(--ink-3)")+'"><span class="dot" style="background:'+colorOf(c.key)+'"></span>'+esc(c.code)+'</button>';
   }).join("");
+  if(!("classes" in FILTER))FILTER.classes=1;
+  if(MEET.length)h+='<button class="chip" data-f="classes" aria-pressed="'+(FILTER.classes?"true":"false")+'"><span class="dot"></span>Classes</button>';
   if(!("study" in FILTER))FILTER.study=1;
   h+='<button class="chip" data-f="study" aria-pressed="'+(FILTER.study?"true":"false")+'"><span class="dot"></span>Study</button>';
   if(!("life" in FILTER))FILTER.life=1;
@@ -3106,6 +3125,7 @@ function visible(e){
   if(e.kind==="life")return FILTER.life!==0;
   if(FILTER[e.c]===0)return false;
   if(e.kind==="study"&&!FILTER.study)return false;
+  if(e.meeting&&!FILTER.classes)return false;
   return true;
 }
 var MONTH_KEYS=[];
@@ -3268,6 +3288,8 @@ function sheetEvent(id,iso){
   rows+='</dl>';
   if(item&&item.note)rows+='<p class="note">'+esc(item.note)+'</p>';
   if(!item&&ev&&ev.kind==="study")rows+='<p class="note">A study block you set on the Courses tab. Move it, add another, or remove it there.</p>';
+  if(!item&&ev&&ev.meeting)rows+='<p class="note">A regular class meeting, worked out from the outline\u2019s \u201cmeets\u201d line'
+    +(c.meets?' (<b>'+esc(c.meets)+(c.time?', '+esc(c.time):'')+'</b>)':'')+'. If the days or time are wrong, fix or hide them on the Courses tab.</p>';
   if(!item&&ev&&ev.kind==="life"){
     if(ev.note)rows+='<p class="note">'+esc(ev.note)+'</p>';
     rows+='<p class="note">Something you added on the Life tab. Remove it there if it changes.</p>';
@@ -3332,7 +3354,12 @@ function renderCourses(){
       +'<div class="chead"><div class="ctop"><span class="ccode" style="color:'+textColorOf(c.key)+'">'+esc(c.code)+'</span><span class="ctitle">'+esc(c.title)+'</span>'
       +'<span class="cacts"><button class="btn sm danger" data-del="'+esc(c.key)+'">Remove</button></span></div><div class="cmeta">'
       +(c.instructor?'<span>Instructor <b>'+esc(c.instructor)+'</b>'+(c.email?' · <a href="mailto:'+esc(c.email)+'">'+esc(c.email)+'</a>':'')+'</span>':'')
-      +(c.meets?'<span>Meets <b>'+esc(c.meets)+'</b>'+(c.time?', '+esc(c.time):'')+'</span>':'')
+      +(c.meets?'<span>Meets <b>'+esc(c.meets)+'</b>'+(c.time?', '+esc(c.time):'')
+          +(meetingPlan(c)?(c.meetOff?' \u00b7 <button type="button" class="linkish" data-meeton="'+esc(c.key)+'">show on calendar</button>'
+            :' \u00b7 '+meetingsFor(c.key)+' on the calendar \u00b7 <button type="button" class="linkish" data-meetoff="'+esc(c.key)+'">hide</button>')
+           :' \u00b7 <button type="button" class="linkish" data-meetask="'+esc(c.key)+'">add a time to see classes on the calendar</button>')
+          +' \u00b7 <button type="button" class="linkish" data-meetask="'+esc(c.key)+'">edit</button></span>'
+        :'<span><button type="button" class="linkish" data-meetask="'+esc(c.key)+'">When does it meet?</button></span>')
       +(c.room?'<span>Room <b>'+esc(c.room)+'</b></span>':'')
       +'</div></div><div class="cbody"><div>'
       +'<div class="blk"><h4>Assessments</h4><table class="assess"><thead><tr><th>Item</th><th>Date</th><th style="text-align:right">Weight</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
@@ -3355,6 +3382,7 @@ function renderAll(){
   resetPalette();
   normalizeBlocks();
   STUDY=studyEvents();
+  MEET=meetingEvents();
   LIFE=lifeEvents();
   var has=S.courses.length>0||lifeList().length>0;
   document.getElementById("empty-state").classList.toggle("hide",has);
@@ -3898,6 +3926,73 @@ function removeCourse(k){
     saveMarks();save();renderAll();sdToast("Put back.");
   });
 }
+/* ===================== the classes themselves =====================
+   Deadlines are the exceptions; classes are the week. A course whose outline
+   gives meeting days and a time (or whose dated schedule makes the days plain)
+   gets a meeting on each of those days across the term. Three rules keep it
+   honest: a dated row in the outline always wins over a generated meeting; a
+   statutory holiday or a day the outline marks off gets nothing; and every
+   switch to turn them off — the calendar chip, Settings, the course itself —
+   is one tap, because a wrong meeting on the calendar is worse than none. */
+function showMeetings(){try{return localStorage.getItem("sd.meet")!=="0";}catch(e){return true;}}
+function setShowMeetings(on){try{on?localStorage.removeItem("sd.meet"):localStorage.setItem("sd.meet","0");}catch(e){}renderAll();paintSettings();}
+function meetingPlan(c){
+  /* the outline's own "meets" line is the authority; the dated schedule is the
+     fallback for an outline that never stated one (courseDows reads it) */
+  var dows=meetDows(c);
+  var tr=parseTimeRange(c.time);
+  if(!dows.length||!tr)return null;
+  return {dows:dows,from:tr.from,to:tr.to};
+}
+function meetingEvents(){
+  if(!showMeetings())return [];
+  /* The span is the courses' own dates — not Life entries, which can sit months
+     outside the term — widened back to the Monday of the first week, since the
+     first dated thing in an outline is rarely the first class. */
+  var ds=[];
+  S.items.forEach(function(i){if(i.d)ds.push(i.d);});
+  S.courses.forEach(function(c){(c.classes||[]).forEach(function(r){if(r.date)ds.push(r.date);});});
+  if(!ds.length)return [];
+  ds.sort();
+  var start=P(ds[0]),end=P(ds[ds.length-1]);
+  start.setDate(start.getDate()-((start.getDay()+6)%7));
+  var hol={};for(var y=start.getFullYear();y<=end.getFullYear();y++){var h=bcHolidays(y);Object.keys(h).forEach(function(k){hol[k]=h[k];});}
+  var out=[];
+  S.courses.forEach(function(c){
+    if(c.meetOff)return;
+    var mp=meetingPlan(c);if(!mp)return;
+    var dated={};(c.classes||[]).forEach(function(r){dated[r.date]=1;});
+    var d=new Date(start);
+    while(d<=end){
+      var iso=ISO(d);
+      if(mp.dows.indexOf(d.getDay())>-1&&!dated[iso]&&!hol[iso])
+        out.push({id:"mt-"+c.key+"-"+iso,c:c.key,d:iso,t:"Class",k:"class",from:mp.from,to:mp.to,room:c.room||"",meeting:true});
+      d=new Date(d.getTime()+864e5);
+    }
+  });
+  return out;
+}
+var MEET=[];
+function meetingsFor(key){return MEET.filter(function(m){return m.c===key;}).length;}
+/* "When does it meet?" — typed once, parsed the same way an outline is. */
+function askMeeting(key){
+  var c=courseOf(key);
+  var v=window.prompt("When does "+(c.code||c.key)+" meet?\n\nDays and a time, the way an outline says it — for example:\n"
+    +"Mon / Thu 1:00 – 2:15 pm\nTuesday 11:30 am – 2:20 pm\nMWF 9:30-10:20am",
+    (c.meets||"")+(c.time?"  "+c.time:""));
+  if(v===null)return;
+  v=v.trim();
+  if(!v){c.meets="";c.time="";save();renderAll();return;}
+  var dows=dowsFromText(v),tr=parseTimeRange(v);
+  if(!dows.length||!tr){alert("That did not read as days and a time. Try the shape “Mon / Thu 1:00 – 2:15 pm”.");return;}
+  var m=v.match(/(\d{1,2}(?::\d{2})?\s*(?:am|pm)?\s*[-–]\s*\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/i);
+  c.meets=dows.map(function(d){return DOWN[d].slice(0,3);}).join(" / ");
+  c.time=m?tidyTime(m[1]):(t12(tr.from)+" – "+t12(tr.to));
+  c.meetOff=false;
+  save();renderAll();
+}
+function tidyTime(s){return String(s).replace(/\s+/g," ").replace(/\s*-\s*/," – ").trim();}
+
 /* ===================== the course file =====================
    One tap instead of a parse.
 
@@ -5407,6 +5502,8 @@ function allExportEvents(){
     if(i.at){ex.from=i.at;ex.to=addMin(i.at,30);}
     out.push(ex);
   });
+  MEET.forEach(function(m){var c=courseOf(m.c);out.push({title:c.key+" — Class",date:m.d,allDay:false,from:m.from,to:m.to,
+    desc:(c.code||"")+(c.title?" "+c.title:""),loc:m.room||"",alarm:false});});
   STUDY.forEach(function(s){var c=courseOf(s.c);out.push({title:"Study — "+c.key+": "+s.t,date:s.d,allDay:false,from:s.from,to:s.to,desc:"",loc:"",alarm:false});});
   LIFE.forEach(function(e){out.push({title:e.t,date:e.d,allDay:false,from:e.from,to:e.to,
     desc:(e.note||"")+(e.note?"\n\n":"")+catOf(e.cat)[1],loc:"",alarm:false});});
@@ -5626,6 +5723,10 @@ document.addEventListener("click",function(e){
   if(t.closest("#set-countinfo")){showPanel("p-rights");window.scrollTo({top:0,behavior:"smooth"});
     setTimeout(function(){var el=document.getElementById("counting-note");
       if(el)el.scrollIntoView({behavior:"smooth",block:"center"});},60);return;}
+  if((x=t.closest("[data-meet-set]"))){setShowMeetings(x.dataset.meetSet==="1");return;}
+  if((x=t.closest("[data-meetoff]"))){courseOf(x.dataset.meetoff).meetOff=true;save();renderAll();return;}
+  if((x=t.closest("[data-meeton]"))){courseOf(x.dataset.meeton).meetOff=false;save();renderAll();return;}
+  if((x=t.closest("[data-meetask]"))){askMeeting(x.dataset.meetask);return;}
   if((x=t.closest("[data-eod-set]"))){
     try{x.dataset.eodSet==="1"?localStorage.setItem("sd.eod","1"):localStorage.removeItem("sd.eod");}catch(err){}
     renderAll();paintSettings();return;
@@ -6193,6 +6294,9 @@ function paintSettings(){
   });
   Array.prototype.forEach.call(document.querySelectorAll("[data-count-set]"),function(b){
     b.setAttribute("aria-pressed",(b.dataset.countSet==="1")===isCounted()?"true":"false");
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-meet-set]"),function(b){
+    b.setAttribute("aria-pressed",(b.dataset.meetSet==="1")===showMeetings()?"true":"false");
   });
   Array.prototype.forEach.call(document.querySelectorAll("[data-eod-set]"),function(b){
     b.setAttribute("aria-pressed",(b.dataset.eodSet==="1")===assumeEOD()?"true":"false");
