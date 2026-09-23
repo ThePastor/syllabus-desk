@@ -43,4 +43,4 @@ from it.
 Bundles [PDF.js](https://mozilla.github.io/pdf.js/) (Apache-2.0, © Mozilla Foundation) and
 [JSZip](https://stuk.github.io/jszip/) (MIT, © Stuart Knightley), each under its own licence.
 
-Built by JohnsonXCorp · johnsonandy242@gmail.com
+Built by JohnsonXCorp · johnsonxcorp@outlook.com
