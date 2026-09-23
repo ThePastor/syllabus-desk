@@ -1,5 +1,5 @@
 /* ============================================================================
-   Syllabus Desk service worker  ·  build 4.8.1
+   Syllabus Desk service worker  ·  build 4.9
 
    Two jobs, and a rule about each.
 
@@ -13,7 +13,7 @@
    untouched. If the worker ever answered that from cache the app would decide
    it was up to date forever.
    ========================================================================== */
-var VER   = "4.8.1";
+var VER   = "4.9";
 var SHELL = "sd-shell-" + VER;
 var HOME  = "./index.html";
 var FILES = ["./", HOME, "./manifest.webmanifest", "./icon-192.png", "./icon-512.png",
@@ -67,15 +67,6 @@ function netFirst(req) {
       settled = true; clearTimeout(timer);
       if (keepable(res)) { var copy = res.clone();
         caches.open(SHELL).then(function (c) { c.put(HOME, copy); }).catch(function () {}); }
-      /* A 404 or a 5xx for our own page means the host is mid-publish, not that the app is gone.
-         Prefer the copy we already hold; only pass the bad response on if there is nothing. */
-      if (res && !res.ok) {
-        caches.match(req, { ignoreSearch: true }).then(function (hit) {
-          if (hit) return resolve(hit);
-          caches.match(HOME).then(function (home) { resolve(home || res); });
-        });
-        return;
-      }
       resolve(res);
     }).catch(function () {
       if (settled) return; settled = true; clearTimeout(timer); fallback();

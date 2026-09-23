@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Syllabus Desk  v4.8  (15 September 2026)
+  Syllabus Desk  v4.9  (23 September 2026)
   Copyright (c) 2026 JohnsonXCorp. All rights reserved.
 
   This page is proprietary software. It is published so it can be served and so you can verify what
@@ -9,7 +9,7 @@
   redistribute, sell, or build another product from it, in whole or in part.
 
   Licence:  https://github.com/ThePastor/syllabus-desk/blob/main/LICENSE
-  Contact:  johnsonxcorp@outlook.com
+  Contact:  johnsonandy242@gmail.com
 
   This file also bundles PDF.js (Apache-2.0, (c) Mozilla Foundation) and JSZip (MIT, (c) Stuart
   Knightley), each under its own licence. Those notices must travel with any copy.
@@ -1175,14 +1175,18 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
       dow = DOW.findIndex(function (n) { return n.slice(0, 3) === t.slice(0, 3); });
     }
     var m;
-    // September 28 / Sept. 28 / Sep 28, 2026
-    if ((m = s.match(/\b([A-Za-z]{3,9})\.?\s+(\d{1,2})(?:\s*,\s*(\d{4}))?\b/))) {
+    // September 28 / Sept. 28 / Sep 28, 2026 — the FIRST pair whose word is a
+    // month, not the first pair of any kind: "Week 3 — September 21" starts
+    // with a word-number pair that is not a date, and used to be read as none.
+    var re1 = /\b([A-Za-z]{3,9})\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?:\s*,\s*(\d{4}))?\b/g;
+    while ((m = re1.exec(s))) {
       var mi = monthIndex(m[1]);
       if (mi > -1 && +m[2] >= 1 && +m[2] <= 31)
         return { m: mi, d: +m[2], y: m[3] ? +m[3] : null, dow: dow };
     }
     // 28 September
-    if ((m = s.match(/\b(\d{1,2})\s+([A-Za-z]{3,9})\.?(?:\s*,?\s*(\d{4}))?\b/))) {
+    var re2 = /\b(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,9})\.?(?:\s*,?\s*(\d{4}))?\b/g;
+    while ((m = re2.exec(s))) {
       var mi2 = monthIndex(m[2]);
       if (mi2 > -1 && +m[1] >= 1 && +m[1] <= 31)
         return { m: mi2, d: +m[1], y: m[3] ? +m[3] : null, dow: dow };
@@ -1435,6 +1439,23 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
     return h;
   }
 
+  /* What a cell says AFTER its date. Only the tail counts: "Week 3 — Sept 21"
+     has words before the date and none after, and those words are a label,
+     not a topic. A trailing weekday in brackets is part of the date. */
+  var DATE_SPAN = /(?:\b(?:sun|mon|tues?|wed(?:nes)?|thur?s?|fri|sat(?:ur)?)(?:day)?\b\.?,?\s*)?(?:\b[A-Za-z]{3,9}\.?\s+\d{1,2}(?:st|nd|rd|th)?(?:\s*,\s*\d{4})?\b|\b\d{1,2}\s+[A-Za-z]{3,9}\.?(?:\s*,?\s*\d{4})?\b|\b\d{4}-\d{1,2}-\d{1,2}\b|\b\d{1,2}\/\d{1,2}(?:\/\d{2,4})?\b)(?:\s*\((?:sun|mon|tues?|wed(?:nes)?|thur?s?|fri|sat(?:ur)?)(?:day)?\.?\))?/i;
+  var DATE_SPAN_G = new RegExp(DATE_SPAN.source, "gi");
+  function sameCellTopic(cell) {
+    /* the first span that is genuinely a date — "Week 3" looks like one and is not */
+    var str = String(cell || ""), m = null, hit = null;
+    DATE_SPAN_G.lastIndex = 0;
+    while ((m = DATE_SPAN_G.exec(str))) { if (readDate(m[0])) { hit = m; break; } }
+    if (!hit) return "";
+    var tail = tidy(str.slice(hit.index + hit[0].length).replace(/^[-–—:|\s]+/, ""));
+    if (!/[A-Za-z]{3,}/.test(tail)) return "";                 /* "– 25", "2026", nothing */
+    if (/^\(?(?:sun|mon|tues?|wed(?:nes)?|thur?s?|fri|sat(?:ur)?)(?:day)?\)?$/i.test(tail)) return "";
+    return tail;
+  }
+
   /* ----------------------------------------------------------------- main */
   function parse(text) {
     text = String(text || "");
@@ -1455,21 +1476,24 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
          so a cell carrying both a weight and a date is left for readWeights,
          which knows the date belongs to the item named in that same cell. */
       if (/\d{1,3}\s*%/.test(cells[i])) continue;
-      // the topic is the next cell that is not itself a date and not a bare number
-      var topic = "";
-      for (var j = i + 1; j < Math.min(i + 4, cells.length); j++) {
-        var c = cells[j];
-        if (readDate(c)) break;
-        if (/^[\d.]{1,4}$/.test(c)) continue;
-        if (c.length < 2) continue;
-        topic = c; break;
-      }
-      // or, on one line: "Oct 08 — Exam 1"
+      /* THE ROW'S OWN WORDS COME FIRST.
+
+         "November 17, 2026   Midterm 2" is one cell that says everything. The
+         reader used to look at the NEXT cell for a topic before looking at the
+         rest of this one, so the last row of every schedule block took the
+         heading that followed it ("Grading") as its topic, and the real item
+         surfaced later from the weights table with no date. Whatever follows
+         the date inside the same cell is the topic when it has words in it;
+         the next cell is only for a cell that is a bare date. */
+      var topic = sameCellTopic(cells[i]);
       if (!topic) {
-        var rest = tidy(cells[i].replace(/^[^A-Za-z0-9]*/, ""));
-        var strip = rest.replace(/^(?:[A-Za-z]{3,9}\.?,?\s*)?[A-Za-z]{3,9}\.?\s+\d{1,2}(?:\s*,\s*\d{4})?/, "");
-        strip = tidy(strip.replace(/^[-–:\s]+/, ""));
-        if (strip.length > 2) topic = strip;
+        for (var j = i + 1; j < Math.min(i + 4, cells.length); j++) {
+          var c = cells[j];
+          if (readDate(c)) break;
+          if (/^[\d.]{1,4}$/.test(c)) continue;
+          if (c.length < 2) continue;
+          topic = c; break;
+        }
       }
       raw.push({ d: d, topic: topic });
     }
@@ -2083,7 +2107,7 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
         <table class="assess" style="margin-bottom:20px"><tbody>
           <tr><td style="width:36%"><span class="name">Product</span></td><td>Syllabus Desk</td></tr>
           <tr><td><span class="name">Owner</span></td><td>JohnsonXCorp <span class="sub">trade name — the legal owner is Anndy Johnson personally</span></td></tr>
-          <tr><td><span class="name">Contact</span></td><td><a href="mailto:johnsonxcorp@outlook.com">johnsonxcorp@outlook.com</a></td></tr>
+          <tr><td><span class="name">Contact</span></td><td><a href="mailto:johnsonandy242@gmail.com">johnsonandy242@gmail.com</a></td></tr>
           <tr><td><span class="name">Copyright</span></td><td>&copy; <span class="r-year"></span> JohnsonXCorp. All rights reserved.</td></tr>
           <tr><td><span class="name">Licence</span></td><td>Proprietary. Public repo, legal notices, no registration filed.</td></tr>
           <tr><td><span class="name">Repository</span></td><td><a href="https://github.com/ThePastor/syllabus-desk">ThePastor/syllabus-desk</a> <span class="sub">public</span></td></tr>
@@ -2462,10 +2486,10 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
   <span>Claude proposes the dates and <b style="color:var(--inverse-ink)">you confirm every one</b>. Anything an outline left blank is flagged, not invented. Instructors move dates — your course page stays the final word.<span id="storage-note"></span></span>
   <span class="maker">
     <span class="by">Built by</span>
-    <a class="jxc-home" href="https://thepastor.github.io/" target="_blank" rel="noopener" title="JohnsonXCorp — see all our apps" style="color:inherit;text-decoration:none"><svg class="jxc-logo" viewBox="0 0 648 104" role="img" aria-label="JohnsonXCorp" focusable="false">
+    <svg class="jxc-logo" viewBox="0 0 648 104" role="img" aria-label="JohnsonXCorp" focusable="false">
       <path class="jxc-word" fill="currentColor" d="M99.2 17.4c-0.1 0.2 -0.1 14.8 -0.1 32.4l0.1 32 6.8 -0 6.8 -0 0.1 -13.2c0.1 -11.2 0.1 -13.3 0.6 -13.6 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.8 0.5 -1.2 0 -0.6 0.2 -0.8 0.8 -0.8 0.4 -0 1 -0.2 1.2 -0.5 0.3 -0.4 1.2 -0.5 3.5 -0.5l3.1 -0 2.2 2.3 2.2 2.2 0.1 13.7 0.1 13.7 6.8 -0 6.8 -0 0.1 -15.2c0.1 -13.2 0 -15.3 -0.4 -15.6 -0.3 -0.3 -0.5 -1 -0.5 -2 0 -1 -0.2 -1.7 -0.5 -2 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.7 -1.4 -2 -2 -2 -0.3 -0 -0.9 -0.5 -1.5 -1 -0.5 -0.6 -1.2 -1 -1.5 -1 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 0.2 -2 0.5 -0.3 0.3 -1 0.5 -2 0.5 -1 -0 -1.7 0.2 -2 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.7 0.5 -1.1 0.5 -0.3 -0 -0.7 0.2 -0.8 0.5 -0.1 0.3 -0.4 0.5 -0.7 0.5 -0.4 -0 -0.5 -2 -0.5 -11.9l-0.1 -11.9 -6.8 -0.1c-5.2 -0.1 -6.8 -0 -6.9 0.3zM485.9 17.5c-0.1 0.4 -0.9 0.5 -3.8 0.5 -2.8 -0 -3.7 0.1 -4.1 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.7 -0 -9 8.3 -9 9 0 0.3 -0.2 0.7 -0.5 1 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.4 0.3 -0.5 1.6 -0.5 7 0 5.4 0.1 6.7 0.5 7 0.3 0.2 0.5 0.9 0.5 1.5 0 0.6 0.2 1.3 0.5 1.5 0.3 0.2 0.5 0.9 0.5 1.5 0 0.6 0.2 1.3 0.5 1.5 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.7 1.2 1.5 2 0.8 0.8 1.5 1.7 1.5 2 0 0.7 3.4 4 4 4 0.3 -0 1.2 0.7 2 1.5 0.8 0.8 1.7 1.5 2 1.5 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.3 0.3 1 0.5 2 0.5 1 -0 1.7 0.2 2 0.5 0.3 0.4 1.6 0.5 7.5 0.5 5.9 -0 7.2 -0.1 7.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 1 -0.4 1.5 -1 0.5 -0.5 1.2 -1 1.5 -1 0.7 -0 2 -1.4 2 -2 0 -0.3 -1.9 -2.4 -4.3 -4.7 -5 -5 -5.4 -5.1 -7.7 -2.7 -0.8 0.8 -1.7 1.5 -2 1.5 -0.3 -0 -0.7 0.2 -1 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.6 0.7 -9.4 0.7 -10 -0 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.7 -0 -6 -5.3 -6 -6 0 -0.3 -0.2 -0.7 -0.5 -1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.4 -0.3 -0.5 -1.5 -0.5 -6.5 0 -5 0.1 -6.2 0.5 -6.5 0.3 -0.2 0.5 -0.9 0.5 -1.5 0 -0.6 0.2 -1.3 0.5 -1.5 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.7 2.4 -3 3 -3 0.3 -0 0.9 -0.5 1.5 -1 0.7 -0.7 1.3 -1 2 -1 0.6 -0 1.2 -0.2 1.5 -0.5 0.3 -0.4 1.4 -0.5 6 -0.5 4.6 -0 5.7 0.1 6 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 1.2 0.7 2 1.5 0.9 0.9 1.7 1.5 2.1 1.4 0.5 -0.1 9.9 -9.1 9.9 -9.5 0 -0.3 -2.6 -2.4 -3 -2.4 -0.3 -0 -0.9 -0.5 -1.5 -1 -0.5 -0.6 -1.2 -1 -1.5 -1 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 -0.2 -2 -0.5 -0.3 -0.4 -1.2 -0.5 -4.1 -0.5 -2.9 -0 -3.7 -0.1 -3.8 -0.5 -0.1 -0.3 -0.4 -0.5 -0.6 -0.5 -0.2 -0 -0.5 0.2 -0.6 0.5zM30.2 18.2c-0.1 0.1 -0.2 10.2 -0.2 22.3 0 19.2 -0.1 22.1 -0.5 22.5 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.9 -0.4 1.5 -2.3 3.3l-2.3 2.2 -3 -0c-2.3 -0 -3.1 -0.1 -3.4 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -1 -0.5 -1.5 -1 -0.5 -0.5 -1.2 -1 -1.5 -1 -0.7 -0 -9 8.3 -9 9 0 0.7 3.4 4 4 4 0.3 -0 0.9 0.5 1.5 1 0.5 0.5 1.2 1 1.5 1 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.6 0.7 12.4 0.7 13 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.7 -0 6 -5.3 6 -6 0 -0.3 0.2 -0.7 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.9 0.5 -1.5 0 -0.6 0.2 -1.3 0.5 -1.5 0.4 -0.4 0.5 -3.4 0.4 -24.6l-0.1 -24.2 -6.7 -0.1c-3.7 -0 -6.8 0 -6.9 0.1zM70 37.5c-0.3 0.4 -1.1 0.5 -3 0.5 -1.9 -0 -2.7 0.1 -3 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2 1 -0.5 0.5 -1.2 1 -1.5 1 -0.7 -0 -5 4.3 -5 5 0 0.3 -0.4 0.9 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.2 0.7 -0.5 1 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.7 0.6 -0.7 11.4 0 12 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.9 0.5 1.5 0 0.6 0.2 1.3 0.5 1.5 0.3 0.2 0.5 0.7 0.5 1 0 0.7 7.3 8 8 8 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.6 0.7 11.4 0.7 12 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 1 -0.5 1.5 -1 0.5 -0.6 1.2 -1 1.5 -1 0.7 -0 5 -4.4 5 -5.1 0 -0.3 0.2 -0.7 0.5 -0.9 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.3 0.5 -1.1 0.5 -2.5 0 -1.4 0.2 -2.2 0.5 -2.5 0.3 -0.3 0.5 -1.1 0.5 -2.5 0 -1.4 -0.2 -2.2 -0.5 -2.5 -0.3 -0.3 -0.5 -1.1 -0.5 -2.5 0 -1.4 -0.2 -2.2 -0.5 -2.5 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.7 -1.2 -1.5 -2 -0.8 -0.8 -1.5 -1.7 -1.5 -2 0 -0.7 -1.4 -2 -2 -2 -0.3 -0 -1.2 -0.7 -2 -1.5 -0.8 -0.8 -1.7 -1.5 -2 -1.5 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 0.2 -2.5 0.5zm5 13c0.2 0.3 0.7 0.5 0.9 0.5 0.3 -0 1.6 1 2.8 2.2 2.2 2.1 2.3 2.3 2.3 3.8 0 1 0.2 1.7 0.5 2 0.3 0.2 0.5 0.7 0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.3 -0.5 1 -0.5 2 0 1 -0.2 1.7 -0.5 2 -0.3 0.2 -0.5 0.7 -0.5 0.9 0 0.7 -2.3 3.1 -3 3.1 -0.3 -0 -0.7 0.2 -1 0.5 -0.6 0.7 -7.4 0.7 -8 -0 -0.2 -0.3 -0.7 -0.5 -0.9 -0.5 -0.7 -0 -4.1 -3.3 -4.1 -4 0 -0.3 -0.2 -0.7 -0.5 -1 -0.4 -0.3 -0.5 -1.2 -0.5 -3.5 0 -2.3 0.1 -3.2 0.5 -3.5 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -0.9 0 -0.7 2.3 -3.1 3 -3.1 0.3 -0 0.7 -0.2 1 -0.5 0.3 -0.4 1.2 -0.5 3.5 -0.5 2.3 -0 3.2 0.1 3.5 0.5zM172 37.5c-0.3 0.3 -1.1 0.5 -2.5 0.5 -1.4 -0 -2.2 0.2 -2.5 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2 1 -1.4 1.4 -2.3 1.2 -2.5 -0.5l-0.2 -1.3 -6.8 -0 -6.8 -0 0 21.8 0 21.8 6.8 -0 6.8 -0 0.1 -13.2c0.1 -11.2 0.1 -13.3 0.6 -13.6 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.2 0.5 -0.8 0.5 -1.2 0 -0.6 0.2 -0.8 0.8 -0.8 0.4 -0 1 -0.2 1.2 -0.5 0.3 -0.4 1.2 -0.5 3.5 -0.5l3.1 -0 2.2 2.3 2.2 2.2 0.1 13.7 0.1 13.7 6.8 -0 6.8 -0 0.1 -15.2c0.1 -13.2 0 -15.3 -0.4 -15.6 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.9 -0.5 -1.6 -3.3 -4.3 -1.8 -1.8 -3.5 -3.2 -3.8 -3.2 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 0.2 -1.5 0.5zM207 37.5c-0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2 1 -0.5 0.5 -1.2 1 -1.5 1 -0.7 -0 -3 2.4 -3 3.1 0 0.3 -0.2 0.7 -0.5 0.9 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.4 0.3 -0.5 1.1 -0.5 3 0 1.9 0.1 2.7 0.5 3 0.3 0.2 0.5 0.9 0.5 1.5 0 0.6 0.2 1.3 0.5 1.5 0.3 0.2 0.5 0.7 0.5 1 0 0.7 3.3 4 4.1 4 0.3 -0 0.7 0.2 0.9 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.3 0.3 1 0.5 2 0.5 1 -0 1.7 0.2 2 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.5 0.9 -0 2 1.4 2 2.5 0 0.6 -0.3 1.3 -0.8 1.7 -0.7 0.6 -1.2 0.7 -3.8 0.7 -2.3 -0 -3.1 -0.1 -3.4 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -1.2 -0.7 -2 -1.5 -0.8 -0.8 -1.7 -1.5 -2 -1.5 -0.7 -0 -8 7.3 -8 8 0 0.6 2.4 3 3 3 0.3 -0 0.9 0.5 1.5 1 0.5 0.6 1.2 1 1.5 1 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.3 0.3 1 0.5 2 0.5 1 -0 1.7 0.2 2 0.5 0.6 0.7 11.4 0.7 12 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.9 -0 1.5 -0.5 3.8 -2.8 2.2 -2.3 2.7 -2.9 2.7 -3.8 0 -0.6 0.2 -1.2 0.5 -1.5 0.4 -0.3 0.5 -1.2 0.5 -4.1 0 -2.9 -0.1 -3.7 -0.5 -3.8 -0.3 -0.1 -0.5 -0.6 -0.5 -1.1 0 -0.5 -0.2 -1 -0.5 -1.1 -0.3 -0.1 -0.5 -0.5 -0.5 -0.8 0 -0.7 -3.3 -4.1 -4.1 -4.1 -0.3 -0 -0.7 -0.2 -0.9 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.9 -0.4 -1.3 -0.8 -1 -1.1 -0.9 -3 0.2 -3.1 0.4 -0.1 0.9 -0.3 1.1 -0.6 0.5 -0.6 2.5 -0.6 3 0 0.3 0.3 1 0.5 2 0.5 1 -0 1.7 0.2 2 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.4 0.5 -0.1 8 -7.1 8 -7.5 0 -0.3 -3.6 -3.5 -4 -3.5 -0.3 -0 -0.9 -0.5 -1.5 -1 -0.7 -0.7 -1.3 -1 -2 -1 -0.6 -0 -1.2 -0.2 -1.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.3 -0.4 -1.4 -0.5 -5.5 -0.5 -4.1 -0 -5.2 0.1 -5.5 0.5zM252 37.5c-0.3 0.4 -1.1 0.5 -3 0.5 -1.9 -0 -2.7 0.1 -3 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2.5 1.5 -0.8 0.8 -1.7 1.5 -2 1.5 -0.7 -0 -3 2.4 -3 3 0 0.3 -0.4 0.9 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.2 0.7 -0.5 1 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.4 0.3 -0.5 1.3 -0.5 4.5 0 3.2 0.1 4.2 0.5 4.5 0.3 0.3 0.5 1 0.5 2 0 1 0.2 1.7 0.5 2 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.7 5.3 6 6 6 0.3 -0 0.9 0.5 1.5 1 0.7 0.7 1.3 1 2 1 0.6 -0 1.2 0.2 1.5 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.3 0.4 1.4 0.5 6 0.5 4.6 -0 5.7 -0.1 6 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.7 -0 7 -6.3 7 -7 0 -0.3 0.2 -0.7 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.3 0.5 -1 0.5 -2 0 -1 0.2 -1.7 0.5 -2 0.4 -0.3 0.5 -1.3 0.5 -4.5 0 -3.2 -0.1 -4.2 -0.5 -4.5 -0.3 -0.3 -0.5 -1 -0.5 -2 0 -1 -0.2 -1.7 -0.5 -2 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.2 -0.8 -0.5 -1 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.7 -3.4 -4 -4 -4 -0.3 -0 -0.9 -0.5 -1.5 -1 -0.5 -0.6 -1.2 -1 -1.5 -1 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 -0.2 -1.5 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 0.2 -2.5 0.5zm5 13c0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.6 0.5 0.9 0.5 0.7 -0 2.1 1.3 2.1 2 0 0.3 0.2 0.7 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.3 0.5 1.1 0.5 2.5 0 1.4 -0.2 2.2 -0.5 2.5 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.3 0.2 -0.5 0.7 -0.5 0.9 0 0.3 -0.8 1.3 -1.7 2.3l-1.7 1.8 -4.1 -0c-3.2 -0 -4.1 -0.1 -4.5 -0.5 -0.2 -0.3 -0.7 -0.5 -0.9 -0.5 -0.3 -0 -1.3 -0.8 -2.3 -1.7 -1.4 -1.4 -1.8 -2 -1.8 -2.8 0 -0.6 -0.2 -1.2 -0.5 -1.5 -0.3 -0.3 -0.5 -1.1 -0.5 -2.5 0 -1.4 0.2 -2.2 0.5 -2.5 0.3 -0.2 0.5 -0.9 0.5 -1.5 0 -0.8 0.3 -1.4 1 -2 0.6 -0.5 1 -1.3 1 -1.7 0 -0.6 0.2 -0.8 0.8 -0.8 0.4 -0 1 -0.2 1.2 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.3 -0.4 1.1 -0.5 3 -0.5 1.9 -0 2.7 0.1 3 0.5zM306 37.5c-0.3 0.3 -1.1 0.5 -2.5 0.5 -1.4 -0 -2.2 0.2 -2.5 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.4 0.3 -2 1 -1.4 1.4 -2.3 1.2 -2.5 -0.5l-0.2 -1.3 -6.8 -0 -6.8 -0 0 21.8 0 21.8 6.8 -0 6.8 -0 0.1 -13.2c0.1 -11.2 0.1 -13.3 0.6 -13.6 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.8 -1.3 1.8 -2.3l1.8 -1.7 3 -0c2.9 -0 3 0 4 1 0.5 0.5 1.3 1 1.7 1 0.6 -0 0.8 0.2 0.8 0.8 0 0.4 0.2 1 0.5 1.2 0.4 0.3 0.5 2.5 0.6 14.1l0.1 13.7 6.8 -0 6.8 -0 0.1 -15.7c0.1 -13.7 0 -15.8 -0.4 -16.1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.3 -1 -1.7 0 -0.6 -0.2 -0.8 -0.8 -0.8 -0.5 -0 -1.3 -0.6 -2.2 -1.5 -0.8 -0.8 -1.7 -1.5 -2 -1.5 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.3 -0.3 -1.1 -0.5 -2.5 -0.5 -1.4 -0 -2.2 -0.2 -2.5 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 0.2 -1.5 0.5zM533 37.5c-0.3 0.4 -1.1 0.5 -3 0.5 -1.9 -0 -2.7 0.1 -3 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -0.8 0.2 -1 0.5 -0.2 0.3 -0.7 0.5 -1 0.5 -0.3 -0 -2.2 1.7 -4.3 3.8 -3.2 3.2 -3.7 3.9 -3.7 4.8 0 0.6 -0.2 1.2 -0.5 1.5 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.4 0.3 -0.5 1.1 -0.5 3.1 0 2 -0.1 2.7 -0.5 2.8 -0.3 0.1 -0.5 0.4 -0.5 0.6 0 0.2 0.2 0.5 0.5 0.6 0.4 0.1 0.5 0.8 0.5 3.3 0 2.4 0.1 3.3 0.5 3.6 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.7 2.4 3 3 3 0.3 -0 0.9 0.5 1.5 1 0.5 0.6 1.2 1 1.5 1 0.3 -0 0.7 0.2 1 0.5 0.2 0.3 0.7 0.5 1 0.5 0.3 -0 0.8 0.2 1 0.5 0.2 0.3 0.9 0.5 1.5 0.5 0.6 -0 1.3 0.2 1.5 0.5 0.6 0.7 11.4 0.7 12 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 1.2 -0.7 2 -1.5 0.8 -0.8 1.7 -1.5 2 -1.5 0.7 -0 2 -1.4 2 -2 0 -0.3 0.7 -1.2 1.5 -2 0.8 -0.8 1.5 -1.7 1.5 -2 0 -0.3 0.2 -0.7 0.5 -1 0.3 -0.2 0.5 -0.9 0.5 -1.5 0 -0.6 0.2 -1.3 0.5 -1.5 0.4 -0.3 0.5 -1.1 0.5 -3.1 0 -2 0.1 -2.7 0.5 -2.8 0.3 -0.1 0.5 -0.4 0.5 -0.6 0 -0.2 -0.2 -0.5 -0.5 -0.6 -0.4 -0.1 -0.5 -0.8 -0.5 -2.8 0 -2 -0.1 -2.8 -0.5 -3.1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.2 -0.8 -0.5 -1 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.7 -6.3 -7 -7 -7 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.3 -0.4 -1.1 -0.5 -3 -0.5 -1.9 -0 -2.7 -0.1 -3 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 0.2 -2 0.5zm4 13c0.2 0.3 0.9 0.5 1.4 0.5 0.8 -0 1.4 0.4 2.8 1.7 1 1 1.8 2 1.8 2.3 0 0.3 0.2 0.7 0.5 1 0.4 0.3 0.5 1.2 0.5 4 0 2.8 -0.1 3.7 -0.5 4 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.2 0.8 -0.5 1 -0.3 0.2 -0.5 0.8 -0.5 1.2 0 0.6 -0.2 0.8 -0.8 0.8 -0.4 -0 -1.2 0.4 -1.7 1 -0.9 1 -1 1 -4.5 1 -2.7 -0 -3.6 -0.1 -4 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.2 -0.3 -0.8 -0.5 -1.2 -0.5 -0.6 -0 -0.8 -0.2 -0.8 -0.8 0 -0.4 -0.4 -1.2 -1 -1.7l-1 -1 0 -4.1c0 -3.2 0.1 -4.1 0.5 -4.5 0.3 -0.2 0.5 -0.7 0.5 -0.9 0 -0.7 3.3 -4.1 4 -4.1 0.3 -0 0.7 -0.2 1 -0.5 0.3 -0.4 1.1 -0.5 3 -0.5 1.9 -0 2.7 0.1 3 0.5zM585 37.5c-0.3 0.3 -1 0.5 -2 0.5 -1 -0 -1.7 0.2 -2 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.8 -0 -1.3 0.3 -1.9 1 -1.1 1.2 -1.6 1.3 -1.6 0.1 -0 -0.6 -0.3 -1.1 -0.8 -1.5 -0.7 -0.5 -1.5 -0.6 -6.9 -0.5l-6.1 0.1 0 21.8 0 21.8 6.8 -0 6.8 -0 0.1 -13.7c0.1 -11.7 0.1 -13.8 0.6 -14.1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.7 1.4 -2 2.1 -2 0.3 -0 0.7 -0.2 0.9 -0.5 0.6 -0.7 5.4 -0.7 6 -0 0.3 0.4 0.9 0.5 2.1 0.4 1.4 -0.1 1.7 -0.2 1.8 -0.8 0.1 -0.4 1 -1.6 2.1 -2.6 1.1 -1.1 2 -2.2 2 -2.5 0 -0.3 0.5 -1 1 -1.5 1.3 -1.2 1.3 -2.7 0.2 -3.8 -0.4 -0.4 -1 -0.7 -1.3 -0.7 -0.3 -0 -0.7 -0.2 -0.9 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 -0.2 -2 -0.5 -0.3 -0.3 -1 -0.5 -2 -0.5 -1 -0 -1.7 0.2 -2 0.5zM622 37.5c-0.3 0.3 -1 0.5 -2 0.5 -1 -0 -1.7 0.2 -2 0.5 -0.2 0.3 -0.9 0.5 -1.5 0.5 -0.6 -0 -1.3 0.2 -1.5 0.5 -0.2 0.3 -0.7 0.5 -1.1 0.5 -0.3 -0 -0.7 0.2 -0.8 0.5 -0.4 1 -1.1 0.5 -1.2 -0.9l-0.1 -1.4 -6.8 -0 -6.8 -0 0 31.3 0 31.3 6.8 -0 6.8 -0 0.2 -10.3c0.2 -10.1 0.2 -10.3 0.8 -10.4 0.4 -0.1 1.1 0.3 1.7 0.9 0.7 0.7 1.3 1 2 1 0.6 -0 1.2 0.2 1.5 0.5 0.6 0.7 9.4 0.7 10 -0 0.2 -0.3 0.9 -0.5 1.5 -0.5 0.6 -0 1.3 -0.2 1.5 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.3 -0 0.8 -0.2 1 -0.5 0.2 -0.3 0.7 -0.5 1 -0.5 0.7 -0 5 -4.3 5 -5 0 -0.3 0.5 -0.9 1 -1.5 0.7 -0.7 1 -1.3 1 -2 0 -0.6 0.2 -1.2 0.5 -1.5 0.3 -0.3 0.5 -1 0.5 -2 0 -1 0.2 -1.7 0.5 -2 0.4 -0.3 0.5 -1.3 0.5 -4.5 0 -3.2 -0.1 -4.2 -0.5 -4.5 -0.3 -0.3 -0.5 -1 -0.5 -2 0 -1 -0.2 -1.7 -0.5 -2 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.2 -0.8 -0.5 -1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.8 -0.3 -1.4 -1.5 -2.5 -0.9 -0.9 -1.5 -1.8 -1.5 -2.2 0 -0.6 -0.2 -0.8 -0.8 -0.8 -0.5 -0 -1.3 -0.6 -2.2 -1.5 -0.8 -0.8 -1.7 -1.5 -2 -1.5 -0.3 -0 -0.7 -0.2 -1 -0.5 -0.2 -0.3 -0.7 -0.5 -1 -0.5 -0.3 -0 -0.8 -0.2 -1 -0.5 -0.3 -0.4 -1.1 -0.5 -3 -0.5 -1.9 -0 -2.7 -0.1 -3 -0.5 -0.2 -0.3 -0.9 -0.5 -1.5 -0.5 -0.6 -0 -1.3 0.2 -1.5 0.5zm2 13c0.2 0.3 0.7 0.5 1 0.5 0.3 -0 1 0.4 1.5 1 0.5 0.5 1.3 1 1.7 1 0.6 -0 0.8 0.2 0.8 0.8 0 0.4 0.2 1 0.5 1.2 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.2 0.8 0.5 1 0.3 0.3 0.5 1.1 0.5 2.5 0 1.4 -0.2 2.2 -0.5 2.5 -0.3 0.2 -0.5 0.9 -0.5 1.5 0 0.6 -0.2 1.3 -0.5 1.5 -0.3 0.2 -0.5 0.7 -0.5 0.9 0 0.7 -2.3 3.1 -3 3.1 -0.3 -0 -0.7 0.2 -1 0.5 -0.3 0.4 -1.2 0.5 -4 0.5 -2.8 -0 -3.7 -0.1 -4 -0.5 -0.2 -0.3 -0.7 -0.5 -0.9 -0.5 -0.7 -0 -3.1 -2.3 -3.1 -3 0 -0.3 -0.2 -0.7 -0.5 -1 -0.3 -0.2 -0.5 -0.9 -0.5 -1.5 0 -0.6 -0.2 -1.3 -0.5 -1.5 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 0.2 -0.8 0.5 -1 0.3 -0.3 0.5 -1 0.5 -2 0 -1 0.2 -1.7 0.5 -2 0.3 -0.2 0.5 -0.7 0.5 -0.9 0 -0.7 3.3 -4.1 4 -4.1 0.3 -0 0.7 -0.2 1 -0.5 0.3 -0.4 1.1 -0.5 3 -0.5 1.9 -0 2.7 0.1 3 0.5z"/>
       <path class="jxc-x" d="M335.2 3.4c-0.1 0.2 -0.1 21.4 -0.1 46.9l0.1 46.5 13.8 -0 13.8 -0 0 -6.8 0 -6.8 -6.8 -0.2 -6.8 -0.2 0 -32.8 0 -32.8 6.9 -0.1 6.9 -0.1 0 -6.3c0 -6.1 -0 -6.3 -0.8 -7 -0.8 -0.7 -0.9 -0.7 -13.8 -0.7 -10.2 -0 -13.1 0.1 -13.2 0.4zM419.1 3.4c-0.1 0.2 -0.1 3.3 -0.1 6.9l0.1 6.5 6.2 0.1c6 0.1 6.2 0.1 6.9 0.8l0.7 0.8 -0.1 32.2 -0.1 32.1 -6.8 0.2 -6.8 0.2 0 6.8 0 6.8 13.8 -0 13.8 -0 0.1 -46.1 0.1 -46.2 -0.7 -0.8 -0.7 -0.8 -13.1 -0c-10.4 -0 -13.2 0.1 -13.3 0.4zM360 19.4c0 0.2 0.5 0.7 1 1.1 0.6 0.4 1 1 1 1.4 0 0.4 0.5 1.1 1 1.6 0.6 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.7 1.2 1.5 2 0.8 0.8 1.5 1.7 1.5 2 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.7 1.2 1.5 2 0.8 0.8 1.5 1.7 1.5 2 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.6 0 0.3 0.2 0.7 0.5 0.8 0.3 0.1 0.5 0.4 0.5 0.6 0 0.2 -0.2 0.5 -0.5 0.6 -0.3 0.1 -0.5 0.5 -0.5 0.8 0 0.3 -0.7 1.3 -1.5 2.1 -0.8 0.8 -1.5 1.7 -1.5 2 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.7 1.2 -1.5 2 -0.8 0.8 -1.5 1.7 -1.5 2 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.2 0.7 -0.5 0.9 -0.3 0.2 -0.5 0.5 -0.3 0.7 0.2 0.3 2.4 0.4 7.3 0.4l7.1 -0 1.2 -1.3c0.7 -0.7 1.2 -1.5 1.2 -1.8 0 -0.3 0.5 -0.9 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.2 -0.7 0.5 -1 0.3 -0.2 0.5 -0.7 0.5 -1 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.8 1.5 -2.1 2.2 -1.9 0.3 0.1 0.6 0.4 0.7 0.8 0.1 0.4 0.5 1.1 1.1 1.6 0.5 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.2 0.7 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.2 0.7 0.5 1 0.3 0.2 0.5 0.7 0.5 1 0 0.3 0.5 1 1 1.5 0.6 0.5 1 1.2 1 1.5 0 0.3 0.4 0.9 0.8 1.3 0.8 0.7 1 0.7 8.4 0.7 7.4 -0.1 7.6 -0.1 7.7 -0.8 0.1 -0.4 -0.3 -1.1 -0.9 -1.7 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.3 -1 -1.7 0 -0.4 -0.2 -0.8 -0.5 -0.9 -0.3 -0.1 -0.5 -0.5 -0.5 -0.9 0 -0.4 0.2 -0.8 0.5 -0.9 0.3 -0.1 0.5 -0.5 0.5 -0.9 0 -0.4 0.5 -1.2 1 -1.7 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.7 -1.2 1.5 -2 0.8 -0.8 1.5 -1.7 1.5 -2 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.2 1 -1.5 0 -0.3 0.5 -1 1 -1.5 0.6 -0.5 1 -1.3 1 -1.6 0 -0.4 0.4 -1 1 -1.4 2.1 -1.4 1.5 -1.5 -6.9 -1.4 -7.8 0.1 -7.9 0.1 -8 0.8 -0.1 0.4 -0.5 1.1 -1.1 1.6 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.2 0.7 -0.5 1 -0.3 0.2 -0.5 0.7 -0.5 1 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.5 0.5 -1 1.2 -1 1.5 0 0.3 -0.4 1 -1 1.5 -0.6 0.5 -1 1.2 -1.1 1.6 -0.1 0.6 -0.3 0.7 -1.4 0.7 -1.1 -0 -1.4 -0.1 -1.4 -0.7 -0.1 -0.4 -0.5 -1.1 -1.1 -1.6 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.2 -0.7 -0.5 -1 -0.3 -0.2 -0.5 -0.7 -0.5 -1 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.5 -0.5 -1 -1.2 -1 -1.5 0 -0.3 -0.4 -1 -1 -1.5 -0.6 -0.5 -1 -1.2 -1.1 -1.6 -0.1 -0.7 -0.2 -0.7 -8.5 -0.8 -6.6 -0.1 -8.4 -0 -8.4 0.3z"/>
-    </svg></a>
+    </svg>
     <a href="#rights" id="rightslink">&copy; <span class="r-year"></span> JohnsonXCorp &middot; Legal &amp; privacy</a>
     <button type="button" class="build" id="buildstamp"></button>
   </span>
@@ -2473,11 +2497,12 @@ catch(e){document.documentElement.setAttribute("data-theme","light");}})();
 
 <script>
 "use strict";
-var BUILD={v:"4.8",date:"15 September 2026",year:2026};
+var BUILD={v:"4.9",date:"23 September 2026",year:2026};
 /* What each version changed, newest first. Kept in the page rather than in a file on a code
    host, because the person who wants it is the one who just watched the page refresh itself.
    Trim the tail past a dozen; nobody reads further back than that. */
 var WHATS_NEW=[
+  ["4.9","<b>Four things the code audit found.</b> The reader no longer drops the last row of a schedule table or misses dates written as \u201cWeek 3 \u2014 September 21\u201d. Removing a course now removes its planned study sessions, ticks and marks too \u2014 and offers <b>Undo</b> for twenty seconds instead of asking whether you are sure. A tab left open overnight wakes up on the right day. And anything that arrives from outside \u2014 a data file, a course file, an account copy \u2014 is checked against what the page itself would have made before it is shown."],
   ["4.8","<b>Readable on a phone.</b> A sweep of every screen on iPhones, iPads and computers: the small labels \u2014 tabs, table headings, form captions \u2014 come up to eleven pixels; text fields are sixteen on phones so tapping one no longer zooms the page and leaves it there; the check-before-you-save table turns into cards on a narrow screen instead of running off its right edge; and every button and box is big enough to hit on a touch screen."],
   ["4.7","<b>The reader stops trusting file names.</b> It looks at the first bytes of a file, so a Word document whose insides are laid out unusually now opens, an old .doc or any other file that is not text gets a plain explanation instead of 190,000 characters of noise, and a scanned PDF says it is a scan rather than \u201cnothing dated\u201d. The file picker also names the file types the way iPhones want them named. And these release notes are now owner-only: everybody else sees the version, the date and the Refresh button, which is what they need."],
   ["4.6","<b>Import is a file now.</b> Export \u203a <b>Import a data file</b> opens a file picker instead of asking you to paste; a data file dropped on Add a course by mistake is offered for import rather than turned away. And the page itself no longer carries anybody\u2019s timetable: the owner\u2019s own schedule, which sat in the source behind an owner-only button, has been taken out. Nobody\u2019s term belongs in a public page."],
@@ -2523,6 +2548,19 @@ function newerThan(a,b){var x=verNum(a),y=verNum(b);
   for(var i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0);}return false;}
 /* ===================== helpers ===================== */
 var TODAY=new Date(); TODAY.setHours(0,0,0,0);
+/* A tab left open overnight — an installed app especially — used to wake up
+   highlighting yesterday and counting down from it. Check on every return to
+   the page and once a minute while it is visible. */
+function rollDay(){
+  var now=new Date();now.setHours(0,0,0,0);
+  if(now.getTime()===TODAY.getTime())return false;
+  TODAY=now;
+  if(typeof renderAll==="function"&&document.getElementById("weeks"))renderAll();
+  return true;
+}
+setInterval(function(){if(!document.hidden)rollDay();},60000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)rollDay();});
+window.addEventListener("focus",rollDay);
 var DOWN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 var MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
 var PALETTE=["--accent","--coral","--mint-deep","--warn","--bad","--ink-2","--accent-deep","--ok"];
@@ -2643,9 +2681,72 @@ function t12(t){if(!t)return "";var a=t.split(":"),h=+a[0],m=a[1]||"00";var ap=h
 function uid(){return Math.random().toString(36).slice(2,9);}
 function monOf(d){var x=new Date(d);var s=(x.getDay()+6)%7;x.setDate(x.getDate()-s);x.setHours(0,0,0,0);return x;}
 
+
+/* ===================== what is allowed in =====================
+   S is rendered into HTML. Most of it goes through esc(); ids and colour
+   tokens go into attributes and CSS custom properties, where a stray quote
+   is a way out of the attribute. Nothing the page makes itself can contain
+   one — uid() is base-36, colours come from PALETTE — so the rule is simply
+   that nothing arriving from outside may be shaped differently from what
+   the page would have made. Applied on every ingest: local storage, a data
+   file, a course file, an account payload. */
+var SAFE_ID=/^[A-Za-z0-9_.:·-]{1,48}$/;
+function cleanId(v){v=String(v==null?"":v);return SAFE_ID.test(v)?v:uid();}
+function cleanKey(v){v=String(v==null?"":v).slice(0,12);return /^[A-Za-z0-9·_-]{1,12}$/.test(v)?v:("C"+uid().slice(0,4)).toUpperCase();}
+function cleanStr(v,n){return String(v==null?"":v).slice(0,n||200);}
+function cleanColor(v,ix){return PALETTE.indexOf(v)>-1?v:PALETTE[(ix||0)%PALETTE.length];}
+function cleanTime(v){return /^\d{2}:\d{2}$/.test(v||"")?v:"";}
+function cleanDate(v){return isISO(v)?v:null;}
+function cleanTerm(t){
+  t=(t&&typeof t==="object")?t:{};
+  var keyMap={};
+  var courses=(Array.isArray(t.courses)?t.courses:[]).map(function(c,ix){
+    c=(c&&typeof c==="object")?c:{};
+    var key=cleanKey(c.key);
+    while(keyMap[key]&&keyMap[key]!==c)key=cleanKey(key.slice(0,9)+"·"+uid().slice(0,2));
+    keyMap[key]=c;
+    return {key:key,code:cleanStr(c.code,60),title:cleanStr(c.title,120),instructor:cleanStr(c.instructor,80),
+      email:cleanStr(c.email,120),room:cleanStr(c.room,40),meets:cleanStr(c.meets,60),time:cleanStr(c.time,40),
+      color:cleanColor(c.color,ix),rules:cleanStr(c.rules,600),
+      weights:(Array.isArray(c.weights)?c.weights:[]).filter(function(w){return w&&w.length>1;})
+        .map(function(w){return [cleanStr(w[0],60),+w[1]||0];}).slice(0,40),
+      classes:(Array.isArray(c.classes)?c.classes:[]).filter(function(r){return r&&isISO(r.date);})
+        .map(function(r){return {date:r.date,topic:cleanStr(r.topic,160),off:!!r.off,mark:!!r.mark};}).slice(0,400),
+      blocks:(Array.isArray(c.blocks)?c.blocks:[]).map(function(b){
+        b=b||{};return {id:cleanId(b.id),dow:Math.max(0,Math.min(6,+b.dow||0)),
+          from:cleanTime(b.from)||"19:00",to:cleanTime(b.to)||"20:30",
+          every:(+b.every===2?2:1),anchor:cleanDate(b.anchor)||""};}).slice(0,14),
+      study:c.study&&typeof c.study==="object"?{on:!!c.study.on,dow:+c.study.dow||0,
+        from:cleanTime(c.study.from),to:cleanTime(c.study.to),label:cleanStr(c.study.label,80)}:undefined};
+  });
+  var keys={};courses.forEach(function(c){keys[c.key]=1;});
+  var items=(Array.isArray(t.items)?t.items:[]).map(function(i){
+    i=(i&&typeof i==="object")?i:{};
+    return {id:cleanId(i.id),c:cleanKey(i.c),t:cleanStr(i.t||"Untitled",140),d:cleanDate(i.d),at:cleanTime(i.at),
+      k:["exam","quiz","due","pres","other"].indexOf(i.k)>-1?i.k:"due",w:cleanStr(i.w,12),note:cleanStr(i.note,300)};
+  }).filter(function(i){return keys[i.c];}).slice(0,2000);
+  var ids={};items.forEach(function(i){ids[i.id]=1;});
+  var done={};Object.keys(t.done&&typeof t.done==="object"?t.done:{}).forEach(function(k){if(SAFE_ID.test(k)||/^(cl|st|ramp|lf|pl)-/.test(k))done[k]=1;});
+  var life=(Array.isArray(t.life)?t.life:[]).map(function(e){
+    e=(e&&typeof e==="object")?e:{};
+    return {id:cleanId(e.id),t:cleanStr(e.t,80),cat:cleanStr(e.cat,20),from:cleanTime(e.from)||"17:00",
+      to:cleanTime(e.to)||"18:00",note:cleanStr(e.note,140),every:(+e.every===2?2:1),anchor:cleanDate(e.anchor)||"",
+      d:cleanDate(e.d)||undefined,dows:Array.isArray(e.dows)?e.dows.map(Number).filter(function(x){return x>=0&&x<=6;}):undefined};
+  }).slice(0,300);
+  var plan=(Array.isArray(t.plan)?t.plan:[]).map(function(pn){
+    pn=(pn&&typeof pn==="object")?pn:{};
+    return {id:cleanId(pn.id),forId:cleanId(pn.forId),c:cleanKey(pn.c),d:cleanDate(pn.d),
+      from:cleanTime(pn.from)||"19:00",to:cleanTime(pn.to)||"20:30",t:cleanStr(pn.t,140)};
+  }).filter(function(pn){return pn.d&&ids[pn.forId]&&keys[pn.c];}).slice(0,600);
+  var out={courses:courses,items:items,done:done,life:life,plan:plan,
+           name:cleanStr(t.name,60),version:+t.version||1};
+  if(t.demo)out.demo=true;
+  return out;
+}
+
 /* ===================== state ===================== */
 var S={courses:[],items:[],done:{},version:1};
-function load(){try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.courses)S=p;}}catch(e){}}
+function load(){try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.courses)S=cleanTerm(p);}}catch(e){}}
 function save(){syncSoon();
   try{localStorage.setItem(KEY,JSON.stringify(S));document.getElementById("storage-note").textContent="";}
   catch(e){document.getElementById("storage-note").innerHTML=' <b style="color:var(--jxc-gold)">This browser is refusing to save</b>, so your courses will go when the tab closes. Export your data to keep it.';}}
@@ -2693,7 +2794,7 @@ function palOf(key){
 function resetPalette(){VAR_CACHE={};PAL_CACHE={};}
 function textColorOf(k){return palOf(k).ct;}
 function inkColorOf(k){return palOf(k).ci;}
-function colorOf(k){var c=S.courses.filter(function(x){return x.key===k;})[0];return c?"var("+c.color+")":"var(--ink-3)";}
+function colorOf(k){var c=S.courses.filter(function(x){return x.key===k;})[0];return c?"var("+cleanColor(c.color)+")":"var(--ink-3)";}
 function courseOf(k){
   /* life entries carry no course, but everything downstream — the rail colour,
      the contrast engine, the calendar chip — asks for one, so give them a real
@@ -2983,7 +3084,7 @@ function renderHorizon(){
     var col=colorOf(i.c);
     return '<div class="hcard unset" style="--hc:'+col+'"><div class="d" style="color:'+textColorOf(i.c)+'">'+esc(courseOf(i.c).code)+'</div>'
       +'<div class="t">'+esc(i.t)+'</div><div class="m">'+esc(i.note||"No date given in the outline.")+'</div>'
-      +'<div style="margin-top:10px"><button class="tbd" data-tbd="'+i.id+'">Set date</button></div></div>';
+      +'<div style="margin-top:10px"><button class="tbd" data-tbd="'+esc(i.id)+'">Set date</button></div></div>';
   }).join("");
   document.getElementById("horizon").innerHTML=html||'<div class="hcard"><div class="t">Nothing ahead</div><div class="m">Add a course to fill this in.</div></div>';
   document.getElementById("hz-note").textContent=total?("next "+up.length+" of "+total):"";
@@ -3194,9 +3295,9 @@ function renderCourses(){
       return '<tr><td style="width:100%"><span class="name">'+esc(i.t)+'</span>'+(i.note?'<div class="sub">'+esc(i.note)+'</div>':'')+'</td>'
         +(i.d?'<td class="dt">'+fmtDay(P(i.d))
              +(i.at?'<div class="sub mono">'+esc(t12(i.at))+'</div>'
-                   :'<div class="sub"><button class="tbd" data-settime="'+i.id+'">+ time</button></div>')
+                   :'<div class="sub"><button class="tbd" data-settime="'+esc(i.id)+'">+ time</button></div>')
              +'</td>'
-           :'<td class="dt"><button class="tbd" data-tbd="'+i.id+'">set</button></td>')
+           :'<td class="dt"><button class="tbd" data-tbd="'+esc(i.id)+'">set</button></td>')
         +'<td class="wt">'+esc(i.w||"—")+'</td></tr>';
     }).join("")||'<tr><td colspan="3" style="color:var(--ink-3)">No graded items found in this outline.</td></tr>';
     var tot=(c.weights||[]).reduce(function(a,b){return a+(+b[1]||0);},0),bar="",key="";
@@ -3758,16 +3859,45 @@ function importBundle(p,already){
   }
   var q=Object.assign({},p);
   if(q.marks){setMarks(q.marks);}delete q.marks;
-  if(Array.isArray(q.archive)){ARCHIVE=q.archive;saveArchive();}delete q.archive;
+  if(Array.isArray(q.archive)){ARCHIVE=q.archive.slice(0,40).map(cleanArchived).filter(Boolean);saveArchive();}delete q.archive;
   delete q.demo;
-  S={courses:q.courses||[],items:q.items||[],done:q.done||{},life:q.life||[],
-     plan:q.plan||[],name:q.name||"",version:q.version||1};
+  S=cleanTerm(q);
   save();resetPalette();renderAll();paintSettings();
   showPanel("p-weeks");window.scrollTo({top:0,behavior:"smooth"});
   sdToast("Imported: "+n+" course"+(n===1?"":"s")+".");
   return true;
 }
 
+/* ---------- removing a course, whole, with a way back ----------
+   Its items, its planned study sessions, its ticks and its marks all go with
+   it; leaving any of them behind is how a calendar ends up with "Work on
+   Essay 2" for a course that no longer exists. And instead of a dialog that
+   asks "are you sure" (everyone says yes), it just goes — with Undo in the
+   toast for twenty seconds. */
+var UNDO_COURSE=null;
+function removeCourse(k){
+  var c=courseOf(k);if(!c||!S.courses.some(function(x){return x.key===k;}))return;
+  var gone={course:c,items:S.items.filter(function(i){return i.c===k;}),
+            plan:planList().filter(function(pn){return pn.c===k;}),done:{},marks:{}};
+  gone.items.forEach(function(i){if(S.done[i.id]){gone.done[i.id]=1;delete S.done[i.id];}});
+  Object.keys(MARKS).forEach(function(mk){
+    if(mk.indexOf("w:"+k+":")===0||mk==="target:"+k||gone.items.some(function(i){return i.id===mk;})){gone.marks[mk]=MARKS[mk];delete MARKS[mk];}
+  });
+  S.courses=S.courses.filter(function(x){return x.key!==k;});
+  S.items=S.items.filter(function(i){return i.c!==k;});
+  S.plan=planList().filter(function(pn){return pn.c!==k;});
+  saveMarks();save();renderAll();
+  UNDO_COURSE=gone;
+  sdToast("Removed "+(c.code||c.key)+" and everything in it.","Undo",function(){
+    var g=UNDO_COURSE;if(!g)return;UNDO_COURSE=null;
+    if(S.courses.some(function(x){return x.key===g.course.key;}))return;
+    S.courses.push(g.course);g.items.forEach(function(i){S.items.push(i);});
+    g.plan.forEach(function(pn){planList().push(pn);});
+    Object.keys(g.done).forEach(function(id){S.done[id]=1;});
+    Object.keys(g.marks).forEach(function(mk){MARKS[mk]=g.marks[mk];});
+    saveMarks();save();renderAll();sdToast("Put back.");
+  });
+}
 /* ===================== the course file =====================
    One tap instead of a parse.
 
@@ -3917,6 +4047,11 @@ function loadArchive(){
   try{var raw=localStorage.getItem(TERMS_KEY);ARCHIVE=raw?(JSON.parse(raw)||[]):[];}
   catch(e){ARCHIVE=[];}
   if(!Array.isArray(ARCHIVE))ARCHIVE=[];
+  ARCHIVE=ARCHIVE.map(cleanArchived).filter(Boolean);
+}
+function cleanArchived(r){
+  if(!r||typeof r!=="object")return null;
+  return {id:cleanId(r.id),name:cleanStr(r.name,60),saved:cleanDate(r.saved)||"",payload:cleanTerm(r.payload||{})};
 }
 function saveArchive(){
   try{localStorage.setItem(TERMS_KEY,JSON.stringify(ARCHIVE));}catch(e){}
@@ -3969,8 +4104,7 @@ function openArchived(id){
   /* put the live one away first, so nothing is ever discarded to make room */
   if(!S.demo)archiveCurrent();
   var p=want.payload||{};
-  S={courses:p.courses||[],items:p.items||[],done:p.done||{},life:p.life||[],
-     plan:p.plan||[],name:p.name||want.name||"",version:p.version||1};
+  S=cleanTerm(p);if(!S.name)S.name=cleanStr(want.name,60);
   saveArchive();save();resetPalette();renderAll();paintSettings();
   showPanel("p-weeks");window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -5569,13 +5703,7 @@ document.addEventListener("click",function(e){
     cd.blocks=(cd.blocks||[]).filter(function(b){return b.id!==pd[1];});
     save();renderAll();return;
   }
-  if((x=t.closest("[data-del]"))){
-    var k=x.dataset.del;
-    if(!confirm("Remove "+courseOf(k).code+" and everything in it? This cannot be undone."))return;
-    S.courses=S.courses.filter(function(c){return c.key!==k;});
-    S.items=S.items.filter(function(i){return i.c!==k;});
-    save();renderAll();return;
-  }
+  if((x=t.closest("[data-del]"))){removeCourse(x.dataset.del);return;}
   if((x=t.closest("[data-rdel]"))&&PENDING){PENDING.items.splice(+x.dataset.rdel,1);drawReview();return;}
   if((x=t.closest("[data-rtime]"))&&PENDING){
     /* 11:59 pm is the commonest deadline by a mile, so it is the starting
@@ -6014,9 +6142,8 @@ function pullTerm(){
 function adoptCloud(row){
   SYNC.applying=true;
   var p=row.payload||{};
-  S={courses:p.courses||[],items:p.items||[],done:p.done||{},life:p.life||[],
-     plan:p.plan||[],name:p.name||"",version:p.version||1};
-  if(Array.isArray(p.archive)){ARCHIVE=p.archive;saveArchive();}
+  S=cleanTerm(p);
+  if(Array.isArray(p.archive)){ARCHIVE=p.archive.slice(0,40).map(cleanArchived).filter(Boolean);saveArchive();}
   try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
   if(p.theme==="dark"||p.theme==="light"){
     document.documentElement.setAttribute("data-theme",p.theme);
