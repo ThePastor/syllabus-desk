@@ -33,7 +33,7 @@ aid, not a source of truth — your course page and your instructor are.
 
 ## Licence
 
-Copyright © 2026 **JohnsonXCorp**. All rights reserved. See [LICENSE](LICENSE).
+Copyright © 2026 **JohnsonX Labs**. All rights reserved. See [LICENSE](LICENSE).
 
 This is **not open source**. It is published so the app can be served and so you can read it and
 verify what it does with your files. You may use it, read it, and keep everything it makes from
@@ -43,4 +43,4 @@ from it.
 Bundles [PDF.js](https://mozilla.github.io/pdf.js/) (Apache-2.0, © Mozilla Foundation) and
 [JSZip](https://stuk.github.io/jszip/) (MIT, © Stuart Knightley), each under its own licence.
 
-Built by JohnsonXCorp · johnsonxcorp@outlook.com
+Built by JohnsonX Labs · johnsonxcorp@outlook.com
